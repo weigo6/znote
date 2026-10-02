@@ -1,5 +1,6 @@
 import { setRendered, applyRenderedTheme } from "./preview";
-import { previewAnchors, previewTarget, sourceLineAtPreview, type PreviewAnchor } from "./preview-sync";
+import { updateSourceLocations } from "./preview-source-map";
+import { previewAnchors, previewAnchorAt, readingAnchors, readingAnchorAt, lineWithin, isPreviewVisible, type PreviewAnchor, type ReadingAnchor } from "./preview-sync";
 import type { RenderResult } from "./types";
 import documentCss from "./markdown-theme.css?inline";
 import scrollbarCss from "./scrollbar.css?inline";
@@ -29,16 +30,47 @@ export class PreviewSurface {
   private indexedSource?: string;
   private indexedArticle?: HTMLElement;
   private scrollListener?: (line: number) => void;
-  private lastScrollInput = 0;
   private suppressedScrollTop: number | null = null;
   private scrollFrame = 0;
+  private layoutFrame = 0;
+  private layoutObserver?: ResizeObserver;
+  private contentObserver?: MutationObserver;
+  private frameEvents?: AbortController;
+  private geometry: ReadingAnchor[] = [];
+  private geometryDirty = true;
+  private pointerScrolling = false;
+  private userScrolling = false;
+  private scrollIdleTimer = 0;
+  private intent: "editor" | "preview" = "editor";
+  private lastReportedLine?: number;
+  private readingPosition?: { element: HTMLElement; fraction: number; gap: number; viewportY: number; line: number };
+  private documentId?: string;
+  private cursorFrame = 0;
+  private cursorTarget?: { source: string; line: number; cause: "editor" | "navigation" };
   onFindShortcut?: () => void;
+
+  get followsEditor() { return this.intent === "editor"; }
+
+  editorIntent() {
+    this.intent = "editor";
+    this.readingPosition = undefined;
+    this.userScrolling = false;
+    this.pointerScrolling = false;
+    clearTimeout(this.scrollIdleTimer);
+    if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
+    this.scrollFrame = 0;
+    this.lastReportedLine = undefined;
+  }
+
+  private navigationIntent() {
+    this.editorIntent();
+    this.intent = "preview";
+  }
 
   setScrollSync(source: string, listener?: (line: number) => void) {
     const article = this.frame?.contentDocument?.querySelector<HTMLElement>("article");
     if (article) this.ensureScrollIndex(source, article);
     this.scrollListener = listener;
-    this.lastScrollInput = 0;
   }
 
   private ensureScrollIndex(source: string, article: HTMLElement) {
@@ -46,7 +78,65 @@ export class PreviewSurface {
     this.scrollAnchors = previewAnchors(source, article);
     this.indexedSource = source;
     this.indexedArticle = article;
+    this.geometryDirty = true;
+    this.lastReportedLine = undefined;
   }
+
+  private getGeometry() {
+    const doc = this.frame?.contentDocument;
+    if (doc && this.geometryDirty) {
+      this.geometry = readingAnchors(this.scrollAnchors, (doc.scrollingElement || doc.documentElement).scrollTop, this.indexedArticle);
+      this.geometryDirty = false;
+    }
+    return this.geometry;
+  }
+
+  private rememberReadingPosition() {
+    const doc = this.frame?.contentDocument;
+    if (!doc) return;
+    const scrollTop = (doc.scrollingElement || doc.documentElement).scrollTop;
+    const viewportY = doc.documentElement.clientHeight * 0.28;
+    const reading = readingAnchorAt(this.getGeometry(), scrollTop + viewportY);
+    if (!reading) return;
+    const fraction = Math.max(0, Math.min(1, (scrollTop + viewportY - reading.top) / Math.max(1, reading.bottom - reading.top)));
+    const gap = scrollTop + viewportY - reading.top - (reading.bottom - reading.top) * fraction;
+    this.readingPosition = { element: reading.anchor.element, fraction, gap, viewportY, line: lineWithin(reading.anchor, fraction) };
+  }
+
+  private writeScroll(top: number) {
+    const doc = this.frame?.contentDocument;
+    if (!doc) return;
+    const scroller = doc.scrollingElement || doc.documentElement;
+    scroller.scrollTop = top;
+    this.suppressedScrollTop = scroller.scrollTop;
+  }
+
+  private restoreReadingPosition() {
+    const doc = this.frame?.contentDocument;
+    const position = this.readingPosition;
+    if (!doc || !position || this.intent !== "preview") return;
+    let element = position.element;
+    if (!isPreviewVisible(element))
+      element = previewAnchorAt(this.scrollAnchors, position.line)?.element || element;
+    while (!isPreviewVisible(element) && element.parentElement) element = element.parentElement;
+    if (!isPreviewVisible(element)) return;
+    const rect = element.getBoundingClientRect();
+    const top = (doc.scrollingElement || doc.documentElement).scrollTop;
+    this.writeScroll(top + rect.top + rect.height * position.fraction + position.gap - position.viewportY);
+    this.geometryDirty = true;
+    this.rememberReadingPosition();
+  }
+
+  private invalidateGeometry = () => {
+    this.geometryDirty = true;
+    if (this.layoutFrame) return;
+    this.layoutFrame = requestAnimationFrame(() => {
+      this.layoutFrame = 0;
+      if (this.intent === "preview") this.restoreReadingPosition();
+      else if (this.cursorTarget?.cause === "editor")
+        this.applySourceScroll(this.cursorTarget.source, this.cursorTarget.line);
+    });
+  };
 
   private findRegistry() {
     const doc = this.frame?.contentDocument;
@@ -163,10 +253,12 @@ export class PreviewSurface {
     }
     const scroller = doc?.scrollingElement;
     if (scroller && doc) {
+      this.navigationIntent();
       const rect = range.getBoundingClientRect();
       const viewport = doc.documentElement.clientHeight;
       if (rect.top < 0 || rect.bottom > viewport)
-        scroller.scrollTop += rect.top - viewport * 0.3;
+        this.writeScroll(scroller.scrollTop + rect.top - viewport * 0.3);
+      this.rememberReadingPosition();
     }
     return this.getFindState();
   }
@@ -185,34 +277,75 @@ export class PreviewSurface {
 
   cancel() {
     this.session?.abort();
+    if (this.cursorFrame) cancelAnimationFrame(this.cursorFrame);
+    this.cursorFrame = 0;
+    this.cursorTarget = undefined;
   }
 
-  scrollToSource(source: string, line: number) {
+  scrollToSource(source: string, line: number, cause: "editor" | "navigation" = "navigation") {
+    if (cause === "navigation") {
+      this.navigationIntent();
+    }
+    this.cursorTarget = { source, line, cause };
+    if (this.cursorFrame) return;
+    this.cursorFrame = requestAnimationFrame(() => {
+      this.cursorFrame = 0;
+      const target = this.cursorTarget;
+      if (target) {
+        this.applySourceScroll(target.source, target.line);
+        if (target.cause === "navigation") this.rememberReadingPosition();
+      }
+    });
+  }
+
+  private applySourceScroll(source: string, line: number) {
     const doc = this.frame?.contentDocument;
     const article = doc?.querySelector<HTMLElement>("article");
     if (!doc || !article) return;
     this.ensureScrollIndex(source, article);
-    const target = previewTarget(this.scrollAnchors, line);
-    if (!target) return;
+    const anchor = previewAnchorAt(this.scrollAnchors, line);
+    if (!anchor) return;
+    let target = anchor.element;
+    // A source block inside a closed details/hidden tab has no visible rect.
+    // Reveal its visible containing block without opening user controls.
+    while (!isPreviewVisible(target) && target.parentElement && target !== article)
+      target = target.parentElement;
     const scroller = doc.scrollingElement || doc.documentElement;
     const rect = target.getBoundingClientRect();
     const viewport = doc.documentElement.clientHeight;
-    if (rect.top >= 0 && rect.bottom <= viewport) return;
-    scroller.scrollTop += rect.top - viewport * 0.28;
-    this.suppressedScrollTop = scroller.scrollTop;
+    const fraction = Math.max(0, Math.min(1, (line - anchor.line) / Math.max(1, (anchor.endLine ?? anchor.line) - anchor.line)));
+    const y = rect.top + Math.max(0, rect.height - 1) * fraction;
+    if (y >= 0 && y <= viewport) return;
+    this.writeScroll(scroller.scrollTop + y - viewport * 0.28);
   }
 
   dispose() {
     this.clearFind();
     this.cancel();
     this.observer?.disconnect();
+    this.layoutObserver?.disconnect();
+    this.contentObserver?.disconnect();
+    this.frameEvents?.abort();
     this.scrollAnchors = [];
     this.indexedSource = undefined;
     this.indexedArticle = undefined;
     this.scrollListener = undefined;
     this.suppressedScrollTop = null;
     if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
+    if (this.layoutFrame) cancelAnimationFrame(this.layoutFrame);
+    if (this.cursorFrame) cancelAnimationFrame(this.cursorFrame);
+    clearTimeout(this.scrollIdleTimer);
     this.scrollFrame = 0;
+    this.layoutFrame = 0;
+    this.cursorFrame = 0;
+    this.cursorTarget = undefined;
+    this.geometry = [];
+    this.geometryDirty = true;
+    this.readingPosition = undefined;
+    this.documentId = undefined;
+    this.intent = "editor";
+    this.userScrolling = false;
+    this.pointerScrolling = false;
     this.resolveReady?.();
     this.frame?.remove();
     this.session = undefined;
@@ -319,29 +452,66 @@ export class PreviewSurface {
         },
         true,
       );
-      const markScrollInput = () => { this.lastScrollInput = performance.now(); };
+      const markScrollInput = () => {
+        this.intent = "preview";
+        this.userScrolling = true;
+        this.suppressedScrollTop = null;
+        if (this.cursorFrame) cancelAnimationFrame(this.cursorFrame);
+        this.cursorFrame = 0;
+        this.cursorTarget = undefined;
+        this.rememberReadingPosition();
+        clearTimeout(this.scrollIdleTimer);
+        this.scrollIdleTimer = window.setTimeout(() => { if (!this.pointerScrolling) this.userScrolling = false; }, 240);
+      };
       doc.addEventListener("wheel", markScrollInput, { passive: true });
       doc.addEventListener("touchmove", markScrollInput, { passive: true });
-      doc.addEventListener("pointerdown", markScrollInput, { passive: true });
+      doc.addEventListener("pointerdown", () => { this.pointerScrolling = true; markScrollInput(); }, { passive: true });
+      const releasePointer = () => {
+        this.pointerScrolling = false;
+        clearTimeout(this.scrollIdleTimer);
+        this.scrollIdleTimer = window.setTimeout(() => { this.userScrolling = false; }, 240);
+      };
+      doc.addEventListener("pointerup", releasePointer, { passive: true });
+      doc.addEventListener("pointercancel", releasePointer, { passive: true });
+      doc.defaultView?.addEventListener("blur", releasePointer);
+      this.frameEvents?.abort();
+      this.frameEvents = new AbortController();
+      window.addEventListener("pointerup", releasePointer, { passive: true, signal: this.frameEvents.signal });
+      window.addEventListener("pointercancel", releasePointer, { passive: true, signal: this.frameEvents.signal });
       doc.addEventListener("keydown", (event) => {
         if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key))
           markScrollInput();
       });
       doc.defaultView?.addEventListener("scroll", () => {
         const scrollTop = (doc.scrollingElement || doc.documentElement).scrollTop;
-        if (this.suppressedScrollTop === scrollTop) {
-          this.suppressedScrollTop = null;
+        if (this.suppressedScrollTop !== null && Math.abs(this.suppressedScrollTop - scrollTop) < 1) {
           return;
         }
         this.suppressedScrollTop = null;
-        if (!this.scrollListener || performance.now() - this.lastScrollInput > 500) return;
+        if (!this.userScrolling && !this.pointerScrolling) return;
+        clearTimeout(this.scrollIdleTimer);
+        this.scrollIdleTimer = window.setTimeout(() => { if (!this.pointerScrolling) this.userScrolling = false; }, 240);
         if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
         this.scrollFrame = requestAnimationFrame(() => {
           this.scrollFrame = 0;
-          const line = sourceLineAtPreview(this.scrollAnchors, doc.documentElement.clientHeight * 0.28);
-          if (line !== null) this.scrollListener?.(line);
+          this.rememberReadingPosition();
+          const line = this.readingPosition?.line;
+          if (line !== undefined && line > 0 && line !== this.lastReportedLine) {
+            this.lastReportedLine = line;
+            this.scrollListener?.(line);
+          }
         });
       }, { passive: true });
+      const article = doc.querySelector<HTMLElement>("article")!;
+      this.layoutObserver = new ResizeObserver(this.invalidateGeometry);
+      this.layoutObserver.observe(article);
+      this.contentObserver = new MutationObserver(this.invalidateGeometry);
+      this.contentObserver.observe(article, { childList: true, subtree: true, attributes: true,
+        attributeFilter: ["class", "style", "hidden", "open", "checked", "src"] });
+      article.addEventListener("load", this.invalidateGeometry, true);
+      article.addEventListener("toggle", this.invalidateGeometry, true);
+      article.addEventListener("change", this.invalidateGeometry, true);
+      doc.defaultView?.addEventListener("resize", this.invalidateGeometry);
     });
     await this.ready;
     return frame;
@@ -352,12 +522,22 @@ export class PreviewSurface {
     result: RenderResult,
     path?: string,
     diagnostic: (value: string) => void = () => {},
+    context?: { source: string; documentId: string; onCommit?: () => void },
   ) {
     if (this.frame && this.frame.parentElement !== host) this.dispose();
     this.cancel();
-    this.scrollAnchors = [];
-    this.indexedSource = undefined;
-    this.indexedArticle = undefined;
+    if (context && context.documentId !== this.documentId) {
+      this.documentId = context.documentId;
+      this.editorIntent();
+      if (this.cursorFrame) cancelAnimationFrame(this.cursorFrame);
+      this.cursorFrame = 0;
+      this.cursorTarget = undefined;
+      this.scrollAnchors = [];
+      this.indexedSource = undefined;
+      this.indexedArticle = undefined;
+      this.geometry = [];
+      this.geometryDirty = true;
+    }
     const session = (this.session = new AbortController());
     const frame = await this.ensureFrame(host);
     if (session.signal.aborted) return;
@@ -395,7 +575,16 @@ export class PreviewSurface {
       !article.querySelector("[data-zn-pending]")
     ) {
       // Preserve formula DOM and selection for style-only edits.
+      if (this.intent === "preview") this.rememberReadingPosition();
       commitStyles();
+      updateSourceLocations(article, result);
+      if (context) {
+        this.indexedSource = undefined;
+        this.ensureScrollIndex(context.source, article);
+      }
+      this.restoreReadingPosition();
+      this.invalidateGeometry();
+      context?.onCommit?.();
       mountInteractions({
         container: article,
         plan: result.plan,
@@ -409,7 +598,7 @@ export class PreviewSurface {
     let scrollLeft = 0;
     const restoreScroll = () => {
       const scroller = doc.scrollingElement || doc.documentElement;
-      scroller.scrollTop = scrollTop;
+      this.writeScroll(scrollTop);
       scroller.scrollLeft = scrollLeft;
     };
     await setRendered(
@@ -423,13 +612,19 @@ export class PreviewSurface {
       {
         beforeCommit: () => {
           // Theme, styles and body commit together; a cancelled render cannot leak them.
+          if (this.intent === "preview") this.rememberReadingPosition();
           commitStyles();
           const scroller = doc.scrollingElement || doc.documentElement;
           scrollTop = scroller.scrollTop;
           scrollLeft = scroller.scrollLeft;
         },
         afterCommit: () => {
+          this.indexedSource = undefined;
+          this.indexedArticle = undefined;
+          if (context) this.ensureScrollIndex(context.source, article);
           restoreScroll();
+          this.restoreReadingPosition();
+          context?.onCommit?.();
         },
       },
     );

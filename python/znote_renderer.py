@@ -15,6 +15,7 @@ import yaml
 
 from render_plan import resolve
 from render_config import CAPABILITIES
+from source_map import SourceMap
 
 _parse_cache = OrderedDict()
 _cache_bytes = 0
@@ -26,18 +27,20 @@ def convert_cached(text, plan, extensions, configs):
     cached = _parse_cache.get(key)
     if cached is not None:
         _parse_cache.move_to_end(key)
-        return cached[0], copy.deepcopy(cached[1])
+        return cached[0], copy.deepcopy(cached[1]), [entry.copy() for entry in cached[2]]
     md = markdown.Markdown(extensions=extensions, extension_configs=configs, output_format="html")
+    mapping = SourceMap(md, text)
     html = md.convert(text)
     toc = getattr(md, "toc_tokens", [])
-    size = len(html.encode()) + len(json.dumps(toc).encode())
+    entries = mapping.entries
+    size = len(html.encode()) + len(json.dumps(toc).encode()) + len(json.dumps(entries).encode())
     if size <= 8 * 1024 * 1024:
-        _parse_cache[key] = (html, copy.deepcopy(toc), size)
+        _parse_cache[key] = (html, copy.deepcopy(toc), [entry.copy() for entry in entries], size)
         _cache_bytes += size
         while len(_parse_cache) > 6 or _cache_bytes > 16 * 1024 * 1024:
             _, removed = _parse_cache.popitem(last=False)
-            _cache_bytes -= removed[2]
-    return html, toc
+            _cache_bytes -= removed[3]
+    return html, toc, entries
 
 
 def front_matter(text):
@@ -54,11 +57,22 @@ def front_matter(text):
 
 
 def render(req):
-    text, meta, warnings = front_matter(req.get("text", ""))
+    original = req.get("text", "")
+    # CodeMirror uses LF and UTF-16 offsets. Preserve CRLF input offsets when
+    # this renderer is called directly; the GUI already normalizes its text.
+    text, meta, warnings = front_matter(original)
+    prefix = original[:len(original) - len(text)]
     plan, extensions, configs, theme, profile, config_warnings = resolve(req)
     warnings.extend(config_warnings)
-    html, toc = convert_cached(text, plan, extensions, configs)
+    html, toc, entries = convert_cached(text, plan, extensions, configs)
+    base = len(prefix.encode("utf-16-le")) // 2
+    if base:
+        for entry in entries:
+            if "from" in entry:
+                entry["from"] += base
+                entry["to"] += base
     return {"html": html, "toc": toc, "meta": meta,
+            "sourceMap": {"version": 1, "offsetEncoding": "utf-16", "entries": entries},
             "warnings": warnings, "theme": theme, "plan": plan,
             "profile": profile, "extensions": [str(x) for x in extensions],
             # Token colors and line metrics have one owner: the reader theme.
@@ -84,7 +98,7 @@ def main():
         try:
             with contextlib.redirect_stdout(io.StringIO()):
                 result = dispatch(json.loads(line))
-            protocol.write(json.dumps(result, ensure_ascii=False) + "\n")
+            protocol.write(json.dumps(result, ensure_ascii=False, separators=(",", ":")) + "\n")
         except Exception as exc:
             protocol.write(json.dumps({"error": f"{exc}\n{traceback.format_exc()}"}, ensure_ascii=False) + "\n")
 

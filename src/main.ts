@@ -137,6 +137,7 @@ interface Tab {
   name: string;
   path?: string;
   text: string;
+  revision: number;
   base: string;
   hash: string;
   bom: boolean;
@@ -539,9 +540,9 @@ function cursorStatus() {
 }
 function syncPreviewToCursor() {
   const tab = current();
-  if (!prefs.syncPreview || mode !== "split" || !tab?.editor || renderedKey !== previewKey(tab)) return;
+  if (!prefs.syncPreview || mode !== "split" || !tab?.editor || renderedKey !== previewKey(tab) || !previewSurface.followsEditor) return;
   const state = tab.editor.view.state;
-  previewSurface.scrollToSource(tab.text, state.doc.lineAt(state.selection.main.head).number);
+  previewSurface.scrollToSource(tab.text, state.doc.lineAt(state.selection.main.head).number, "editor");
 }
 function syncEditorToPreview(line: number) {
   const tab = current();
@@ -556,6 +557,7 @@ function mountTab(tab: Tab) {
   tab.editor = new NoteEditor(tab.host, tab.text, {
     change: (text) => {
       tab.text = text;
+      tab.revision++;
       tab.dirty = text !== tab.base;
       if (tab.id === activeId) {
         renderTabs();
@@ -570,6 +572,7 @@ function mountTab(tab: Tab) {
     },
     cursor: () => {
       if (tab.id === activeId) {
+        previewSurface.editorIntent();
         cursorStatus();
         syncPreviewToCursor();
         hideSelectionToolbar();
@@ -610,6 +613,7 @@ function addTab(doc?: DiskDocument, text = "") {
     name: doc ? doc.path.split(/[\\/]/).pop()! : "未命名.md",
     path: doc?.path,
     text: body,
+    revision: 0,
     base: body,
     hash: doc?.hash || "new",
     bom: doc?.bom || false,
@@ -781,6 +785,7 @@ async function showExternal() {
       tab.host?.remove();
       tab.editor = undefined;
       tab.text = doc.text.replace(/\r\n/g, "\n");
+      tab.revision++;
       tab.base = tab.text;
       tab.hash = doc.hash;
       tab.bom = doc.bom;
@@ -882,6 +887,7 @@ async function restoreDrafts() {
           tab.host?.remove();
           tab.editor = undefined;
           tab.text = item.text;
+          tab.revision++;
           tab.base = item.base;
           tab.hash = item.hash;
           tab.dirty = true;
@@ -920,11 +926,13 @@ function setMode(value: Mode) {
   scheduleRender();
   if (value === "split") requestAnimationFrame(syncPreviewToCursor);
 }
+let renderSettingsRevision = 0;
 function previewKey(tab: Tab) {
   return JSON.stringify([
     tab.id,
-    tab.text,
-    prefs.render,
+    tab.revision,
+    renderSettingsRevision,
+    tab.path,
   ]);
 }
 function scheduleRender() {
@@ -957,6 +965,7 @@ async function renderPreviewNow(generation: number) {
   const tab = current();
   if (!tab) return;
   const key = previewKey(tab);
+  const source = tab.text;
   if (!native) {
     $("#preview-content").innerHTML =
       '<p class="empty-state">请在桌面应用中查看 Python Markdown 预览。</p>';
@@ -965,7 +974,7 @@ async function renderPreviewNow(generation: number) {
   }
   try {
     const result = await invoke<RenderResult>("render_markdown", {
-      text: tab.text,
+      text: source,
       path: tab.path || null,
       settings: prefs.render,
     });
@@ -977,6 +986,12 @@ async function renderPreviewNow(generation: number) {
       result,
       tab.path,
       (message) => runtimeWarnings.push(message),
+      { source, documentId: tab.id, onCommit: () => {
+        if (generation !== renderGeneration || tab.id !== activeId) return;
+        renderedKey = key;
+        previewSurface.setScrollSync(source, syncEditorToPreview);
+        syncPreviewToCursor();
+      } },
     );
     if (generation !== renderGeneration || tab.id !== activeId) return;
     if (!$("#preview-find").hidden) updatePreviewFind(previewSurface.getFindState());
@@ -1107,6 +1122,7 @@ function showSettings() {
   );
   modalDispose = mountRenderSettings($("#render-settings"), prefs.render, settings => {
     prefs.render = settings;
+    renderSettingsRevision++;
     persistPrefs(); renderedKey = ""; scheduleRender(); status();
   });
   $("#modal-root .modal").classList.add("render-settings-modal");
@@ -1790,7 +1806,7 @@ document.addEventListener("click", (e) => {
   if (jump) {
     const tab = current();
     const position = Number(jump.dataset.jump);
-    if (tab && mode !== "source") {
+    if (tab && mode !== "source" && renderedKey === previewKey(tab)) {
       const line = tab.text.slice(0, position).split("\n").length;
       previewSurface.scrollToSource(tab.text, line);
     }
@@ -1904,6 +1920,7 @@ async function checkDisk() {
       tab.host?.remove();
       tab.editor = undefined;
       tab.text = doc.text.replace(/\r\n/g, "\n");
+      tab.revision++;
       tab.base = tab.text;
       tab.hash = doc.hash;
       tab.bom = doc.bom;

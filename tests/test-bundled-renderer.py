@@ -26,6 +26,9 @@ try:
     assert info["capabilities"]["schemaVersion"] == 3
     default = request({"action": "render", "text": "!!! note\n\n    你好 😀"})
     assert "admonition note" in default["html"]
+    assert default["sourceMap"]["version"] == 1
+    assert default["sourceMap"]["offsetEncoding"] == "utf-16"
+    assert any(entry["precision"] == "exact" for entry in default["sourceMap"]["entries"])
     custom = request({"action": "render", "text": "!!! note\n\n    你好 😀",
                       "settings": {"extensions": {"admonition": False}, "variant": "classic",
                                    "primary": "teal", "accent": "cyan",
@@ -48,6 +51,12 @@ try:
     assert configured["theme"]["reader"]["font"] == "serif"
     assert configured["plan"]["math"]["macros"]["RR"]["body"] == "\\mathbb{R}"
     assert request({"action": "render", "text": "# After settings"})["html"].startswith("<h1")
+    body = '# Header 😀\n\n- same\n- same'
+    prefix = '---\ntitle: cache\n---\n'
+    a = request({"action": "render", "text": body})
+    b = request({"action": "render", "text": prefix + body})
+    assert b["sourceMap"]["entries"][0]["from"] == len(prefix)
+    assert a["html"] == b["html"]
     print("Packaged Markdown rendering and GUI settings passed", flush=True)
 finally:
     process.stdin.close()

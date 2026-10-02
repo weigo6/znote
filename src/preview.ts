@@ -2,12 +2,12 @@ import DOMPurify from "dompurify";
 import { mountRuntimes, mountInteractions } from "./render-plugins";
 import { invoke } from "@tauri-apps/api/core";
 import type { RenderResult } from "./types";
+import { bindLocations, refreshLocations } from "./preview-source-map";
 
 let sequence = 0;
 const namespaces = new WeakMap<HTMLElement, string>();
 const blockSignatures = new WeakMap<Node, string>();
 const mathDefinitions = new WeakMap<HTMLElement, boolean>();
-
 export const escapeHtml = (value: string) =>
   value.replace(
     /[&<>"']/g,
@@ -157,6 +157,9 @@ export async function setRendered(
     scroll.append(inner);
     inner.append(table);
   });
+  // Positions are side-table data, excluded from content signatures. This also
+  // removes user-supplied reserved attributes when no renderer map is present.
+  bindLocations(staged, result);
   const mathCount = staged.querySelectorAll(".arithmatex").length;
   const diagramCount = staged.querySelectorAll(".mermaid").length;
   const imageCount = staged.querySelectorAll("img").length;
@@ -173,6 +176,7 @@ export async function setRendered(
       img.removeAttribute("src");
     });
   const reusable = new Map<string, Node[]>();
+  const reusedLocations: [Node, Node][] = [];
   for (const node of Array.from(container.childNodes)) {
     if (node.nodeType === 1 && (node as HTMLElement).dataset.znPending) continue;
     const signature = blockSignatures.get(node);
@@ -209,7 +213,10 @@ export async function setRendered(
     const match = hasMath && !reuseMath
       ? undefined
       : reusable.get(signature)?.shift();
-    if (match) return match;
+    if (match) {
+      reusedLocations.push([match, node]);
+      return match;
+    }
     blockSignatures.set(node, signature);
     return node;
   });
@@ -231,6 +238,7 @@ export async function setRendered(
   ]);
   if (session.signal.aborted) return false;
   hooks.beforeCommit?.();
+  reusedLocations.forEach(([previous, freshNode]) => refreshLocations(previous, freshNode));
   applyRenderedTheme(container, result);
   desired.forEach((node, index) => {
     const current = container.childNodes[index];

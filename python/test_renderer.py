@@ -11,7 +11,7 @@ FIXTURE=Path(__file__).resolve().parent.parent/'tests/fixtures/syntax-coverage.m
 class RendererTests(unittest.TestCase):
     def test_default_extensions(self):
         result=render({'text':FIXTURE.read_text(encoding='utf-8')})
-        for marker in ['admonition note','<details','tabbed-set','footnote-ref','task-list-item','<table>','<mark>','<del>','<kbd','md-button','<svg','arithmatex','mermaid','grid cards','中文正文']:
+        for marker in ['admonition note','<details','tabbed-set','footnote-ref','task-list-item','<table','<mark>','<del>','<kbd','md-button','<svg','arithmatex','mermaid','grid cards','中文正文']:
             self.assertIn(marker,result['html'])
     def test_frontmatter_safe(self):
         text,meta,warnings=front_matter('---\ntitle: 测试\n---\n正文')

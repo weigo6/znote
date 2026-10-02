@@ -18,6 +18,11 @@ export interface Workspace {
   truncated: boolean;
 }
 export interface RenderResult {
+  sourceMap?: {
+    version: 1;
+    offsetEncoding: "utf-16";
+    entries: SourceLocation[];
+  };
   plan?: RenderPlan;
   html: string;
   toc: { name: string; id: string; level: number; children: unknown[] }[];
@@ -32,6 +37,14 @@ export interface RenderResult {
     accent: string;
     reader?: ReaderSettings;
   };
+}
+export interface SourceLocation {
+  id: string;
+  kind: string;
+  precision: "exact" | "inherited" | "generated";
+  from?: number;
+  to?: number;
+  parentId?: string;
 }
 export type MathEngine = "katex" | "mathjax" | "none";
 export interface MacroDefinition {

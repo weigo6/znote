@@ -59,12 +59,14 @@ znote/
 │   ├── preview-surface.ts      隔离 iframe 的生命周期与主题同步
 │   ├── preview.ts              HTML 清理、标识符命名空间、提交顺序
 │   ├── preview-sync.ts         编辑光标与预览滚动同步
+│   ├── preview-source-map.ts   DOM 节点源范围侧表与复用时的映射更新
 │   ├── reader-theme.ts         应用主题令牌 → 正文颜色映射
 │   ├── markdown-theme.css      应用侧排版适配
 │   ├── zensical.generated.css  ← 生成文件，请勿手改
 │   └── types.ts                前后端共享的类型契约
 ├── python/                     渲染器
 │   ├── znote_renderer.py       JSONL 协议入口（常驻进程）
+│   ├── source_map.py           解析阶段的块位置传播（固定 Markdown 版本适配）
 │   ├── render_plan.py          渲染计划、扩展依赖、修订号、有界解析缓存
 │   ├── render_config.py        配置规范化
 │   └── test_*.py               渲染器单元测试
@@ -180,6 +182,18 @@ pnpm run test:browser
 
 HTML 类名、生成器函数、格式化回调、资源路径属于应用内部协议。
 配置校验必须拒绝回调或模块路径，只接受数据参数。
+
+渲染结果可携带 `sourceMap`，其独立 `version` 为 1，坐标为原文的 UTF-16 半开区间。
+`exact` 表示可信块范围，`inherited` 表示继承范围，`generated` 不提供源范围。
+它是块级映射；普通多行块内部的视觉定位仍是估计。渲染配置的 `schemaVersion` 继续为 3。
+
+`data-zn-node` 仅用于把 HTML 节点绑定到侧表，清理后移除，不参与内容复用签名。
+复用节点的映射与新 DOM 一起提交；不能把绝对位置加入签名，也不能继续使用旧范围。
+预处理修改不明确或扩展生成的内容必须降级，禁止从渲染文本进行无界反查。
+
+性能测量脚本为 `scripts/benchmark-source-map.py`（交替比较原生/映射解析）与
+`scripts/benchmark-preview-sync.mjs`（需要 1430 端口的 Vite 测试服务器）。两者接受文档路径，
+只读取文档；前端测量包括稳定布局下的索引、查询和插入内容后的公式节点复用，不能代替桌面 IPC 整链路测量。
 
 ### 前端
 

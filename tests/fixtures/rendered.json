@@ -17,9 +17,38 @@
   },
   "results": {
     "!!! note \"提示\"\n\n    中文 **粗体** 内容。": {
-      "html": "<div class=\"admonition note\">\n<p class=\"admonition-title\">提示</p>\n<p>中文 <strong>粗体</strong> 内容。</p>\n</div>",
+      "html": "<div class=\"admonition note\" data-zn-node=\"0\">\n<p class=\"admonition-title\" data-zn-node=\"1\">提示</p>\n<p data-zn-node=\"2\">中文 <strong>粗体</strong> 内容。</p>\n</div>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "div",
+            "precision": "exact",
+            "from": 0,
+            "to": 32
+          },
+          {
+            "id": "1",
+            "kind": "p",
+            "precision": "inherited",
+            "from": 0,
+            "to": 32,
+            "parentId": "0"
+          },
+          {
+            "id": "2",
+            "kind": "p",
+            "precision": "exact",
+            "from": 15,
+            "to": 32,
+            "parentId": "0"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -239,9 +268,54 @@
       "highlightCss": ""
     },
     "??? note \"展开查看\"\n\n    第一段详细内容。\n\n    第二段详细内容。\n\n    第三段详细内容。": {
-      "html": "<details class=\"note\">\n<summary>展开查看</summary>\n<p>第一段详细内容。</p>\n<p>第二段详细内容。</p>\n<p>第三段详细内容。</p>\n</details>",
+      "html": "<details class=\"note\" data-zn-node=\"0\">\n<summary data-zn-node=\"1\">展开查看</summary>\n<p data-zn-node=\"2\">第一段详细内容。</p>\n<p data-zn-node=\"3\">第二段详细内容。</p>\n<p data-zn-node=\"4\">第三段详细内容。</p>\n</details>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "details",
+            "precision": "exact",
+            "from": 0,
+            "to": 57
+          },
+          {
+            "id": "1",
+            "kind": "summary",
+            "precision": "inherited",
+            "from": 0,
+            "to": 57,
+            "parentId": "0"
+          },
+          {
+            "id": "2",
+            "kind": "p",
+            "precision": "exact",
+            "from": 17,
+            "to": 29,
+            "parentId": "0"
+          },
+          {
+            "id": "3",
+            "kind": "p",
+            "precision": "exact",
+            "from": 31,
+            "to": 43,
+            "parentId": "0"
+          },
+          {
+            "id": "4",
+            "kind": "p",
+            "precision": "exact",
+            "from": 45,
+            "to": 57,
+            "parentId": "0"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -461,9 +535,86 @@
       "highlightCss": ""
     },
     "=== \"第一项\"\n\n    短内容。\n\n=== \"第二项\"\n\n    第一段长内容。\n\n    第二段长内容。\n\n    第三段长内容。": {
-      "html": "<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\">\n<div class=\"tabbed-block\">\n<p>短内容。</p>\n</div>\n<div class=\"tabbed-block\">\n<p>第一段长内容。</p>\n<p>第二段长内容。</p>\n<p>第三段长内容。</p>\n</div>\n</div>\n</div>",
+      "html": "<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\" data-zn-node=\"0\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\" data-zn-node=\"1\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\" data-zn-node=\"2\">\n<div class=\"tabbed-block\" data-zn-node=\"3\">\n<p data-zn-node=\"4\">短内容。</p>\n</div>\n<div class=\"tabbed-block\" data-zn-node=\"5\">\n<p data-zn-node=\"6\">第一段长内容。</p>\n<p data-zn-node=\"7\">第二段长内容。</p>\n<p data-zn-node=\"8\">第三段长内容。</p>\n</div>\n</div>\n</div>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "div",
+            "precision": "exact",
+            "from": 0,
+            "to": 9
+          },
+          {
+            "id": "1",
+            "kind": "div",
+            "precision": "inherited",
+            "from": 0,
+            "to": 9,
+            "parentId": "0"
+          },
+          {
+            "id": "2",
+            "kind": "div",
+            "precision": "inherited",
+            "from": 0,
+            "to": 9,
+            "parentId": "0"
+          },
+          {
+            "id": "3",
+            "kind": "div",
+            "precision": "exact",
+            "from": 11,
+            "to": 19,
+            "parentId": "2"
+          },
+          {
+            "id": "4",
+            "kind": "p",
+            "precision": "exact",
+            "from": 11,
+            "to": 19,
+            "parentId": "3"
+          },
+          {
+            "id": "5",
+            "kind": "div",
+            "precision": "exact",
+            "from": 32,
+            "to": 69,
+            "parentId": "2"
+          },
+          {
+            "id": "6",
+            "kind": "p",
+            "precision": "exact",
+            "from": 32,
+            "to": 43,
+            "parentId": "5"
+          },
+          {
+            "id": "7",
+            "kind": "p",
+            "precision": "exact",
+            "from": 45,
+            "to": 56,
+            "parentId": "5"
+          },
+          {
+            "id": "8",
+            "kind": "p",
+            "precision": "exact",
+            "from": 58,
+            "to": 69,
+            "parentId": "5"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -683,9 +834,38 @@
       "highlightCss": ""
     },
     "| 名称 | 数值 |\n| --- | --- |\n| 中文 | **12** |": {
-      "html": "<table>\n<thead>\n<tr>\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>",
+      "html": "<table data-zn-node=\"0\">\n<thead>\n<tr data-zn-node=\"1\">\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr data-zn-node=\"2\">\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "table",
+            "precision": "exact",
+            "from": 0,
+            "to": 41
+          },
+          {
+            "id": "1",
+            "kind": "tr",
+            "precision": "inherited",
+            "from": 0,
+            "to": 41,
+            "parentId": "0"
+          },
+          {
+            "id": "2",
+            "kind": "tr",
+            "precision": "inherited",
+            "from": 0,
+            "to": 41,
+            "parentId": "0"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -905,9 +1085,22 @@
       "highlightCss": ""
     },
     "```python\ndef greet(name):\n    return \"你好 \" + name\n```": {
-      "html": "<div class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>",
+      "html": "<div data-zn-node=\"0\" class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "div",
+            "precision": "exact",
+            "from": 0,
+            "to": 54
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -1127,9 +1320,22 @@
       "highlightCss": ""
     },
     "```python title=\"hello.py\" linenums=\"1\"\ndef hello():\n    print(\"你好，ZNote\")\n```": {
-      "html": "<div class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>",
+      "html": "<div data-zn-node=\"0\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "div",
+            "precision": "exact",
+            "from": 0,
+            "to": 78
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -1349,9 +1555,38 @@
       "highlightCss": ""
     },
     "> 引用 **粗体**。\n>\n> 第二段内容。": {
-      "html": "<blockquote>\n<p>引用 <strong>粗体</strong>。</p>\n<p>第二段内容。</p>\n</blockquote>",
+      "html": "<blockquote data-zn-node=\"0\">\n<p data-zn-node=\"1\">引用 <strong>粗体</strong>。</p>\n<p data-zn-node=\"2\">第二段内容。</p>\n</blockquote>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "blockquote",
+            "precision": "exact",
+            "from": 0,
+            "to": 23
+          },
+          {
+            "id": "1",
+            "kind": "p",
+            "precision": "exact",
+            "from": 0,
+            "to": 12,
+            "parentId": "0"
+          },
+          {
+            "id": "2",
+            "kind": "p",
+            "precision": "exact",
+            "from": 15,
+            "to": 23,
+            "parentId": "0"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -1571,9 +1806,22 @@
       "highlightCss": ""
     },
     "---": {
-      "html": "<hr>",
+      "html": "<hr data-zn-node=\"0\">",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "hr",
+            "precision": "exact",
+            "from": 0,
+            "to": 3
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -1793,7 +2041,7 @@
       "highlightCss": ""
     },
     "下划线标题\n----------": {
-      "html": "<h2 id=\"_1\">下划线标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>",
+      "html": "<h2 data-zn-node=\"0\" id=\"_1\">下划线标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>",
       "toc": [
         {
           "level": 2,
@@ -1805,6 +2053,19 @@
         }
       ],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "h2",
+            "precision": "exact",
+            "from": 0,
+            "to": 16
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -2024,9 +2285,22 @@
       "highlightCss": ""
     },
     "$$\nE=mc^2\n$$": {
-      "html": "<div class=\"arithmatex\">\\[\nE=mc^2\n\\]</div>",
+      "html": "<div class=\"arithmatex\" data-zn-node=\"0\">\\[\nE=mc^2\n\\]</div>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "div",
+            "precision": "exact",
+            "from": 0,
+            "to": 12
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -2246,9 +2520,22 @@
       "highlightCss": ""
     },
     "![diagram](data:image/svg+xml,%3Csvg%20xmlns=\"http://www.w3.org/2000/svg\"%20width=\"300\"%20height=\"100\"/%3E)": {
-      "html": "<p><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
+      "html": "<p data-zn-node=\"0\"><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
       "toc": [],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "p",
+            "precision": "exact",
+            "from": 0,
+            "to": 107
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -2468,7 +2755,7 @@
       "highlightCss": ""
     },
     "# 渲染验证\n\n```mermaid\ngraph LR\n A[Start] --> B{Error?}\n B -->|Yes| C[Debug]\n B -->|No| D[Done]\n```\n\n```python linenums=\"1\"\nvalue_1 = 1\nvalue_2 = 2\nvalue_3 = 3\nvalue_4 = 4\nvalue_5 = 5\nvalue_6 = 6\nvalue_7 = 7\nvalue_8 = 8\nvalue_9 = 9\nvalue_10 = 10\nvalue_11 = 11\nvalue_12 = 12\nvalue_13 = 13\nvalue_14 = 14\nvalue_15 = 15\nvalue_16 = 16\nvalue_17 = 17\nvalue_18 = 18\nvalue_19 = 19\nvalue_20 = 20\n```\n\n脚注[^note]\n\n[^note]: 悬浮可以读取这段中文脚注。\n\n:material-home: :fontawesome-brands-github: :octicons-mark-github-16:\n\n<div style=\"color: rgb(90, 110, 130)\">内联样式</div>\n\n<style>.local-style { font-weight: 700; }</style>\n\n<div class=\"local-style\">样式块</div>": {
-      "html": "<h1 id=\"_1\">渲染验证<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h1>\n<pre class=\"mermaid\"><code>graph LR\n A[Start] --&gt; B{Error?}\n B --&gt;|Yes| C[Debug]\n B --&gt;|No| D[Done]</code></pre>\n<div class=\"language-python highlight\"><table class=\"highlighttable\"><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\"> 1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\"> 2</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-3\"> 3</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-4\"> 4</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-5\"> 5</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-6\"> 6</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-7\"> 7</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-8\"> 8</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-9\"> 9</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-10\">10</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-11\">11</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-12\">12</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-13\">13</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-14\">14</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-15\">15</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-16\">16</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-17\">17</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-18\">18</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-19\">19</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-20\">20</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"n\">value_1</span> <span class=\"o\">=</span> <span class=\"mi\">1</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a><span class=\"n\">value_2</span> <span class=\"o\">=</span> <span class=\"mi\">2</span>\n</span><span id=\"__span-0-3\"><a id=\"__codelineno-0-3\" name=\"__codelineno-0-3\"></a><span class=\"n\">value_3</span> <span class=\"o\">=</span> <span class=\"mi\">3</span>\n</span><span id=\"__span-0-4\"><a id=\"__codelineno-0-4\" name=\"__codelineno-0-4\"></a><span class=\"n\">value_4</span> <span class=\"o\">=</span> <span class=\"mi\">4</span>\n</span><span id=\"__span-0-5\"><a id=\"__codelineno-0-5\" name=\"__codelineno-0-5\"></a><span class=\"n\">value_5</span> <span class=\"o\">=</span> <span class=\"mi\">5</span>\n</span><span id=\"__span-0-6\"><a id=\"__codelineno-0-6\" name=\"__codelineno-0-6\"></a><span class=\"n\">value_6</span> <span class=\"o\">=</span> <span class=\"mi\">6</span>\n</span><span id=\"__span-0-7\"><a id=\"__codelineno-0-7\" name=\"__codelineno-0-7\"></a><span class=\"n\">value_7</span> <span class=\"o\">=</span> <span class=\"mi\">7</span>\n</span><span id=\"__span-0-8\"><a id=\"__codelineno-0-8\" name=\"__codelineno-0-8\"></a><span class=\"n\">value_8</span> <span class=\"o\">=</span> <span class=\"mi\">8</span>\n</span><span id=\"__span-0-9\"><a id=\"__codelineno-0-9\" name=\"__codelineno-0-9\"></a><span class=\"n\">value_9</span> <span class=\"o\">=</span> <span class=\"mi\">9</span>\n</span><span id=\"__span-0-10\"><a id=\"__codelineno-0-10\" name=\"__codelineno-0-10\"></a><span class=\"n\">value_10</span> <span class=\"o\">=</span> <span class=\"mi\">10</span>\n</span><span id=\"__span-0-11\"><a id=\"__codelineno-0-11\" name=\"__codelineno-0-11\"></a><span class=\"n\">value_11</span> <span class=\"o\">=</span> <span class=\"mi\">11</span>\n</span><span id=\"__span-0-12\"><a id=\"__codelineno-0-12\" name=\"__codelineno-0-12\"></a><span class=\"n\">value_12</span> <span class=\"o\">=</span> <span class=\"mi\">12</span>\n</span><span id=\"__span-0-13\"><a id=\"__codelineno-0-13\" name=\"__codelineno-0-13\"></a><span class=\"n\">value_13</span> <span class=\"o\">=</span> <span class=\"mi\">13</span>\n</span><span id=\"__span-0-14\"><a id=\"__codelineno-0-14\" name=\"__codelineno-0-14\"></a><span class=\"n\">value_14</span> <span class=\"o\">=</span> <span class=\"mi\">14</span>\n</span><span id=\"__span-0-15\"><a id=\"__codelineno-0-15\" name=\"__codelineno-0-15\"></a><span class=\"n\">value_15</span> <span class=\"o\">=</span> <span class=\"mi\">15</span>\n</span><span id=\"__span-0-16\"><a id=\"__codelineno-0-16\" name=\"__codelineno-0-16\"></a><span class=\"n\">value_16</span> <span class=\"o\">=</span> <span class=\"mi\">16</span>\n</span><span id=\"__span-0-17\"><a id=\"__codelineno-0-17\" name=\"__codelineno-0-17\"></a><span class=\"n\">value_17</span> <span class=\"o\">=</span> <span class=\"mi\">17</span>\n</span><span id=\"__span-0-18\"><a id=\"__codelineno-0-18\" name=\"__codelineno-0-18\"></a><span class=\"n\">value_18</span> <span class=\"o\">=</span> <span class=\"mi\">18</span>\n</span><span id=\"__span-0-19\"><a id=\"__codelineno-0-19\" name=\"__codelineno-0-19\"></a><span class=\"n\">value_19</span> <span class=\"o\">=</span> <span class=\"mi\">19</span>\n</span><span id=\"__span-0-20\"><a id=\"__codelineno-0-20\" name=\"__codelineno-0-20\"></a><span class=\"n\">value_20</span> <span class=\"o\">=</span> <span class=\"mi\">20</span>\n</span></code></pre></div></td></tr></table></div>\n<p>脚注<sup id=\"fnref:note\"><a class=\"footnote-ref\" href=\"#fn:note\">1</a></sup></p>\n<p><span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=\"currentColor\" d=\"M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path d=\"M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656\"/></svg></span></p>\n<div style=\"color: rgb(90, 110, 130)\">内联样式</div>\n\n<style>.local-style { font-weight: 700; }</style>\n\n<div class=\"local-style\">样式块</div>\n\n<div class=\"footnote\">\n<hr>\n<ol>\n<li id=\"fn:note\">\n<p>悬浮可以读取这段中文脚注。&#160;<a class=\"footnote-backref\" href=\"#fnref:note\" title=\"返回正文中的脚注 1\">↩</a></p>\n</li>\n</ol>\n</div>",
+      "html": "<h1 data-zn-node=\"0\" id=\"_1\">渲染验证<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h1>\n<pre data-zn-node=\"8\" class=\"mermaid\"><code>graph LR\n A[Start] --&gt; B{Error?}\n B --&gt;|Yes| C[Debug]\n B --&gt;|No| D[Done]</code></pre>\n<div data-zn-node=\"9\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\"> 1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\"> 2</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-3\"> 3</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-4\"> 4</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-5\"> 5</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-6\"> 6</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-7\"> 7</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-8\"> 8</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-9\"> 9</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-10\">10</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-11\">11</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-12\">12</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-13\">13</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-14\">14</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-15\">15</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-16\">16</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-17\">17</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-18\">18</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-19\">19</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-20\">20</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"n\">value_1</span> <span class=\"o\">=</span> <span class=\"mi\">1</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a><span class=\"n\">value_2</span> <span class=\"o\">=</span> <span class=\"mi\">2</span>\n</span><span id=\"__span-0-3\"><a id=\"__codelineno-0-3\" name=\"__codelineno-0-3\"></a><span class=\"n\">value_3</span> <span class=\"o\">=</span> <span class=\"mi\">3</span>\n</span><span id=\"__span-0-4\"><a id=\"__codelineno-0-4\" name=\"__codelineno-0-4\"></a><span class=\"n\">value_4</span> <span class=\"o\">=</span> <span class=\"mi\">4</span>\n</span><span id=\"__span-0-5\"><a id=\"__codelineno-0-5\" name=\"__codelineno-0-5\"></a><span class=\"n\">value_5</span> <span class=\"o\">=</span> <span class=\"mi\">5</span>\n</span><span id=\"__span-0-6\"><a id=\"__codelineno-0-6\" name=\"__codelineno-0-6\"></a><span class=\"n\">value_6</span> <span class=\"o\">=</span> <span class=\"mi\">6</span>\n</span><span id=\"__span-0-7\"><a id=\"__codelineno-0-7\" name=\"__codelineno-0-7\"></a><span class=\"n\">value_7</span> <span class=\"o\">=</span> <span class=\"mi\">7</span>\n</span><span id=\"__span-0-8\"><a id=\"__codelineno-0-8\" name=\"__codelineno-0-8\"></a><span class=\"n\">value_8</span> <span class=\"o\">=</span> <span class=\"mi\">8</span>\n</span><span id=\"__span-0-9\"><a id=\"__codelineno-0-9\" name=\"__codelineno-0-9\"></a><span class=\"n\">value_9</span> <span class=\"o\">=</span> <span class=\"mi\">9</span>\n</span><span id=\"__span-0-10\"><a id=\"__codelineno-0-10\" name=\"__codelineno-0-10\"></a><span class=\"n\">value_10</span> <span class=\"o\">=</span> <span class=\"mi\">10</span>\n</span><span id=\"__span-0-11\"><a id=\"__codelineno-0-11\" name=\"__codelineno-0-11\"></a><span class=\"n\">value_11</span> <span class=\"o\">=</span> <span class=\"mi\">11</span>\n</span><span id=\"__span-0-12\"><a id=\"__codelineno-0-12\" name=\"__codelineno-0-12\"></a><span class=\"n\">value_12</span> <span class=\"o\">=</span> <span class=\"mi\">12</span>\n</span><span id=\"__span-0-13\"><a id=\"__codelineno-0-13\" name=\"__codelineno-0-13\"></a><span class=\"n\">value_13</span> <span class=\"o\">=</span> <span class=\"mi\">13</span>\n</span><span id=\"__span-0-14\"><a id=\"__codelineno-0-14\" name=\"__codelineno-0-14\"></a><span class=\"n\">value_14</span> <span class=\"o\">=</span> <span class=\"mi\">14</span>\n</span><span id=\"__span-0-15\"><a id=\"__codelineno-0-15\" name=\"__codelineno-0-15\"></a><span class=\"n\">value_15</span> <span class=\"o\">=</span> <span class=\"mi\">15</span>\n</span><span id=\"__span-0-16\"><a id=\"__codelineno-0-16\" name=\"__codelineno-0-16\"></a><span class=\"n\">value_16</span> <span class=\"o\">=</span> <span class=\"mi\">16</span>\n</span><span id=\"__span-0-17\"><a id=\"__codelineno-0-17\" name=\"__codelineno-0-17\"></a><span class=\"n\">value_17</span> <span class=\"o\">=</span> <span class=\"mi\">17</span>\n</span><span id=\"__span-0-18\"><a id=\"__codelineno-0-18\" name=\"__codelineno-0-18\"></a><span class=\"n\">value_18</span> <span class=\"o\">=</span> <span class=\"mi\">18</span>\n</span><span id=\"__span-0-19\"><a id=\"__codelineno-0-19\" name=\"__codelineno-0-19\"></a><span class=\"n\">value_19</span> <span class=\"o\">=</span> <span class=\"mi\">19</span>\n</span><span id=\"__span-0-20\"><a id=\"__codelineno-0-20\" name=\"__codelineno-0-20\"></a><span class=\"n\">value_20</span> <span class=\"o\">=</span> <span class=\"mi\">20</span>\n</span></code></pre></div></td></tr></table></div>\n<p data-zn-node=\"1\">脚注<sup id=\"fnref:note\"><a class=\"footnote-ref\" href=\"#fn:note\">1</a></sup></p>\n<p data-zn-node=\"2\"><span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=\"currentColor\" d=\"M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path d=\"M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656\"/></svg></span></p>\n<div data-zn-node=\"10\" style=\"color: rgb(90, 110, 130)\">内联样式</div>\n\n<style>.local-style { font-weight: 700; }</style>\n\n<div data-zn-node=\"11\" class=\"local-style\">样式块</div>\n\n<div class=\"footnote\" data-zn-node=\"3\">\n<hr data-zn-node=\"4\">\n<ol data-zn-node=\"5\">\n<li data-zn-node=\"6\" id=\"fn:note\">\n<p data-zn-node=\"7\">悬浮可以读取这段中文脚注。&#160;<a class=\"footnote-backref\" href=\"#fnref:note\" title=\"返回正文中的脚注 1\">↩</a></p>\n</li>\n</ol>\n</div>",
       "toc": [
         {
           "level": 1,
@@ -2480,6 +2767,88 @@
         }
       ],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "h1",
+            "precision": "exact",
+            "from": 0,
+            "to": 6
+          },
+          {
+            "id": "1",
+            "kind": "p",
+            "precision": "exact",
+            "from": 387,
+            "to": 396
+          },
+          {
+            "id": "2",
+            "kind": "p",
+            "precision": "exact",
+            "from": 422,
+            "to": 491
+          },
+          {
+            "id": "3",
+            "kind": "div",
+            "precision": "generated"
+          },
+          {
+            "id": "4",
+            "kind": "hr",
+            "precision": "generated",
+            "parentId": "3"
+          },
+          {
+            "id": "5",
+            "kind": "ol",
+            "precision": "generated",
+            "parentId": "3"
+          },
+          {
+            "id": "6",
+            "kind": "li",
+            "precision": "generated",
+            "parentId": "5"
+          },
+          {
+            "id": "7",
+            "kind": "p",
+            "precision": "generated",
+            "parentId": "6"
+          },
+          {
+            "id": "8",
+            "kind": "pre",
+            "precision": "exact",
+            "from": 8,
+            "to": 95
+          },
+          {
+            "id": "9",
+            "kind": "div",
+            "precision": "exact",
+            "from": 97,
+            "to": 385
+          },
+          {
+            "id": "10",
+            "kind": "div",
+            "precision": "exact",
+            "from": 543,
+            "to": 628
+          },
+          {
+            "id": "11",
+            "kind": "div",
+            "precision": "generated"
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -2699,7 +3068,7 @@
       "highlightCss": ""
     },
     "# 一级标题 Heading\n\n正文 **粗体**、*斜体*、`inline code`、[链接](https://zensical.org/)、==标记==。\n\n## 二级标题\n\n### 三级标题\n\n> 引用段落\n\n- 列表项目\n- 第二项\n\n有序列表：\n\n1. 有序项目\n\n- [x] 已完成\n- [ ] 待办\n\n---\n\n!!! note \"提示\"\n\n    中文 **粗体** 内容。\n\n??? note \"展开查看\"\n\n    第一段详细内容。\n\n    第二段详细内容。\n\n    第三段详细内容。\n\n=== \"第一项\"\n\n    短内容。\n\n=== \"第二项\"\n\n    第一段长内容。\n\n    第二段长内容。\n\n    第三段长内容。\n\n| 名称 | 数值 |\n| --- | --- |\n| 中文 | **12** |\n\n```python\ndef greet(name):\n    return \"你好 \" + name\n```\n\n```python title=\"hello.py\" linenums=\"1\"\ndef hello():\n    print(\"你好，ZNote\")\n```\n\n> 引用 **粗体**。\n>\n> 第二段内容。\n\n---\n下划线标题\n----------\n$$\nE=mc^2\n$$\n\n![diagram](data:image/svg+xml,%3Csvg%20xmlns=\"http://www.w3.org/2000/svg\"%20width=\"300\"%20height=\"100\"/%3E)": {
-      "html": "<h1 id=\"heading\">一级标题 Heading<a class=\"headerlink\" href=\"#heading\" title=\"跳转到此标题\">&para;</a></h1>\n<p>正文 <strong>粗体</strong>、<em>斜体</em>、<code>inline code</code>、<a href=\"https://zensical.org/\">链接</a>、<mark>标记</mark>。</p>\n<h2 id=\"_1\">二级标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>\n<h3 id=\"_2\">三级标题<a class=\"headerlink\" href=\"#_2\" title=\"跳转到此标题\">&para;</a></h3>\n<blockquote>\n<p>引用段落</p>\n</blockquote>\n<ul>\n<li>列表项目</li>\n<li>第二项</li>\n</ul>\n<p>有序列表：</p>\n<ol class=\"task-list\">\n<li>\n<p>有序项目</p>\n</li>\n<li class=\"task-list-item\">\n<p><label class=\"task-list-control\"><input type=\"checkbox\" disabled checked/><span class=\"task-list-indicator\"></span></label> 已完成</p>\n</li>\n<li class=\"task-list-item\"><label class=\"task-list-control\"><input type=\"checkbox\" disabled/><span class=\"task-list-indicator\"></span></label> 待办</li>\n</ol>\n<hr>\n<div class=\"admonition note\">\n<p class=\"admonition-title\">提示</p>\n<p>中文 <strong>粗体</strong> 内容。</p>\n</div>\n<details class=\"note\">\n<summary>展开查看</summary>\n<p>第一段详细内容。</p>\n<p>第二段详细内容。</p>\n<p>第三段详细内容。</p>\n</details>\n<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\">\n<div class=\"tabbed-block\">\n<p>短内容。</p>\n</div>\n<div class=\"tabbed-block\">\n<p>第一段长内容。</p>\n<p>第二段长内容。</p>\n<p>第三段长内容。</p>\n</div>\n</div>\n</div>\n<table>\n<thead>\n<tr>\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>\n<div class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>\n<div class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-1-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-1-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-1-1\"><a id=\"__codelineno-1-1\" name=\"__codelineno-1-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-1-2\"><a id=\"__codelineno-1-2\" name=\"__codelineno-1-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>\n<blockquote>\n<p>引用 <strong>粗体</strong>。</p>\n<p>第二段内容。</p>\n</blockquote>\n<hr>\n<h2 id=\"_3\">下划线标题<a class=\"headerlink\" href=\"#_3\" title=\"跳转到此标题\">&para;</a></h2>\n<div class=\"arithmatex\">\\[\nE=mc^2\n\\]</div>\n<p><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
+      "html": "<h1 data-zn-node=\"0\" id=\"heading\">一级标题 Heading<a class=\"headerlink\" href=\"#heading\" title=\"跳转到此标题\">&para;</a></h1>\n<p data-zn-node=\"1\">正文 <strong>粗体</strong>、<em>斜体</em>、<code>inline code</code>、<a href=\"https://zensical.org/\">链接</a>、<mark>标记</mark>。</p>\n<h2 data-zn-node=\"2\" id=\"_1\">二级标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>\n<h3 data-zn-node=\"3\" id=\"_2\">三级标题<a class=\"headerlink\" href=\"#_2\" title=\"跳转到此标题\">&para;</a></h3>\n<blockquote data-zn-node=\"4\">\n<p data-zn-node=\"5\">引用段落</p>\n</blockquote>\n<ul data-zn-node=\"6\">\n<li data-zn-node=\"7\">列表项目</li>\n<li data-zn-node=\"8\">第二项</li>\n</ul>\n<p data-zn-node=\"9\">有序列表：</p>\n<ol class=\"task-list\" data-zn-node=\"10\">\n<li data-zn-node=\"11\">\n<p data-zn-node=\"12\">有序项目</p>\n</li>\n<li class=\"task-list-item\" data-zn-node=\"13\">\n<p data-zn-node=\"14\"><label class=\"task-list-control\"><input type=\"checkbox\" disabled checked/><span class=\"task-list-indicator\"></span></label> 已完成</p>\n</li>\n<li class=\"task-list-item\" data-zn-node=\"15\"><label class=\"task-list-control\"><input type=\"checkbox\" disabled/><span class=\"task-list-indicator\"></span></label> 待办</li>\n</ol>\n<hr data-zn-node=\"16\">\n<div class=\"admonition note\" data-zn-node=\"17\">\n<p class=\"admonition-title\" data-zn-node=\"18\">提示</p>\n<p data-zn-node=\"19\">中文 <strong>粗体</strong> 内容。</p>\n</div>\n<details class=\"note\" data-zn-node=\"20\">\n<summary data-zn-node=\"21\">展开查看</summary>\n<p data-zn-node=\"22\">第一段详细内容。</p>\n<p data-zn-node=\"23\">第二段详细内容。</p>\n<p data-zn-node=\"24\">第三段详细内容。</p>\n</details>\n<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\" data-zn-node=\"25\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\" data-zn-node=\"26\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\" data-zn-node=\"27\">\n<div class=\"tabbed-block\" data-zn-node=\"28\">\n<p data-zn-node=\"29\">短内容。</p>\n</div>\n<div class=\"tabbed-block\" data-zn-node=\"30\">\n<p data-zn-node=\"31\">第一段长内容。</p>\n<p data-zn-node=\"32\">第二段长内容。</p>\n<p data-zn-node=\"33\">第三段长内容。</p>\n</div>\n</div>\n</div>\n<table data-zn-node=\"34\">\n<thead>\n<tr data-zn-node=\"35\">\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr data-zn-node=\"36\">\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>\n<div data-zn-node=\"44\" class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>\n<div data-zn-node=\"45\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-1-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-1-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-1-1\"><a id=\"__codelineno-1-1\" name=\"__codelineno-1-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-1-2\"><a id=\"__codelineno-1-2\" name=\"__codelineno-1-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>\n<blockquote data-zn-node=\"37\">\n<p data-zn-node=\"38\">引用 <strong>粗体</strong>。</p>\n<p data-zn-node=\"39\">第二段内容。</p>\n</blockquote>\n<hr data-zn-node=\"40\">\n<h2 data-zn-node=\"41\" id=\"_3\">下划线标题<a class=\"headerlink\" href=\"#_3\" title=\"跳转到此标题\">&para;</a></h2>\n<div class=\"arithmatex\" data-zn-node=\"42\">\\[\nE=mc^2\n\\]</div>\n<p data-zn-node=\"43\"><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
       "toc": [
         {
           "level": 1,
@@ -2737,6 +3106,360 @@
         }
       ],
       "meta": {},
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": [
+          {
+            "id": "0",
+            "kind": "h1",
+            "precision": "exact",
+            "from": 0,
+            "to": 14
+          },
+          {
+            "id": "1",
+            "kind": "p",
+            "precision": "exact",
+            "from": 16,
+            "to": 80
+          },
+          {
+            "id": "2",
+            "kind": "h2",
+            "precision": "exact",
+            "from": 82,
+            "to": 89
+          },
+          {
+            "id": "3",
+            "kind": "h3",
+            "precision": "exact",
+            "from": 91,
+            "to": 99
+          },
+          {
+            "id": "4",
+            "kind": "blockquote",
+            "precision": "exact",
+            "from": 101,
+            "to": 107
+          },
+          {
+            "id": "5",
+            "kind": "p",
+            "precision": "exact",
+            "from": 101,
+            "to": 107,
+            "parentId": "4"
+          },
+          {
+            "id": "6",
+            "kind": "ul",
+            "precision": "exact",
+            "from": 109,
+            "to": 121
+          },
+          {
+            "id": "7",
+            "kind": "li",
+            "precision": "exact",
+            "from": 109,
+            "to": 115,
+            "parentId": "6"
+          },
+          {
+            "id": "8",
+            "kind": "li",
+            "precision": "exact",
+            "from": 116,
+            "to": 121,
+            "parentId": "6"
+          },
+          {
+            "id": "9",
+            "kind": "p",
+            "precision": "exact",
+            "from": 123,
+            "to": 128
+          },
+          {
+            "id": "10",
+            "kind": "ol",
+            "precision": "exact",
+            "from": 130,
+            "to": 157
+          },
+          {
+            "id": "11",
+            "kind": "li",
+            "precision": "exact",
+            "from": 130,
+            "to": 137,
+            "parentId": "10"
+          },
+          {
+            "id": "12",
+            "kind": "p",
+            "precision": "inherited",
+            "from": 130,
+            "to": 137,
+            "parentId": "11"
+          },
+          {
+            "id": "13",
+            "kind": "li",
+            "precision": "exact",
+            "from": 139,
+            "to": 148,
+            "parentId": "10"
+          },
+          {
+            "id": "14",
+            "kind": "p",
+            "precision": "exact",
+            "from": 139,
+            "to": 148,
+            "parentId": "13"
+          },
+          {
+            "id": "15",
+            "kind": "li",
+            "precision": "exact",
+            "from": 149,
+            "to": 157,
+            "parentId": "10"
+          },
+          {
+            "id": "16",
+            "kind": "hr",
+            "precision": "exact",
+            "from": 159,
+            "to": 162
+          },
+          {
+            "id": "17",
+            "kind": "div",
+            "precision": "exact",
+            "from": 164,
+            "to": 196
+          },
+          {
+            "id": "18",
+            "kind": "p",
+            "precision": "inherited",
+            "from": 164,
+            "to": 196,
+            "parentId": "17"
+          },
+          {
+            "id": "19",
+            "kind": "p",
+            "precision": "exact",
+            "from": 179,
+            "to": 196,
+            "parentId": "17"
+          },
+          {
+            "id": "20",
+            "kind": "details",
+            "precision": "exact",
+            "from": 198,
+            "to": 255
+          },
+          {
+            "id": "21",
+            "kind": "summary",
+            "precision": "inherited",
+            "from": 198,
+            "to": 255,
+            "parentId": "20"
+          },
+          {
+            "id": "22",
+            "kind": "p",
+            "precision": "exact",
+            "from": 215,
+            "to": 227,
+            "parentId": "20"
+          },
+          {
+            "id": "23",
+            "kind": "p",
+            "precision": "exact",
+            "from": 229,
+            "to": 241,
+            "parentId": "20"
+          },
+          {
+            "id": "24",
+            "kind": "p",
+            "precision": "exact",
+            "from": 243,
+            "to": 255,
+            "parentId": "20"
+          },
+          {
+            "id": "25",
+            "kind": "div",
+            "precision": "exact",
+            "from": 257,
+            "to": 266
+          },
+          {
+            "id": "26",
+            "kind": "div",
+            "precision": "inherited",
+            "from": 257,
+            "to": 266,
+            "parentId": "25"
+          },
+          {
+            "id": "27",
+            "kind": "div",
+            "precision": "inherited",
+            "from": 257,
+            "to": 266,
+            "parentId": "25"
+          },
+          {
+            "id": "28",
+            "kind": "div",
+            "precision": "exact",
+            "from": 268,
+            "to": 276,
+            "parentId": "27"
+          },
+          {
+            "id": "29",
+            "kind": "p",
+            "precision": "exact",
+            "from": 268,
+            "to": 276,
+            "parentId": "28"
+          },
+          {
+            "id": "30",
+            "kind": "div",
+            "precision": "exact",
+            "from": 289,
+            "to": 326,
+            "parentId": "27"
+          },
+          {
+            "id": "31",
+            "kind": "p",
+            "precision": "exact",
+            "from": 289,
+            "to": 300,
+            "parentId": "30"
+          },
+          {
+            "id": "32",
+            "kind": "p",
+            "precision": "exact",
+            "from": 302,
+            "to": 313,
+            "parentId": "30"
+          },
+          {
+            "id": "33",
+            "kind": "p",
+            "precision": "exact",
+            "from": 315,
+            "to": 326,
+            "parentId": "30"
+          },
+          {
+            "id": "34",
+            "kind": "table",
+            "precision": "exact",
+            "from": 328,
+            "to": 369
+          },
+          {
+            "id": "35",
+            "kind": "tr",
+            "precision": "inherited",
+            "from": 328,
+            "to": 369,
+            "parentId": "34"
+          },
+          {
+            "id": "36",
+            "kind": "tr",
+            "precision": "inherited",
+            "from": 328,
+            "to": 369,
+            "parentId": "34"
+          },
+          {
+            "id": "37",
+            "kind": "blockquote",
+            "precision": "exact",
+            "from": 507,
+            "to": 530
+          },
+          {
+            "id": "38",
+            "kind": "p",
+            "precision": "exact",
+            "from": 507,
+            "to": 519,
+            "parentId": "37"
+          },
+          {
+            "id": "39",
+            "kind": "p",
+            "precision": "exact",
+            "from": 522,
+            "to": 530,
+            "parentId": "37"
+          },
+          {
+            "id": "40",
+            "kind": "hr",
+            "precision": "exact",
+            "from": 532,
+            "to": 565
+          },
+          {
+            "id": "41",
+            "kind": "h2",
+            "precision": "exact",
+            "from": 536,
+            "to": 552
+          },
+          {
+            "id": "42",
+            "kind": "div",
+            "precision": "exact",
+            "from": 553,
+            "to": 565
+          },
+          {
+            "id": "43",
+            "kind": "p",
+            "precision": "exact",
+            "from": 567,
+            "to": 674
+          },
+          {
+            "id": "44",
+            "kind": "div",
+            "precision": "exact",
+            "from": 371,
+            "to": 425
+          },
+          {
+            "id": "45",
+            "kind": "div",
+            "precision": "exact",
+            "from": 427,
+            "to": 505
+          }
+        ]
+      },
       "warnings": [],
       "theme": {
         "variant": "modern",
@@ -2960,6 +3683,11 @@
       "toc": [],
       "meta": {
         "title": "属性"
+      },
+      "sourceMap": {
+        "version": 1,
+        "offsetEncoding": "utf-16",
+        "entries": []
       },
       "warnings": [],
       "theme": {
