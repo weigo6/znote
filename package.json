@@ -1,0 +1,45 @@
+{
+  "name": "znote",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 1420 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "tauri": "node scripts/tauri.mjs",
+    "test": "vitest run src",
+    "test:browser": "playwright test",
+    "styles:sync": "node scripts/sync-zensical-styles.mjs",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.18.0",
+    "@codemirror/commands": "^6.8.0",
+    "@codemirror/lang-markdown": "^6.3.0",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/search": "^6.5.0",
+    "@codemirror/state": "^6.5.0",
+    "@codemirror/view": "^6.36.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/roboto": "^5.3.0",
+    "@fontsource-variable/roboto-mono": "^5.3.0",
+    "@lezer/highlight": "^1.2.0",
+    "@tauri-apps/api": "^2.0.0",
+    "dompurify": "^3.2.0",
+    "katex": "^0.16.22",
+    "lucide": "^0.468.0",
+    "mathjax-full": "3.2.2",
+    "mermaid": "^11.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/katex": "^0.16.7",
+    "postcss": "^8.5.28",
+    "prettier": "^3.9.9",
+    "typescript": "^5.8.0",
+    "vite": "^6.3.0",
+    "vitest": "^3.1.0"
+  }
+}

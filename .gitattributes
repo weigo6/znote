@@ -1,0 +1,34 @@
+# Normalize the repository to LF so checkouts are identical on every platform.
+* text=auto eol=lf
+
+# Windows-native scripts keep CRLF: they are edited and run with Windows tooling,
+# and CRLF avoids line-continuation surprises in here-strings.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Do not let Git touch the vendored Zensical CSS. public/vendor/zensical/manifest.json
+# records a SHA-256 for each file as it came out of the pinned wheel, and any
+# end-of-line rewriting on checkout would silently invalidate those digests.
+public/vendor/zensical/** -text
+
+# --- Binary assets ----------------------------------------------------------
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.icns binary
+*.exe  binary
+*.dll  binary
+*.pyd  binary
+*.zip  binary
+*.woff binary
+*.woff2 binary
+
+# --- Diff and language-stat hints ------------------------------------------
+src/zensical.generated.css   linguist-generated=true
+public/vendor/zensical/**    linguist-vendored=true
+pnpm-lock.yaml               linguist-generated=true
+src-tauri/Cargo.lock         linguist-generated=true

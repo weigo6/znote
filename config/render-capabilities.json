@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 3,
+  "readerPresets": [
+    {
+      "id": "integrated",
+      "name": "随应用 · 舒适",
+      "description": "与编辑区共用底色，舒展的正文行距。",
+      "font": "sans",
+      "lineHeight": 1.8,
+      "width": 820
+    },
+    {
+      "id": "book",
+      "name": "书页 · 宋体",
+      "description": "宋体正文、较窄栏宽与宽松行距，适合长文。",
+      "font": "serif",
+      "lineHeight": 2,
+      "width": 720
+    },
+    {
+      "id": "compact",
+      "name": "紧凑 · 技术笔记",
+      "description": "较紧的行距与宽栏，便于查看代码和资料。",
+      "font": "sans",
+      "lineHeight": 1.6,
+      "width": 1000
+    }
+  ],
+  "extensions": [
+    { "id": "tables", "label": "表格", "group": "基础排版", "options": {} },
+    {
+      "id": "toc",
+      "label": "目录与标题锚点",
+      "group": "基础排版",
+      "options": {
+        "permalink": {
+          "label": "标题锚点",
+          "type": "booleanOrText",
+          "default": true,
+          "maxLength": 32,
+          "legacy": "toc_permalink"
+        },
+        "toc_depth": {
+          "label": "目录层级",
+          "type": "text",
+          "default": "6",
+          "pattern": "^[1-6](-[1-6])?$",
+          "maxLength": 3
+        },
+        "title": {
+          "label": "目录标题",
+          "type": "text",
+          "default": "",
+          "maxLength": 100
+        },
+        "permalink_title": {
+          "label": "锚点提示",
+          "type": "text",
+          "default": "跳转到此标题",
+          "maxLength": 100
+        }
+      }
+    },
+    { "id": "abbr", "label": "缩写", "group": "基础排版", "options": {} },
+    {
+      "id": "attr_list",
+      "label": "元素属性",
+      "group": "基础排版",
+      "options": {}
+    },
+    {
+      "id": "def_list",
+      "label": "定义列表",
+      "group": "基础排版",
+      "options": {}
+    },
+    {
+      "id": "footnotes",
+      "label": "脚注",
+      "group": "基础排版",
+      "options": {
+        "USE_DEFINITION_ORDER": {
+          "label": "按定义顺序编号",
+          "type": "boolean",
+          "default": true
+        },
+        "BACKLINK_TEXT": {
+          "label": "返回正文符号",
+          "type": "text",
+          "default": "↩",
+          "maxLength": 32
+        },
+        "BACKLINK_TITLE": {
+          "label": "返回正文提示（{} 为编号）",
+          "type": "text",
+          "default": "返回正文中的脚注 {}",
+          "maxLength": 100,
+          "pattern": "^[^{}]*(?:\\{\\}[^{}]*)?$"
+        }
+      }
+    },
+    {
+      "id": "md_in_html",
+      "label": "HTML 内的 Markdown",
+      "group": "基础排版",
+      "options": {}
+    },
+    {
+      "id": "admonition",
+      "label": "提示框",
+      "group": "内容组件",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.details",
+      "label": "折叠详情",
+      "group": "内容组件",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.tabbed",
+      "label": "内容标签页",
+      "group": "内容组件",
+      "options": {
+        "alternate_style": {
+          "label": "新版标签页布局",
+          "type": "boolean",
+          "default": true,
+          "legacy": "tabbed_alternate_style"
+        }
+      }
+    },
+    {
+      "id": "pymdownx.tasklist",
+      "label": "任务列表",
+      "group": "内容组件",
+      "options": {
+        "custom_checkbox": {
+          "label": "主题任务复选框",
+          "type": "boolean",
+          "default": true,
+          "legacy": "tasklist_custom_checkbox"
+        }
+      }
+    },
+    {
+      "id": "pymdownx.superfences",
+      "label": "扩展代码块",
+      "group": "内容组件",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.highlight",
+      "label": "代码高亮",
+      "group": "内容组件",
+      "options": {
+        "linenums": {
+          "label": "默认显示行号",
+          "type": "boolean",
+          "default": false,
+          "legacy": "highlight_line_numbers"
+        },
+        "guess_lang": {
+          "label": "猜测未标注代码的语言",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    {
+      "id": "pymdownx.inlinehilite",
+      "label": "行内代码高亮",
+      "group": "内容组件",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.arithmatex",
+      "label": "数学公式",
+      "group": "行内语法",
+      "options": {
+        "smart_dollar": {
+          "label": "避免将货币金额识别为公式",
+          "type": "boolean",
+          "default": true
+        },
+        "inline_syntax": {
+          "label": "行内公式语法",
+          "type": "choices",
+          "default": ["dollar", "round"],
+          "values": ["dollar", "round"],
+          "labels": ["$…$", "\\(…\\)"]
+        },
+        "block_syntax": {
+          "label": "块公式语法",
+          "type": "choices",
+          "default": ["dollar", "square", "begin"],
+          "values": ["dollar", "square", "begin"],
+          "labels": ["$$…$$", "\\[…\\]", "\\begin…\\end"]
+        }
+      }
+    },
+    {
+      "id": "pymdownx.emoji",
+      "label": "图标与表情",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.magiclink",
+      "label": "自动链接",
+      "group": "行内语法",
+      "options": {
+        "hide_protocol": {
+          "label": "隐藏链接协议前缀",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    {
+      "id": "pymdownx.betterem",
+      "label": "强调",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.caret",
+      "label": "上标与插入",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.tilde",
+      "label": "下标与删除",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.mark",
+      "label": "高亮标记",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.keys",
+      "label": "键盘按键",
+      "group": "行内语法",
+      "options": {}
+    },
+    {
+      "id": "pymdownx.smartsymbols",
+      "label": "智能符号",
+      "group": "行内语法",
+      "options": {}
+    }
+  ],
+  "fields": {
+    "math.engine": {
+      "type": "enum",
+      "default": "katex",
+      "values": ["katex", "mathjax", "none"]
+    },
+    "math.errorMode": {
+      "type": "enum",
+      "default": "source",
+      "values": ["source", "inline"]
+    },
+    "math.katex.fleqn": { "type": "boolean", "default": false },
+    "math.katex.leqno": { "type": "boolean", "default": false },
+    "math.katex.strict": {
+      "type": "enum",
+      "default": "warn",
+      "values": ["ignore", "warn", "error"]
+    },
+    "math.mathjax.tagSide": {
+      "type": "enum",
+      "default": "right",
+      "values": ["left", "right"]
+    },
+    "features.footnoteTooltips": { "type": "boolean", "default": true },
+    "features.inlineStyles": { "type": "boolean", "default": true },
+    "mermaid.enabled": { "type": "boolean", "default": true },
+    "mermaid.theme": {
+      "type": "enum",
+      "default": "auto",
+      "values": ["auto", "neutral", "forest", "dark"]
+    },
+    "reader.preset": {
+      "type": "enum",
+      "default": "integrated",
+      "values": ["integrated", "book", "compact", "custom"]
+    },
+    "reader.font": {
+      "type": "enum",
+      "default": "sans",
+      "values": ["sans", "serif"]
+    },
+    "reader.lineHeight": {
+      "type": "number",
+      "default": 1.8,
+      "min": 1.4,
+      "max": 2.2
+    },
+    "reader.width": {
+      "type": "integer",
+      "default": 820,
+      "min": 600,
+      "max": 1200
+    },
+    "variant": {
+      "type": "enum",
+      "default": "modern",
+      "values": ["modern", "classic"]
+    }
+  }
+}

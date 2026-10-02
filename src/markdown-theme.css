@@ -1,0 +1,130 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/roboto";
+@import "@fontsource-variable/roboto-mono";
+@import "./zensical.generated.css";
+
+/* The application chrome is separate from the official document theme. */
+.znote-render-scope {
+  --znote-rem: calc(var(--editor-font) / 0.75);
+  --md-text-font: "Inter Variable";
+  --md-code-font: "JetBrains Mono Variable";
+  --md-text-font-family:
+    var(--md-text-font), "Microsoft YaHei", "PingFang SC", -apple-system,
+    BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  --md-code-font-family:
+    var(--md-code-font), SFMono-Regular, Consolas, Menlo, monospace;
+  font-family: var(--md-text-font-family);
+  color: var(--md-typeset-color);
+  background: var(--md-default-bg-color);
+  -webkit-font-smoothing: antialiased;
+}
+.znote-render-scope[data-zn-variant="classic"] {
+  --znote-rem: calc(var(--editor-font) / 0.8);
+  --md-text-font: "Roboto Variable";
+  --md-code-font: "Roboto Mono Variable";
+}
+.znote-render-scope .md-typeset {
+  font-family: var(--md-text-font-family);
+  color: var(--md-typeset-color);
+}
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-family: var(--md-code-font-family);
+  font-feature-settings: "kern";
+}
+.md-typeset :where(button, input, label, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+.md-typeset :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+.md-typeset :where(button, input) {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+.md-typeset :where(table) {
+  border-spacing: 0;
+  border-collapse: initial;
+}
+.md-typeset :where(td, th) {
+  font-weight: 400;
+  vertical-align: top;
+}
+.md-typeset :where(img) {
+  border-style: none;
+}
+.md-typeset :where(sub, sup) {
+  line-height: 1em;
+}
+.md-typeset :where(small) {
+  font-size: 80%;
+}
+.md-typeset :where(hr) {
+  box-sizing: initial;
+  display: block;
+  height: calc(var(--znote-rem) * 0.05);
+  padding: 0;
+  overflow: visible;
+  border: 0;
+}
+.md-typeset svg {
+  width: initial;
+  height: initial;
+  vertical-align: initial;
+}
+.md-typeset .mermaid {
+  overflow: auto;
+  text-align: center;
+}
+.md-typeset .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+.md-typeset .arithmatex {
+  overflow: auto;
+}
+.md-typeset .katex {
+  font-size: 1.1em;
+}
+.md-typeset .diagram-error {
+  white-space: pre-wrap;
+  color: var(--md-code-fg-color);
+}
+
+/* ZNote owns reading geometry and code line metrics. Upstream owns components. */
+.znote-render-scope[data-zn-reader] .md-typeset {
+  line-height: var(--reader-line-height, 1.8);
+  font-size: var(--editor-font);
+}
+.znote-render-scope[data-zn-reader] article { max-width: var(--reader-width, 820px); }
+.znote-render-scope[data-zn-reader] .md-typeset :is(h1,h2,h3,h4,h5,h6) {
+  color: var(--znote-heading);
+  line-height: 1.4;
+}
+.znote-render-scope[data-zn-reader] .md-typeset h1 { font-weight: 650; }
+.znote-render-scope[data-zn-reader="book"] .md-typeset h1 { text-align: center; margin-bottom: 1.5em; }
+.znote-render-scope[data-zn-reader="compact"] .md-typeset :is(h1,h2,h3) { margin-top: 1.2em; margin-bottom: .6em; }
+.znote-render-scope[data-zn-reader] .highlight :is(pre,.linenos) {
+  font-size: calc(var(--editor-font) * .85);
+  line-height: 1.6;
+}
+.znote-render-scope[data-zn-reader] .highlight pre code { font-size: inherit; line-height: inherit; }
+.znote-footnote-tooltip {
+  position: fixed; z-index: 100; max-width: min(360px, calc(100vw - 24px));
+  max-height: min(240px, 50vh); overflow: auto; padding: 12px 16px;
+  border: 1px solid var(--znote-border); border-radius: 8px;
+  color: var(--znote-text); background: var(--znote-paper);
+  box-shadow: 0 5px 24px #0003; font: 14px/1.7 var(--md-text-font-family);
+}
+.znote-footnote-tooltip p { margin: 0; }
+.znote-footnote-tooltip p + p { margin-top: .7em; }
+.md-typeset .math-error { color: var(--md-code-fg-color); text-decoration: underline wavy var(--znote-code); }
+

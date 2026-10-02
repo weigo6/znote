@@ -1,0 +1,1 @@
+{"identifier":"main","description":"Local editor window","windows":["main"],"permissions":["core:default","core:window:allow-set-title","core:window:allow-destroy"]}

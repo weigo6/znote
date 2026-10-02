@@ -1,0 +1,6 @@
+zensical==0.0.66
+Markdown==3.11
+pymdown-extensions==12.1
+Pygments==2.21.0
+pyinstaller>=6.16,<7
+

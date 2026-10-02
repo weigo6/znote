@@ -1,0 +1,16 @@
+/* 导入到 ZNote → 设置 → 自定义 CSS 覆盖，按需修改。 */
+:root > * {
+  --md-primary-fg-color: #376e5a;
+  --md-primary-fg-color--light: #5c907b;
+  --md-primary-fg-color--dark: #24513f;
+  --md-accent-fg-color: #b76b42;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #9bc8b2;
+  --md-accent-fg-color: #e6a679;
+}
+
+.md-typeset h1 {
+  letter-spacing: -0.03em;
+}

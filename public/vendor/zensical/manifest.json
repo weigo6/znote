@@ -1,0 +1,25 @@
+{
+  "version": "0.0.66",
+  "files": [
+    {
+      "variant": "modern",
+      "file": "main.1502b751.min.css",
+      "sha256": "1502b751b6e56eefc5b1048d8c39c72bc224eb420659daf065a96e696a7f4090"
+    },
+    {
+      "variant": "modern",
+      "file": "palette.812a03bb.min.css",
+      "sha256": "812a03bb9c39ae29159b525a144e2bd32cd731e1b30898e8bfe5d772ac31ea48"
+    },
+    {
+      "variant": "classic",
+      "file": "main.5da0f285.min.css",
+      "sha256": "5da0f28517268d72d4d354c0fc2131fa1fecefc0bafaf8a5b2197d7b9fa863ec"
+    },
+    {
+      "variant": "classic",
+      "file": "palette.c7ab7c71.min.css",
+      "sha256": "c7ab7c714a76e589065a8ae8fdcebb2915994fb9ca41636a6c73cf62625408db"
+    }
+  ]
+}

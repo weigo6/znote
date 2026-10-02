@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "reader": { "preset": "book" },
+  "math": {
+    "engine": "katex",
+    "errorMode": "source",
+    "macros": {
+      "RR": "\\mathbb{R}",
+      "norm": { "body": "\\lVert #1\\rVert", "args": 1 }
+    },
+    "katex": { "fleqn": false, "leqno": false, "strict": "warn" },
+    "mathjax": { "tagSide": "right" }
+  },
+  "extensionConfigs": {
+    "toc": { "toc_depth": "2-4", "permalink": true },
+    "pymdownx.arithmatex": { "smart_dollar": true, "inline_syntax": ["dollar", "round"], "block_syntax": ["dollar", "square", "begin"] }
+  }
+}

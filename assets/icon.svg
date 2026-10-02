@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1280" viewBox="200 208 858 858" role="img" aria-labelledby="title desc">
+  <title id="title">Coral Markdown note logo</title>
+  <desc id="desc">A rounded M integrated with a folded note page, with a coral orange gradient and a transparent background.</desc>
+  <defs>
+    <linearGradient id="coral" gradientUnits="userSpaceOnUse" x1="280" y1="292" x2="975" y2="976">
+      <stop offset="0" stop-color="#FF9B70"/>
+      <stop offset="0.52" stop-color="#FF7959"/>
+      <stop offset="1" stop-color="#FF5143"/>
+    </linearGradient>
+    <linearGradient id="fold" gradientUnits="userSpaceOnUse" x1="775" y1="294" x2="974" y2="503">
+      <stop offset="0" stop-color="#FFC095"/>
+      <stop offset="1" stop-color="#FF946F"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#coral)" d="M414 292H747Q764 292 764 309V443C764 485 798 515 841 515H960Q975 515 975 530V859C975 909 949 952 910 971Q890 980 890 958V553Q890 525 870 538L643 721Q627 735 611 721L393 540Q366 523 366 551V955Q366 982 345 971C306 954 280 915 280 865V432C280 352 335 292 414 292Z"/>
+  <path fill="url(#coral)" d="M447 765Q447 748 458 742Q469 736 482 746L610 854Q626 868 642 854L772 746Q785 735 797 742Q807 748 807 765V947Q807 976 778 976H476Q447 976 447 947Z"/>
+  <path fill="url(#fold)" d="M776 294Q785 292 797 304L967 478Q978 490 974 500Q973 504 965 504H841C804 504 775 478 775 442V304Q775 297 776 294Z"/>
+</svg>

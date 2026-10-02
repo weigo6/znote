@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ZNote",
+  "version": "0.4.0",
+  "identifier": "app.znote.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "ZNote",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 900,
+        "minHeight": 620,
+        "decorations": true,
+        "backgroundColor": "#f8f8f6"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' data:; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src ipc: http://ipc.localhost; frame-src 'self' blob:; object-src 'none'; base-uri 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "../build/renderer-dist/znote-renderer/": "bin/znote-renderer/"
+    },
+    "shortDescription": "本地 Markdown 编辑与阅览",
+    "category": "Productivity",
+    "windows": {
+      "nsis": {
+        "languages": [
+          "SimpChinese",
+          "English"
+        ],
+        "displayLanguageSelector": true
+      }
+    }
+  }
+}

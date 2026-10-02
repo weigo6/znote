@@ -1,0 +1,73 @@
+[
+  {
+    "name": "defaults",
+    "input": {},
+    "paths": [],
+    "expected": {
+      "schemaVersion": 3,
+      "primary": "app",
+      "reader.preset": "integrated"
+    }
+  },
+  {
+    "name": "legacy parameters",
+    "input": {
+      "schemaVersion": 2,
+      "options": { "toc_permalink": false },
+      "mermaid": false,
+      "math": { "macros": { "norm": "\\lVert #1\\rVert" } }
+    },
+    "paths": [],
+    "expected": {
+      "extensionConfigs.toc.permalink": false,
+      "mermaid.enabled": false,
+      "math.macros.norm.args": 1
+    }
+  },
+  {
+    "name": "invalid extension container",
+    "input": { "extensionConfigs": [] },
+    "paths": ["extensionConfigs"]
+  },
+  {
+    "name": "internal callbacks and markup contracts",
+    "input": {
+      "extensionConfigs": {
+        "toc": { "slugify": "os.system" },
+        "pymdownx.arithmatex": { "generic": false }
+      }
+    },
+    "paths": [
+      "extensionConfigs.toc.slugify",
+      "extensionConfigs.pymdownx.arithmatex.generic"
+    ]
+  },
+  {
+    "name": "explicit null options",
+    "input": { "math": { "macros": null, "katex": { "strict": null } } },
+    "paths": ["math.macros", "math.katex.strict"]
+  },
+  {
+    "name": "invalid footnote title template",
+    "input": {
+      "extensionConfigs": { "footnotes": { "BACKLINK_TITLE": "{} {}" } }
+    },
+    "paths": ["extensionConfigs.footnotes.BACKLINK_TITLE"]
+  },
+  {
+    "name": "reader bounds and unknown fields",
+    "input": { "reader": { "lineHeight": 6, "width": "720", "unknown": true } },
+    "paths": ["reader.lineHeight", "reader.width", "reader.unknown"]
+  },
+  {
+    "name": "normalized macro names and object keys",
+    "input": {
+      "math": { "macros": { "\\RR": "x", "RR": "y", "constructor": "z" } }
+    },
+    "paths": ["math.macros.RR"],
+    "expected": {
+      "math.macros.RR.body": "x",
+      "math.macros.constructor.body": "z"
+    }
+  }
+]
