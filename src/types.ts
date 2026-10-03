@@ -1,3 +1,5 @@
+import type { RenderSettings } from "./render-config";
+
 export interface DiskDocument {
   path: string;
   text: string;
@@ -24,13 +26,11 @@ export interface RenderResult {
     entries: SourceLocation[];
   };
   plan?: RenderPlan;
+  effectiveConfig?: RenderSettings;
   html: string;
   toc: { name: string; id: string; level: number; children: unknown[] }[];
   meta: Record<string, unknown>;
   warnings: string[];
-  profile: string;
-  extensions: string[];
-  highlightCss: string;
   theme?: {
     variant: "modern" | "classic";
     primary: string;
@@ -69,19 +69,12 @@ export interface ReaderSettings {
   width: number;
 }
 export interface RenderPlan {
-  schemaVersion: number;
-  engine: string;
-  engineVersion: string;
-  configRevision: string;
-  documentPath: string | null;
-  extensions: string[];
+  schemaVersion: 4;
   math: MathSettings;
   features?: { footnoteTooltips: boolean; codeAnnotations?: boolean; codeCopy?: boolean; codeSelect?: boolean; inlineStyles: boolean };
   mermaid?: { enabled: boolean; theme: "auto" | "neutral" | "forest" | "dark" };
-  effectiveConfig?: Record<string, unknown>;
-  revisions?: { parse: string; runtime: string; style: string };
+  revisions?: { parse: string; runtime: string };
   runtimes: string[];
   styles: { source: string; css: string }[];
-  dependencies: { path: string; hash: string }[];
 }
 export type Mode = "source" | "split" | "read";

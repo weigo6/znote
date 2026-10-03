@@ -33,6 +33,7 @@ import {
   Command,
   Sun,
   Moon,
+  Monitor,
   Focus,
   Save,
   RefreshCw,
@@ -60,6 +61,7 @@ import { welcome } from "./sample";
 import { headings, wordCount } from "./syntax";
 import { escapeHtml } from "./preview";
 import { PreviewSurface } from "./preview-surface";
+import { applyAppearanceToResult, sameRenderInputs } from "./render-appearance";
 import { normalizeRenderSettings } from "./render-settings";
 import { renderSettingsMarkup, mountRenderSettings } from "./render-settings-ui";
 import type { RenderSettings } from "./render-settings";
@@ -105,6 +107,7 @@ const iconSet = {
   Command,
   Sun,
   Moon,
+  Monitor,
   Focus,
   Save,
   RefreshCw,
@@ -275,7 +278,7 @@ $("#app").innerHTML = `
     <button class="clear-recent" data-action="clear-recent">清空最近记录</button>
   </div>
   <main class="main">
-    <div class="tabs-bar"><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="新建笔记">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="快速操作 Ctrl+K" aria-label="快速操作">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="保存 Ctrl+S" aria-label="保存">${icon("save")}</button><button class="icon-btn" data-action="settings" title="渲染设置" aria-label="渲染设置">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn" data-action="theme" title="切换明暗主题" aria-label="切换明暗主题">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="专注模式 Ctrl+Shift+F" aria-label="专注模式" aria-pressed="false">${icon("focus")}</button></div></div>
+    <div class="tabs-bar"><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="新建笔记">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="快速操作 Ctrl+K" aria-label="快速操作">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="保存 Ctrl+S" aria-label="保存">${icon("save")}</button><button class="icon-btn" data-action="settings" title="渲染设置" aria-label="渲染设置">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn" data-action="theme" title="切换界面主题" aria-label="切换界面主题">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="专注模式 Ctrl+Shift+F" aria-label="专注模式" aria-pressed="false">${icon("focus")}</button></div></div>
     <div class="editor-toolbar"><div class="format-tools"><button class="icon-btn" data-format="heading" title="标题">H<span>1</span></button><button class="icon-btn" data-format="bold" title="粗体 Ctrl+B">${icon("bold")}</button><button class="icon-btn" data-format="italic" title="斜体 Ctrl+I">${icon("italic")}</button><span class="separator"></span><button class="icon-btn" data-format="quote" title="引用">${icon("quote")}</button><button class="icon-btn" data-format="list" title="列表">${icon("list")}</button><button class="icon-btn" data-format="task" title="任务列表">${icon("list-todo")}</button><button class="icon-btn" data-format="link" title="插入链接">${icon("link")}</button><button class="icon-btn" data-format="image" title="插入图片">${icon("image")}</button><button class="icon-btn" data-format="code" title="代码块">${icon("code")}</button><button class="icon-btn" data-format="table" title="表格">${icon("table")}</button><button class="insert-extension" data-action="insert">${icon("sparkles")}<span>扩展</span></button></div><div class="view-modes" role="group" aria-label="编辑模式"><button data-mode="source" title="Markdown 编辑">${icon("code-2")}<span>编辑</span></button><button data-mode="split" title="Python Markdown 对照预览">${icon("columns-2")}<span>对照</span></button><button data-mode="read" title="阅读模式">${icon("book-open")}<span>阅读</span></button></div></div>
     <div id="conflict-banner" class="banner conflict" hidden></div>
     <div id="workspace-notice" class="banner" hidden></div>
@@ -389,10 +392,15 @@ splitResizer.addEventListener("pointercancel", (event) => {
 window.addEventListener("blur", finishSplitResize);
 new ResizeObserver(syncSplitWidth).observe(writingArea);
 
+const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+systemTheme.addEventListener("change", () => {
+  if (prefs.theme === "system") applyPrefs();
+});
+
 function applyPrefs() {
   document.documentElement.dataset.theme =
     prefs.theme === "system"
-      ? matchMedia("(prefers-color-scheme:dark)").matches
+      ? systemTheme.matches
         ? "dark"
         : "light"
       : prefs.theme;
@@ -413,12 +421,18 @@ function applyPrefs() {
   syncSplitWidth();
   const themeButton = document.querySelector<HTMLElement>('[data-action="theme"]');
   if (themeButton) {
-    themeButton.innerHTML = icon(document.documentElement.dataset.theme === "dark" ? "moon" : "sun");
+    const next = prefs.theme === "light" ? "深色" : prefs.theme === "dark" ? "跟随系统" : "浅色";
+    const current = prefs.theme === "light" ? "浅色" : prefs.theme === "dark" ? "深色" : "跟随系统";
+    themeButton.innerHTML = icon(prefs.theme === "system" ? "monitor" : prefs.theme === "dark" ? "moon" : "sun");
+    themeButton.setAttribute("aria-label", `界面主题：${current}，点击切换到${next}`);
+    themeButton.title = `界面主题：${current}，点击切换到${next}`;
+    themeButton.dataset.themeMode = prefs.theme;
     icons();
   }
+  const themeChoice = document.querySelector<HTMLSelectElement>("#theme-choice");
+  if (themeChoice) themeChoice.value = prefs.theme;
   persistPrefs();
-  renderedKey = "";
-  scheduleRender();
+  previewSurface.refreshHostAppearance();
 }
 let recentMenuVersion = 0;
 let recentCloseTimer: ReturnType<typeof setTimeout> | undefined;
@@ -1098,12 +1112,12 @@ function setMode(value: Mode) {
   scheduleRender();
   if (value === "split") requestAnimationFrame(syncPreviewToCursor);
 }
-let renderSettingsRevision = 0;
+let renderInputsRevision = 0;
 function previewKey(tab: Tab) {
   return JSON.stringify([
     tab.id,
     tab.revision,
-    renderSettingsRevision,
+    renderInputsRevision,
     tab.path,
   ]);
 }
@@ -1148,9 +1162,10 @@ async function renderPreviewNow(generation: number) {
     const result = await invoke<RenderResult>("render_markdown", {
       text: source,
       path: tab.path || null,
-      settings: prefs.render,
+      settings: structuredClone(prefs.render),
     });
     if (generation !== renderGeneration || tab.id !== activeId) return;
+    applyAppearanceToResult(result, prefs.render);
     tab.plan = result.plan;
     const runtimeWarnings: string[] = [];
     await previewSurface.render(
@@ -1166,13 +1181,14 @@ async function renderPreviewNow(generation: number) {
       } },
     );
     if (generation !== renderGeneration || tab.id !== activeId) return;
+    previewSurface.updateAppearance(prefs.render);
     if (!$("#preview-find").hidden) updatePreviewFind(previewSurface.getFindState());
     result.warnings.push(...runtimeWarnings);
     renderedKey = key;
     previewSurface.setScrollSync(tab.text, syncEditorToPreview);
     syncPreviewToCursor();
     $("#profile-status").textContent =
-      `${result.profile} · ${result.plan?.math.engine ?? "katex"}`;
+      `Markdown · ${result.plan?.math.engine ?? "katex"}`;
     const warnings = $("#preview-warnings");
     warnings.hidden = !result.warnings.length;
     warnings.textContent = result.warnings.join(" ");
@@ -1293,9 +1309,21 @@ function showSettings() {
   <div class="settings-section"><div class="engine-info" id="settings-engine">内置 Python Markdown 渲染器</div></div><div class="settings-footer"><span>ZNote · 本地 Markdown 编辑器</span><button class="primary" data-dismiss>完成</button></div>`,
   );
   modalDispose = mountRenderSettings($("#render-settings"), prefs.render, settings => {
+    const previous = prefs.render;
     prefs.render = settings;
-    renderSettingsRevision++;
-    persistPrefs(); renderedKey = ""; scheduleRender(); status();
+    persistPrefs();
+    if (sameRenderInputs(previous, settings)) {
+      if (!previewSurface.updateAppearance(settings) && !renderInFlight &&
+          (mode === "read" || mode === "split")) {
+        renderedKey = "";
+        scheduleRender();
+      }
+    } else {
+      renderInputsRevision++;
+      renderedKey = "";
+      scheduleRender();
+    }
+    status();
   });
   $("#modal-root .modal").classList.add("render-settings-modal");
   $<HTMLSelectElement>("#theme-choice").value = prefs.theme;
@@ -2076,7 +2104,7 @@ const actions: Record<string, () => unknown> = {
     const plan = tab?.plan;
     modal(
       "当前渲染配置",
-      `<p>${plan ? "下列配置已用于最近一次预览。" : "切换到阅读或分栏模式后生成有效配置。"}</p><pre class="build-log">${escapeHtml(JSON.stringify(plan ? { ...plan, styles: plan.styles.map((s) => ({ source: s.source })) } : { documentPath: tab?.path || null }, null, 2))}</pre><div class="modal-actions"><button data-dismiss>关闭</button></div>`,
+      `<p>${plan ? "下列运行参数已用于最近一次预览；完整有效配置可在渲染设置中查看。" : "切换到阅读或分栏模式后生成运行参数。"}</p><pre class="build-log">${escapeHtml(JSON.stringify(plan ? { documentPath: tab?.path || null, ...plan, styles: plan.styles.map((s) => ({ source: s.source })) } : { documentPath: tab?.path || null }, null, 2))}</pre><div class="modal-actions"><button data-dismiss>关闭</button></div>`,
     );
   },
   open: () => openFile(),
@@ -2101,8 +2129,7 @@ const actions: Record<string, () => unknown> = {
   },
   settings: showSettings,
   theme: () => {
-    prefs.theme =
-      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    prefs.theme = prefs.theme === "light" ? "dark" : prefs.theme === "dark" ? "system" : "light";
     applyPrefs();
   },
   insert: insertMenu,

@@ -3,7 +3,25 @@ import fs from "node:fs";
 const fixtures = JSON.parse(
   fs.readFileSync("tests/fixtures/rendered.json", "utf8"),
 );
-const regression = fixtures.results[fixtures.samples.regressions.trim()];
+const regression = fixtures.results.regressions;
+
+test("automatic Mermaid theme redraws from the original diagram source", async ({ page }) => {
+  await page.goto("/tests/preview.html");
+  await page.waitForFunction(() => typeof (window as any).renderResult === "function");
+  await page.evaluate(async result => {
+    document.documentElement.dataset.theme = "light";
+    await (window as any).renderResult(result);
+  }, structuredClone(regression));
+  const diagram = page.frameLocator("iframe").locator(".mermaid");
+  await expect(diagram.locator("text").filter({ hasText: "Start" })).toBeVisible();
+  const before = await diagram.locator("svg").getAttribute("id");
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = "dark";
+    (window as any).refreshHostAppearance();
+  });
+  await expect.poll(() => diagram.locator("svg").getAttribute("id")).not.toBe(before);
+  await expect(diagram.locator("text").filter({ hasText: "Start" })).toBeVisible();
+});
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/tests/preview.html");
@@ -206,7 +224,6 @@ test("style-only commits preserve formula DOM and remount delegated footnotes", 
     lineHeight: 2,
     width: 720,
   };
-  result.plan.revisions.style = "book-style";
   await page.evaluate((result) => (window as any).renderResult(result), result);
   expect(
     await frame

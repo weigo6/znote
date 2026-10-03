@@ -16,7 +16,7 @@
     "frontmatter": "---\ntitle: 属性\n---"
   },
   "results": {
-    "!!! note \"提示\"\n\n    中文 **粗体** 内容。": {
+    "admonition": {
       "html": "<div class=\"admonition note\" data-zn-node=\"0\">\n<p class=\"admonition-title\" data-zn-node=\"1\">提示</p>\n<p data-zn-node=\"2\">中文 <strong>粗体</strong> 内容。</p>\n</div>",
       "toc": [],
       "meta": {},
@@ -62,35 +62,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -110,6 +82,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -118,156 +93,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "??? note \"展开查看\"\n\n    第一段详细内容。\n\n    第二段详细内容。\n\n    第三段详细内容。": {
+    "details": {
       "html": "<details class=\"note\" data-zn-node=\"0\">\n<summary data-zn-node=\"1\">展开查看</summary>\n<p data-zn-node=\"2\">第一段详细内容。</p>\n<p data-zn-node=\"3\">第二段详细内容。</p>\n<p data-zn-node=\"4\">第三段详细内容。</p>\n</details>",
       "toc": [],
       "meta": {},
@@ -329,35 +161,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -377,6 +181,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -385,156 +192,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "=== \"第一项\"\n\n    短内容。\n\n=== \"第二项\"\n\n    第一段长内容。\n\n    第二段长内容。\n\n    第三段长内容。": {
+    "tabs": {
       "html": "<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\" data-zn-node=\"0\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\" data-zn-node=\"1\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\" data-zn-node=\"2\">\n<div class=\"tabbed-block\" data-zn-node=\"3\">\n<p data-zn-node=\"4\">短内容。</p>\n</div>\n<div class=\"tabbed-block\" data-zn-node=\"5\">\n<p data-zn-node=\"6\">第一段长内容。</p>\n<p data-zn-node=\"7\">第二段长内容。</p>\n<p data-zn-node=\"8\">第三段长内容。</p>\n</div>\n</div>\n</div>",
       "toc": [],
       "meta": {},
@@ -628,35 +292,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -676,6 +312,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -684,156 +323,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "| 名称 | 数值 |\n| --- | --- |\n| 中文 | **12** |": {
+    "table": {
       "html": "<table data-zn-node=\"0\">\n<thead>\n<tr data-zn-node=\"1\">\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr data-zn-node=\"2\">\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>",
       "toc": [],
       "meta": {},
@@ -879,35 +375,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -927,6 +395,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -935,156 +406,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "```python\ndef greet(name):\n    return \"你好 \" + name\n```": {
+    "code": {
       "html": "<div data-zn-node=\"0\" class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>",
       "toc": [],
       "meta": {},
@@ -1114,35 +442,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -1162,6 +462,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -1170,156 +473,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "```python title=\"hello.py\" linenums=\"1\"\ndef hello():\n    print(\"你好，ZNote\")\n```": {
+    "numbered_code": {
       "html": "<div data-zn-node=\"0\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>",
       "toc": [],
       "meta": {},
@@ -1349,35 +509,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -1397,6 +529,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -1405,156 +540,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "> 引用 **粗体**。\n>\n> 第二段内容。": {
+    "quote": {
       "html": "<blockquote data-zn-node=\"0\">\n<p data-zn-node=\"1\">引用 <strong>粗体</strong>。</p>\n<p data-zn-node=\"2\">第二段内容。</p>\n</blockquote>",
       "toc": [],
       "meta": {},
@@ -1600,35 +592,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -1648,6 +612,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -1656,156 +623,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "---": {
+    "rule": {
       "html": "<hr data-zn-node=\"0\">",
       "toc": [],
       "meta": {},
@@ -1835,35 +659,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -1883,6 +679,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -1891,156 +690,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "下划线标题\n----------": {
+    "setext": {
       "html": "<h2 data-zn-node=\"0\" id=\"_1\">下划线标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>",
       "toc": [
         {
@@ -2079,35 +735,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -2127,6 +755,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -2135,156 +766,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "$$\nE=mc^2\n$$": {
+    "math": {
       "html": "<div class=\"arithmatex\" data-zn-node=\"0\">\\[\nE=mc^2\n\\]</div>",
       "toc": [],
       "meta": {},
@@ -2314,35 +802,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -2362,6 +822,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -2370,156 +833,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "![diagram](data:image/svg+xml,%3Csvg%20xmlns=\"http://www.w3.org/2000/svg\"%20width=\"300\"%20height=\"100\"/%3E)": {
+    "image": {
       "html": "<p data-zn-node=\"0\"><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
       "toc": [],
       "meta": {},
@@ -2549,35 +869,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -2597,6 +889,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -2605,156 +900,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "# 渲染验证\n\n```mermaid\ngraph LR\n A[Start] --> B{Error?}\n B -->|Yes| C[Debug]\n B -->|No| D[Done]\n```\n\n```python linenums=\"1\"\nvalue_1 = 1\nvalue_2 = 2\nvalue_3 = 3\nvalue_4 = 4\nvalue_5 = 5\nvalue_6 = 6\nvalue_7 = 7\nvalue_8 = 8\nvalue_9 = 9\nvalue_10 = 10\nvalue_11 = 11\nvalue_12 = 12\nvalue_13 = 13\nvalue_14 = 14\nvalue_15 = 15\nvalue_16 = 16\nvalue_17 = 17\nvalue_18 = 18\nvalue_19 = 19\nvalue_20 = 20\n```\n\n脚注[^note]\n\n[^note]: 悬浮可以读取这段中文脚注。\n\n:material-home: :fontawesome-brands-github: :octicons-mark-github-16:\n\n<div style=\"color: rgb(90, 110, 130)\">内联样式</div>\n\n<style>.local-style { font-weight: 700; }</style>\n\n<div class=\"local-style\">样式块</div>": {
+    "regressions": {
       "html": "<h1 data-zn-node=\"0\" id=\"_1\">渲染验证<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h1>\n<pre data-zn-node=\"8\" class=\"mermaid\"><code>graph LR\n A[Start] --&gt; B{Error?}\n B --&gt;|Yes| C[Debug]\n B --&gt;|No| D[Done]</code></pre>\n<div data-zn-node=\"9\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-0-1\"> 1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-2\"> 2</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-3\"> 3</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-4\"> 4</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-5\"> 5</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-6\"> 6</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-7\"> 7</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-8\"> 8</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-9\"> 9</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-10\">10</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-11\">11</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-12\">12</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-13\">13</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-14\">14</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-15\">15</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-16\">16</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-17\">17</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-18\">18</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-19\">19</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-0-20\">20</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\"></a><span class=\"n\">value_1</span> <span class=\"o\">=</span> <span class=\"mi\">1</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\"></a><span class=\"n\">value_2</span> <span class=\"o\">=</span> <span class=\"mi\">2</span>\n</span><span id=\"__span-0-3\"><a id=\"__codelineno-0-3\" name=\"__codelineno-0-3\"></a><span class=\"n\">value_3</span> <span class=\"o\">=</span> <span class=\"mi\">3</span>\n</span><span id=\"__span-0-4\"><a id=\"__codelineno-0-4\" name=\"__codelineno-0-4\"></a><span class=\"n\">value_4</span> <span class=\"o\">=</span> <span class=\"mi\">4</span>\n</span><span id=\"__span-0-5\"><a id=\"__codelineno-0-5\" name=\"__codelineno-0-5\"></a><span class=\"n\">value_5</span> <span class=\"o\">=</span> <span class=\"mi\">5</span>\n</span><span id=\"__span-0-6\"><a id=\"__codelineno-0-6\" name=\"__codelineno-0-6\"></a><span class=\"n\">value_6</span> <span class=\"o\">=</span> <span class=\"mi\">6</span>\n</span><span id=\"__span-0-7\"><a id=\"__codelineno-0-7\" name=\"__codelineno-0-7\"></a><span class=\"n\">value_7</span> <span class=\"o\">=</span> <span class=\"mi\">7</span>\n</span><span id=\"__span-0-8\"><a id=\"__codelineno-0-8\" name=\"__codelineno-0-8\"></a><span class=\"n\">value_8</span> <span class=\"o\">=</span> <span class=\"mi\">8</span>\n</span><span id=\"__span-0-9\"><a id=\"__codelineno-0-9\" name=\"__codelineno-0-9\"></a><span class=\"n\">value_9</span> <span class=\"o\">=</span> <span class=\"mi\">9</span>\n</span><span id=\"__span-0-10\"><a id=\"__codelineno-0-10\" name=\"__codelineno-0-10\"></a><span class=\"n\">value_10</span> <span class=\"o\">=</span> <span class=\"mi\">10</span>\n</span><span id=\"__span-0-11\"><a id=\"__codelineno-0-11\" name=\"__codelineno-0-11\"></a><span class=\"n\">value_11</span> <span class=\"o\">=</span> <span class=\"mi\">11</span>\n</span><span id=\"__span-0-12\"><a id=\"__codelineno-0-12\" name=\"__codelineno-0-12\"></a><span class=\"n\">value_12</span> <span class=\"o\">=</span> <span class=\"mi\">12</span>\n</span><span id=\"__span-0-13\"><a id=\"__codelineno-0-13\" name=\"__codelineno-0-13\"></a><span class=\"n\">value_13</span> <span class=\"o\">=</span> <span class=\"mi\">13</span>\n</span><span id=\"__span-0-14\"><a id=\"__codelineno-0-14\" name=\"__codelineno-0-14\"></a><span class=\"n\">value_14</span> <span class=\"o\">=</span> <span class=\"mi\">14</span>\n</span><span id=\"__span-0-15\"><a id=\"__codelineno-0-15\" name=\"__codelineno-0-15\"></a><span class=\"n\">value_15</span> <span class=\"o\">=</span> <span class=\"mi\">15</span>\n</span><span id=\"__span-0-16\"><a id=\"__codelineno-0-16\" name=\"__codelineno-0-16\"></a><span class=\"n\">value_16</span> <span class=\"o\">=</span> <span class=\"mi\">16</span>\n</span><span id=\"__span-0-17\"><a id=\"__codelineno-0-17\" name=\"__codelineno-0-17\"></a><span class=\"n\">value_17</span> <span class=\"o\">=</span> <span class=\"mi\">17</span>\n</span><span id=\"__span-0-18\"><a id=\"__codelineno-0-18\" name=\"__codelineno-0-18\"></a><span class=\"n\">value_18</span> <span class=\"o\">=</span> <span class=\"mi\">18</span>\n</span><span id=\"__span-0-19\"><a id=\"__codelineno-0-19\" name=\"__codelineno-0-19\"></a><span class=\"n\">value_19</span> <span class=\"o\">=</span> <span class=\"mi\">19</span>\n</span><span id=\"__span-0-20\"><a id=\"__codelineno-0-20\" name=\"__codelineno-0-20\"></a><span class=\"n\">value_20</span> <span class=\"o\">=</span> <span class=\"mi\">20</span>\n</span></code></pre></div></td></tr></table></div>\n<p data-zn-node=\"1\">脚注<sup id=\"fnref:note\"><a class=\"footnote-ref\" href=\"#fn:note\">1</a></sup></p>\n<p data-zn-node=\"2\"><span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill=\"currentColor\" d=\"M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21\"/></svg></span> <span class=\"twemoji\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path d=\"M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656\"/></svg></span></p>\n<div data-zn-node=\"10\" style=\"color: rgb(90, 110, 130)\">内联样式</div>\n\n<style>.local-style { font-weight: 700; }</style>\n\n<div data-zn-node=\"11\" class=\"local-style\">样式块</div>\n\n<div class=\"footnote\" data-zn-node=\"3\">\n<hr data-zn-node=\"4\">\n<ol data-zn-node=\"5\">\n<li data-zn-node=\"6\" id=\"fn:note\">\n<p data-zn-node=\"7\">悬浮可以读取这段中文脚注。&#160;<a class=\"footnote-backref\" href=\"#fnref:note\" title=\"返回正文中的脚注 1\">↩</a></p>\n</li>\n</ol>\n</div>",
       "toc": [
         {
@@ -2862,35 +1014,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -2910,6 +1034,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -2918,156 +1045,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "# 一级标题 Heading\n\n正文 **粗体**、*斜体*、`inline code`、[链接](https://zensical.org/)、==标记==。\n\n## 二级标题\n\n### 三级标题\n\n> 引用段落\n\n- 列表项目\n- 第二项\n\n有序列表：\n\n1. 有序项目\n\n- [x] 已完成\n- [ ] 待办\n\n---\n\n!!! note \"提示\"\n\n    中文 **粗体** 内容。\n\n??? note \"展开查看\"\n\n    第一段详细内容。\n\n    第二段详细内容。\n\n    第三段详细内容。\n\n=== \"第一项\"\n\n    短内容。\n\n=== \"第二项\"\n\n    第一段长内容。\n\n    第二段长内容。\n\n    第三段长内容。\n\n| 名称 | 数值 |\n| --- | --- |\n| 中文 | **12** |\n\n```python\ndef greet(name):\n    return \"你好 \" + name\n```\n\n```python title=\"hello.py\" linenums=\"1\"\ndef hello():\n    print(\"你好，ZNote\")\n```\n\n> 引用 **粗体**。\n>\n> 第二段内容。\n\n---\n下划线标题\n----------\n$$\nE=mc^2\n$$\n\n![diagram](data:image/svg+xml,%3Csvg%20xmlns=\"http://www.w3.org/2000/svg\"%20width=\"300\"%20height=\"100\"/%3E)": {
+    "rich": {
       "html": "<h1 data-zn-node=\"0\" id=\"heading\">一级标题 Heading<a class=\"headerlink\" href=\"#heading\" title=\"跳转到此标题\">&para;</a></h1>\n<p data-zn-node=\"1\">正文 <strong>粗体</strong>、<em>斜体</em>、<code>inline code</code>、<a href=\"https://zensical.org/\">链接</a>、<mark>标记</mark>。</p>\n<h2 data-zn-node=\"2\" id=\"_1\">二级标题<a class=\"headerlink\" href=\"#_1\" title=\"跳转到此标题\">&para;</a></h2>\n<h3 data-zn-node=\"3\" id=\"_2\">三级标题<a class=\"headerlink\" href=\"#_2\" title=\"跳转到此标题\">&para;</a></h3>\n<blockquote data-zn-node=\"4\">\n<p data-zn-node=\"5\">引用段落</p>\n</blockquote>\n<ul data-zn-node=\"6\">\n<li data-zn-node=\"7\">列表项目</li>\n<li data-zn-node=\"8\">第二项</li>\n</ul>\n<p data-zn-node=\"9\">有序列表：</p>\n<ol class=\"task-list\" data-zn-node=\"10\">\n<li data-zn-node=\"11\">\n<p data-zn-node=\"12\">有序项目</p>\n</li>\n<li class=\"task-list-item\" data-zn-node=\"13\">\n<p data-zn-node=\"14\"><label class=\"task-list-control\"><input type=\"checkbox\" disabled checked/><span class=\"task-list-indicator\"></span></label> 已完成</p>\n</li>\n<li class=\"task-list-item\" data-zn-node=\"15\"><label class=\"task-list-control\"><input type=\"checkbox\" disabled/><span class=\"task-list-indicator\"></span></label> 待办</li>\n</ol>\n<hr data-zn-node=\"16\">\n<div class=\"admonition note\" data-zn-node=\"17\">\n<p class=\"admonition-title\" data-zn-node=\"18\">提示</p>\n<p data-zn-node=\"19\">中文 <strong>粗体</strong> 内容。</p>\n</div>\n<details class=\"note\" data-zn-node=\"20\">\n<summary data-zn-node=\"21\">展开查看</summary>\n<p data-zn-node=\"22\">第一段详细内容。</p>\n<p data-zn-node=\"23\">第二段详细内容。</p>\n<p data-zn-node=\"24\">第三段详细内容。</p>\n</details>\n<div class=\"tabbed-set tabbed-alternate\" data-tabs=\"1:2\" data-zn-node=\"25\"><input checked id=\"__tabbed_1_1\" name=\"__tabbed_1\" type=\"radio\"><input id=\"__tabbed_1_2\" name=\"__tabbed_1\" type=\"radio\"><div class=\"tabbed-labels\" data-zn-node=\"26\"><label for=\"__tabbed_1_1\">第一项</label><label for=\"__tabbed_1_2\">第二项</label></div>\n<div class=\"tabbed-content\" data-zn-node=\"27\">\n<div class=\"tabbed-block\" data-zn-node=\"28\">\n<p data-zn-node=\"29\">短内容。</p>\n</div>\n<div class=\"tabbed-block\" data-zn-node=\"30\">\n<p data-zn-node=\"31\">第一段长内容。</p>\n<p data-zn-node=\"32\">第二段长内容。</p>\n<p data-zn-node=\"33\">第三段长内容。</p>\n</div>\n</div>\n</div>\n<table data-zn-node=\"34\">\n<thead>\n<tr data-zn-node=\"35\">\n<th>名称</th>\n<th>数值</th>\n</tr>\n</thead>\n<tbody>\n<tr data-zn-node=\"36\">\n<td>中文</td>\n<td><strong>12</strong></td>\n</tr>\n</tbody>\n</table>\n<div data-zn-node=\"44\" class=\"language-python highlight\"><pre><span></span><code><span id=\"__span-0-1\"><a id=\"__codelineno-0-1\" name=\"__codelineno-0-1\" href=\"#__codelineno-0-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">greet</span><span class=\"p\">(</span><span class=\"n\">name</span><span class=\"p\">):</span>\n</span><span id=\"__span-0-2\"><a id=\"__codelineno-0-2\" name=\"__codelineno-0-2\" href=\"#__codelineno-0-2\"></a>    <span class=\"k\">return</span> <span class=\"s2\">\"你好 \"</span> <span class=\"o\">+</span> <span class=\"n\">name</span>\n</span></code></pre></div>\n<div data-zn-node=\"45\" class=\"language-python highlight\"><table class=\"highlighttable\"><tr><th colspan=\"2\" class=\"filename\"><span class=\"filename\">hello.py</span></th></tr><tr><td class=\"linenos\"><div class=\"linenodiv\"><pre><span></span><span class=\"normal\"><a href=\"#__codelineno-1-1\">1</a></span>\n<span class=\"normal\"><a href=\"#__codelineno-1-2\">2</a></span></pre></div></td><td class=\"code\"><div><pre><span></span><code><span id=\"__span-1-1\"><a id=\"__codelineno-1-1\" name=\"__codelineno-1-1\"></a><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">hello</span><span class=\"p\">():</span>\n</span><span id=\"__span-1-2\"><a id=\"__codelineno-1-2\" name=\"__codelineno-1-2\"></a>    <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">\"你好，ZNote\"</span><span class=\"p\">)</span>\n</span></code></pre></div></td></tr></table></div>\n<blockquote data-zn-node=\"37\">\n<p data-zn-node=\"38\">引用 <strong>粗体</strong>。</p>\n<p data-zn-node=\"39\">第二段内容。</p>\n</blockquote>\n<hr data-zn-node=\"40\">\n<h2 data-zn-node=\"41\" id=\"_3\">下划线标题<a class=\"headerlink\" href=\"#_3\" title=\"跳转到此标题\">&para;</a></h2>\n<div class=\"arithmatex\" data-zn-node=\"42\">\\[\nE=mc^2\n\\]</div>\n<p data-zn-node=\"43\"><img alt=\"diagram\" src=\"data:image/svg+xml,%3Csvg%20xmlns=&quot;http://www.w3.org/2000/svg&quot;%20width=&quot;300&quot;%20height=&quot;100&quot;/%3E\"></p>",
       "toc": [
         {
@@ -3473,35 +1457,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -3521,6 +1477,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -3529,156 +1488,13 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "indigo",
-          "accent": "indigo",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "2557e12ff6ea3eb86f6ca7ebce08eb0243d93938ceb12e04fba17d412f29993f"
-        },
-        "configRevision": "c74d223285880f15bbb29af9da062a8a3451cd696df9d42abf4827eb9b63bee4"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     },
-    "---\ntitle: 属性\n---": {
+    "frontmatter": {
       "html": "",
       "toc": [],
       "meta": {
@@ -3702,35 +1518,7 @@
         }
       },
       "plan": {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": "0.0.66",
-        "documentPath": null,
-        "extensions": [
-          "abbr",
-          "admonition",
-          "attr_list",
-          "def_list",
-          "footnotes",
-          "md_in_html",
-          "toc",
-          "pymdownx.arithmatex",
-          "pymdownx.betterem",
-          "pymdownx.caret",
-          "pymdownx.details",
-          "pymdownx.emoji",
-          "pymdownx.highlight",
-          "pymdownx.inlinehilite",
-          "pymdownx.keys",
-          "pymdownx.magiclink",
-          "pymdownx.mark",
-          "pymdownx.smartsymbols",
-          "pymdownx.superfences",
-          "pymdownx.tabbed",
-          "pymdownx.tasklist",
-          "pymdownx.tilde",
-          "tables"
-        ],
+        "schemaVersion": 4,
         "math": {
           "engine": "katex",
           "errorMode": "source",
@@ -3750,6 +1538,9 @@
         },
         "features": {
           "footnoteTooltips": true,
+          "codeAnnotations": false,
+          "codeCopy": true,
+          "codeSelect": false,
           "inlineStyles": true
         },
         "runtimes": [
@@ -3758,154 +1549,11 @@
           "footnotes"
         ],
         "styles": [],
-        "dependencies": [],
-        "effectiveConfig": {
-          "schemaVersion": 3,
-          "math": {
-            "engine": "katex",
-            "errorMode": "source",
-            "katex": {
-              "fleqn": false,
-              "leqno": false,
-              "strict": "warn"
-            },
-            "mathjax": {
-              "tagSide": "right"
-            },
-            "macros": {}
-          },
-          "features": {
-            "footnoteTooltips": true,
-            "inlineStyles": true
-          },
-          "mermaid": {
-            "enabled": true,
-            "theme": "auto"
-          },
-          "reader": {
-            "preset": "integrated",
-            "font": "sans",
-            "lineHeight": 1.8,
-            "width": 820
-          },
-          "variant": "modern",
-          "primary": "app",
-          "accent": "app",
-          "customCss": "",
-          "extensions": {
-            "tables": true,
-            "toc": true,
-            "abbr": true,
-            "attr_list": true,
-            "def_list": true,
-            "footnotes": true,
-            "md_in_html": true,
-            "admonition": true,
-            "pymdownx.details": true,
-            "pymdownx.tabbed": true,
-            "pymdownx.tasklist": true,
-            "pymdownx.superfences": true,
-            "pymdownx.highlight": true,
-            "pymdownx.inlinehilite": true,
-            "pymdownx.arithmatex": true,
-            "pymdownx.emoji": true,
-            "pymdownx.magiclink": true,
-            "pymdownx.betterem": true,
-            "pymdownx.caret": true,
-            "pymdownx.tilde": true,
-            "pymdownx.mark": true,
-            "pymdownx.keys": true,
-            "pymdownx.smartsymbols": true
-          },
-          "extensionConfigs": {
-            "tables": {},
-            "toc": {
-              "permalink": true,
-              "toc_depth": "6",
-              "title": "",
-              "permalink_title": "跳转到此标题"
-            },
-            "abbr": {},
-            "attr_list": {},
-            "def_list": {},
-            "footnotes": {
-              "USE_DEFINITION_ORDER": true,
-              "BACKLINK_TEXT": "↩",
-              "BACKLINK_TITLE": "返回正文中的脚注 {}"
-            },
-            "md_in_html": {},
-            "admonition": {},
-            "pymdownx.details": {},
-            "pymdownx.tabbed": {
-              "alternate_style": true
-            },
-            "pymdownx.tasklist": {
-              "custom_checkbox": true
-            },
-            "pymdownx.superfences": {},
-            "pymdownx.highlight": {
-              "linenums": false,
-              "guess_lang": false
-            },
-            "pymdownx.inlinehilite": {},
-            "pymdownx.arithmatex": {
-              "smart_dollar": true,
-              "inline_syntax": [
-                "dollar",
-                "round"
-              ],
-              "block_syntax": [
-                "dollar",
-                "square",
-                "begin"
-              ]
-            },
-            "pymdownx.emoji": {},
-            "pymdownx.magiclink": {
-              "hide_protocol": false
-            },
-            "pymdownx.betterem": {},
-            "pymdownx.caret": {},
-            "pymdownx.tilde": {},
-            "pymdownx.mark": {},
-            "pymdownx.keys": {},
-            "pymdownx.smartsymbols": {}
-          }
-        },
         "revisions": {
           "parse": "d203d2bd9f5f9944b11d6e71aeea3f1d4d7178d0f2f235e4a3193b0765966b9c",
-          "runtime": "dae70c30de3b3967be0d4e8a3719a02b9771239c9dff2f750da43c6f6a64d466",
-          "style": "04f40a806e66f0f567b9bc15418d887084d3dafcccd2261d03fb6e664c93cb6c"
-        },
-        "configRevision": "f952b5cf9a93e0f991a60eb1ac6c6b7f92103e3dac283631a5681c4e0606671e"
-      },
-      "profile": "Zensical Markdown",
-      "extensions": [
-        "abbr",
-        "admonition",
-        "attr_list",
-        "def_list",
-        "footnotes",
-        "md_in_html",
-        "toc",
-        "pymdownx.arithmatex",
-        "pymdownx.betterem",
-        "pymdownx.caret",
-        "pymdownx.details",
-        "pymdownx.emoji",
-        "pymdownx.highlight",
-        "pymdownx.inlinehilite",
-        "pymdownx.keys",
-        "pymdownx.magiclink",
-        "pymdownx.mark",
-        "pymdownx.smartsymbols",
-        "pymdownx.superfences",
-        "pymdownx.tabbed",
-        "pymdownx.tasklist",
-        "pymdownx.tilde",
-        "tables"
-      ],
-      "highlightCss": ""
+          "runtime": "84a3a46bb5b2ea74d89da77523d757e3116310f1dd02b977f79d7f97b742c8b4"
+        }
+      }
     }
   }
 }

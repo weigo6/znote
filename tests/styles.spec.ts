@@ -34,10 +34,7 @@ for (const variant of ["modern", "classic"])
           ),
         )
         .join("\n");
-      const rendered =
-        fixtures.results[
-          fixtures.samples.rich.trim() as keyof typeof fixtures.results
-        ].html;
+      const rendered = fixtures.results.rich.html;
       const source = `<!doctype html><html class="no-js" style="font-size:${17 / (variant === "modern" ? 0.75 : 0.8)}px"><head><style>${raw}</style></head><body dir="ltr" data-md-color-scheme="${scheme}" data-md-color-primary="indigo" data-md-color-accent="indigo"><article class="md-typeset">${rendered}</article></body></html>`;
       await page.evaluate((srcdoc) => {
         const iframe = document.createElement("iframe");

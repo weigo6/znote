@@ -2,20 +2,22 @@ import { setRendered, applyRenderedTheme } from "./preview";
 import { updateSourceLocations } from "./preview-source-map";
 import { previewAnchors, previewAnchorAt, readingAnchors, readingAnchorAt, lineWithin, isPreviewVisible, type PreviewAnchor, type ReadingAnchor } from "./preview-sync";
 import type { RenderResult } from "./types";
+import type { RenderSettings } from "./render-config";
+import { applyAppearanceToResult } from "./render-appearance";
 import documentCss from "./markdown-theme.css?inline";
 import scrollbarCss from "./scrollbar.css?inline";
 import mathCss from "katex/dist/katex.min.css?inline";
 import { readerThemeCss } from "./reader-theme";
-import { mountInteractions } from "./render-plugins";
+import { mountInteractions, mountRuntimes } from "./render-plugins";
 
 /** The child has no script execution or Tauri bridge; trusted host code mounts plugins. */
 export class PreviewSurface {
   private session?: AbortController;
+  private themeRuntime?: AbortController;
   private observer?: MutationObserver;
   private frame?: HTMLIFrameElement;
   private ready?: Promise<void>;
   private resolveReady?: () => void;
-  private highlightStyle?: HTMLStyleElement;
   private customStyle?: HTMLStyleElement;
   private readerStyle?: HTMLStyleElement;
   private currentResult?: RenderResult;
@@ -278,9 +280,43 @@ export class PreviewSurface {
 
   cancel() {
     this.session?.abort();
+    this.themeRuntime?.abort();
     if (this.cursorFrame) cancelAnimationFrame(this.cursorFrame);
     this.cursorFrame = 0;
     this.cursorTarget = undefined;
+  }
+
+  updateAppearance(settings: RenderSettings) {
+    const article = this.frame?.contentDocument?.querySelector<HTMLElement>("article");
+    if (!article || !this.currentResult || !this.customStyle) return false;
+    if (this.intent === "preview") this.rememberReadingPosition();
+    applyAppearanceToResult(this.currentResult, settings);
+    this.customStyle.textContent = this.currentResult.plan?.styles.map(item => item.css).join("\n") || "";
+    applyRenderedTheme(article, this.currentResult);
+    this.syncTheme?.();
+    this.invalidateGeometry();
+    return true;
+  }
+
+  refreshHostAppearance() {
+    this.syncTheme?.();
+    const scheme = document.documentElement.dataset.theme;
+    const changed = this.renderedScheme !== undefined && this.renderedScheme !== scheme;
+    this.renderedScheme = scheme;
+    this.invalidateGeometry();
+    const result = this.currentResult;
+    const article = this.frame?.contentDocument?.querySelector<HTMLElement>("article");
+    if (!changed || !article || !result?.plan?.mermaid?.enabled ||
+        result.plan.mermaid.theme !== "auto" || !article.querySelector(".mermaid")) return;
+    this.themeRuntime?.abort();
+    const controller = (this.themeRuntime = new AbortController());
+    this.session?.signal.addEventListener("abort", () => controller.abort(), { once: true });
+    void mountRuntimes({
+      container: article, plan: result.plan, signal: controller.signal,
+      diagnostic: () => {},
+    }, new Set(["mermaid"])).then(() => {
+      if (!controller.signal.aborted) this.invalidateGeometry();
+    });
   }
 
   scrollToSource(source: string, line: number, cause: "editor" | "navigation" = "navigation") {
@@ -354,7 +390,6 @@ export class PreviewSurface {
     this.frame = undefined;
     this.ready = undefined;
     this.resolveReady = undefined;
-    this.highlightStyle = undefined;
     this.customStyle = undefined;
     this.readerStyle = undefined;
     this.currentResult = undefined;
@@ -392,7 +427,7 @@ export class PreviewSurface {
         doc.head.append(element);
         return element;
       };
-      style("@layer znote-highlight, znote-theme, znote-runtime;");
+      style("@layer znote-theme, znote-runtime;");
       style(`@layer znote-theme {${documentCss}}`);
       style(scrollbarCss);
       style(
@@ -403,7 +438,6 @@ export class PreviewSurface {
       style(
         `::highlight(znote-find-matches){background:#f5d75399;color:inherit;}::highlight(znote-find-current){background:#f5a623;color:#241b0b;}body[data-md-color-scheme="slate"] ::highlight(znote-find-matches){background:#b9943299;}body[data-md-color-scheme="slate"] ::highlight(znote-find-current){background:#e3a840;color:#1b201b;}`,
       );
-      this.highlightStyle = style("");
       this.customStyle = style("");
       style("@page{margin:16mm;}@media print{html,body{min-height:0!important;overflow:visible!important;}body{padding:0!important;background:#fff!important;}article{max-width:none!important;}.md-typeset__scrollwrap,.md-typeset__table,pre{max-height:none!important;overflow:visible!important;}img,svg{max-width:100%;}pre,blockquote,img,svg{break-inside:avoid;}}");
       this.syncTheme = () => {
@@ -556,9 +590,6 @@ export class PreviewSurface {
       this.currentResult = result;
       this.currentPath = path;
       this.renderedScheme = document.documentElement.dataset.theme;
-      this.highlightStyle!.textContent = result.highlightCss
-        ? `@layer znote-highlight {${result.highlightCss}}`
-        : "";
       this.customStyle!.textContent =
         result.plan?.styles.map((resource) => resource.css).join("\n") || "";
       applyRenderedTheme(article, result);
@@ -597,6 +628,7 @@ export class PreviewSurface {
       mountInteractions({
         container: article,
         plan: result.plan,
+        path,
         signal: session.signal,
         diagnostic,
       });

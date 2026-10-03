@@ -31,7 +31,7 @@ samples = {
 rich = '# 一级标题 Heading\n\n正文 **粗体**、*斜体*、`inline code`、[链接](https://zensical.org/)、==标记==。\n\n## 二级标题\n\n### 三级标题\n\n> 引用段落\n\n- 列表项目\n- 第二项\n\n有序列表：\n\n1. 有序项目\n\n- [x] 已完成\n- [ ] 待办\n\n---\n\n' + '\n'.join(value for key, value in samples.items() if key != 'regressions')
 samples['rich']=rich
 samples['frontmatter']='---\ntitle: 属性\n---'
-results={text.strip():render({'text':text, 'settings': {'primary': 'indigo', 'accent': 'indigo'} if key == 'rich' else {}}) for key, text in samples.items()}
+results={key:render({'text':text, 'settings': {'primary': 'indigo', 'accent': 'indigo'} if key == 'rich' else {}}) for key, text in samples.items()}
 fixtures=Path(__file__).resolve().parent/'fixtures'
 fixtures.mkdir(exist_ok=True)
 (fixtures/'rendered.json').write_text(json.dumps({'samples':samples,'results':results},ensure_ascii=False,indent=2),encoding='utf-8')

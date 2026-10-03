@@ -62,7 +62,7 @@ def render(req):
     # this renderer is called directly; the GUI already normalizes its text.
     text, meta, warnings = front_matter(original)
     prefix = original[:len(original) - len(text)]
-    plan, extensions, configs, theme, profile, config_warnings = resolve(req)
+    plan, extensions, configs, theme, effective, config_warnings = resolve(req)
     warnings.extend(config_warnings)
     html, toc, entries = convert_cached(text, plan, extensions, configs)
     base = len(prefix.encode("utf-16-le")) // 2
@@ -71,12 +71,12 @@ def render(req):
             if "from" in entry:
                 entry["from"] += base
                 entry["to"] += base
-    return {"html": html, "toc": toc, "meta": meta,
-            "sourceMap": {"version": 1, "offsetEncoding": "utf-16", "entries": entries},
-            "warnings": warnings, "theme": theme, "plan": plan,
-            "profile": profile, "extensions": [str(x) for x in extensions],
-            # Token colors and line metrics have one owner: the reader theme.
-            "highlightCss": ""}
+    result = {"html": html, "toc": toc, "meta": meta,
+              "sourceMap": {"version": 1, "offsetEncoding": "utf-16", "entries": entries},
+              "warnings": warnings, "theme": theme, "plan": plan}
+    if effective is not None:
+        result["effectiveConfig"] = effective
+    return result
 
 
 def dispatch(req):

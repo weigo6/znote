@@ -6,10 +6,14 @@ import { mockIPC } from "@tauri-apps/api/mocks";
 import { setRendered } from "../src/preview";
 import fixtures from "./fixtures/rendered.json";
 import type { RenderResult } from "../src/types";
+const sampleByText = new Map(
+  Object.entries(fixtures.samples).map(([name, source]) => [source.trim(), name]),
+);
 mockIPC((command, args) => {
   if (command === "render_markdown") {
     const key = String(args?.text).trim();
-    const result = (fixtures.results as Record<string, RenderResult>)[key];
+    const name = sampleByText.get(key);
+    const result = name && (fixtures.results as Record<string, RenderResult>)[name];
     if (!result) throw new Error("Missing renderer fixture: " + key);
     return result;
   }
@@ -35,7 +39,7 @@ window.renderSample = async (name) => {
   const text = (fixtures.samples as Record<string, string>)[name];
   await setRendered(
     article,
-    (fixtures.results as Record<string, RenderResult>)[text.trim()],
+    (fixtures.results as Record<string, RenderResult>)[name],
   );
   document.querySelector<HTMLElement>("#editor-stage")!.hidden = true;
   document.querySelector<HTMLElement>(".writing-area")!.dataset.mode = "read";

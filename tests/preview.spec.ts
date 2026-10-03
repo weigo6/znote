@@ -31,11 +31,9 @@ test("print preparation renders the full note and forwards Ctrl+P from the previ
   await page.evaluate(async (markup) => {
     const result = {
       html: markup,
-      toc: [], meta: {}, warnings: [], profile: "test", extensions: [],
-      highlightCss: "",
-      plan: { schemaVersion: 3, engine: "test", engineVersion: "1", configRevision: "1",
-        documentPath: null, math: { engine: "katex", macros: {} },
-        runtimes: [], features: {}, sources: [], extensions: [], styles: [], dependencies: [] },
+      toc: [], meta: {}, warnings: [],
+      plan: { schemaVersion: 4, math: { engine: "katex", macros: {} },
+        runtimes: [], features: {}, styles: [] },
     };
     await (window as any).renderResult(result, "", "print-note", true);
   }, html);

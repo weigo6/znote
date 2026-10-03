@@ -105,7 +105,7 @@ export async function setRendered(
 ) {
   if (
     typeof result.html !== "string" ||
-    (result.plan && ![1, 2, 3].includes(result.plan.schemaVersion))
+    (result.plan && result.plan.schemaVersion !== 4)
   )
     throw new Error("渲染协议版本不兼容，请更新内置渲染器。");
   sessions.get(container)?.abort();
@@ -331,6 +331,7 @@ export async function setRendered(
   mountInteractions({
     container,
     plan: result.plan,
+    path,
     signal: session.signal,
     diagnostic,
   });

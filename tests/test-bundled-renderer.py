@@ -28,6 +28,8 @@ try:
         assert field in info["capabilities"]["fields"], f"Packaged renderer lacks {field}"
     default = request({"action": "render", "text": "!!! note\n\n    你好 😀"})
     assert "admonition note" in default["html"]
+    assert default["plan"]["schemaVersion"] == 4
+    assert "effectiveConfig" not in default and "extensions" not in default
     controls = request({"action": "render", "text": "```python {.copy .select}\nprint(1)\n```",
                         "settings": {"features": {"codeAnnotations": True, "codeCopy": True,
                                                  "codeSelect": True}}})

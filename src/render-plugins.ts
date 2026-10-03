@@ -5,9 +5,11 @@ import { mountZensicalCodeBlocks } from "./zensical-code";
 let sequence = 0;
 let mermaidReady: Promise<(typeof import("mermaid"))["default"]> | undefined;
 let mermaidQueue: Promise<unknown> = Promise.resolve();
+const mermaidSources = new WeakMap<HTMLElement, string>();
 export interface RuntimeContext {
   container: HTMLElement;
   plan?: RenderPlan;
+  path?: string;
   signal: AbortSignal;
   diagnostic: (message: string) => void;
   onMathMarkup?: (element: HTMLElement, markup: string) => void;
@@ -127,6 +129,11 @@ const plugins: RuntimePlugin[] = [
         const mermaid = await mermaidReady;
         for (const diagram of diagrams) {
           try {
+            let source = mermaidSources.get(diagram);
+            if (source === undefined) {
+              source = diagram.textContent || "";
+              mermaidSources.set(diagram, source);
+            }
             const result = (await (mermaidQueue = mermaidQueue
               .catch(() => {})
               .then(async () => {
@@ -153,7 +160,7 @@ const plugins: RuntimePlugin[] = [
                 });
                 return mermaid.render(
                   "zn-diagram-" + sequence++,
-                  diagram.textContent || "",
+                  source,
                 );
               }))) as { svg: string } | undefined;
             if (!signal.aborted && result)
@@ -193,14 +200,14 @@ export async function mountRuntimes(
 }
 
 /** Interactions attach to the committed article, including reused nodes. */
-export function mountInteractions({ container, plan, signal }: RuntimeContext) {
+export function mountInteractions({ container, plan, path, signal }: RuntimeContext) {
   if (signal.aborted) return;
   mountZensicalCodeBlocks(container, {
     copy: plan?.features?.codeCopy === true,
     select: plan?.features?.codeSelect === true,
   }, signal);
   mountCodeAnnotations(container, plan?.features?.codeAnnotations === true, signal,
-    plan?.documentPath || undefined);
+    path);
   if (!plan?.features?.footnoteTooltips) return;
   const doc = container.ownerDocument,
     view = doc.defaultView!;

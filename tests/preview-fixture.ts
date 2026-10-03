@@ -18,6 +18,7 @@ Object.assign(window, {
   renderResult: (result: RenderResult, source?: string, documentId = "test", renderAll = false) =>
     surface.render(host, result, undefined, (value) => warnings.push(value),
       source === undefined && !renderAll ? undefined : { source: source ?? "", documentId, renderAll }),
+  refreshHostAppearance: () => surface.refreshHostAppearance(),
   editorIntent: () => surface.editorIntent(),
   cursorSync: (source: string, line: number) => {
     if (surface.followsEditor) surface.scrollToSource(source, line, "editor");
@@ -78,16 +79,9 @@ Object.assign(window, {
       toc: [],
       meta: {},
       warnings: [],
-      profile: "test",
-      extensions: [],
-      highlightCss: "",
       theme,
       plan: {
-        schemaVersion: 3,
-        engine: "test",
-        engineVersion: "1",
-        configRevision: "1",
-        documentPath: null,
+        schemaVersion: 4,
         math: {
           engine,
           macros:
@@ -97,10 +91,7 @@ Object.assign(window, {
         },
         runtimes: ["tabs", "mermaid"],
         features: { footnoteTooltips: true, inlineStyles: true },
-        sources: [],
-        extensions: [],
         styles: [{ source: "test.css", css }],
-        dependencies: [],
       },
     };
     return surface.render(host, result, undefined, (value) =>

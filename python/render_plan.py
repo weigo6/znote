@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import copy
 import hashlib
-import importlib.metadata
 import json
 
 from zensical.extensions.emoji import to_svg, twemoji
@@ -71,22 +70,19 @@ def resolve_validated(req, settings, warnings):
     revisions = {
         "parse": fingerprint({"extensions": extensions, "options": {name: effective_options[name] for name in extensions}}),
         "runtime": fingerprint({"math": math_settings, "mermaid": mermaid, "features": features}),
-        "style": fingerprint({"theme": theme, "css": settings["customCss"]}),
     }
-    effective = copy.deepcopy(settings)
-    effective["extensionConfigs"] = effective_options
-    effective["math"] = math_settings
-    effective["mermaid"] = mermaid
-    effective["features"] = features
+    effective = None
+    if req.get("includeEffectiveConfig"):
+        effective = copy.deepcopy(settings)
+        effective["extensionConfigs"] = effective_options
+        effective["math"] = math_settings
+        effective["mermaid"] = mermaid
+        effective["features"] = features
     plan = {
-        "schemaVersion": 3,
-        "engine": "zensical-python-markdown",
-        "engineVersion": importlib.metadata.version("zensical"),
-        "documentPath": req.get("path"), "extensions": extensions,
+        "schemaVersion": 4,
         "math": math_settings, "mermaid": mermaid, "features": features,
         "runtimes": runtimes,
         "styles": [{"source": "user-custom-css", "css": settings["customCss"]}] if settings["customCss"] else [],
-        "dependencies": [], "effectiveConfig": effective, "revisions": revisions,
-        "configRevision": fingerprint(revisions),
+        "revisions": revisions,
     }
-    return plan, extensions, configs, theme, "Zensical Markdown", warnings
+    return plan, extensions, configs, theme, effective, warnings

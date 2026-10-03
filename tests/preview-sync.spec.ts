@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const fixtures = JSON.parse(readFileSync(new URL("./fixtures/rendered.json", import.meta.url), "utf8"));
 
 function result(html: string, entries: SourceLocation[] = []): RenderResult {
-  return { html, toc: [], meta: {}, warnings: [], profile: "sync-test", extensions: [], highlightCss: "",
+  return { html, toc: [], meta: {}, warnings: [],
     sourceMap: { version: 1, offsetEncoding: "utf-16", entries } };
 }
 

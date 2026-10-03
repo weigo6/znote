@@ -1,5 +1,25 @@
 import { test, expect } from "@playwright/test";
 
+test("theme button cycles light, dark, and system and follows OS changes", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.addInitScript(() => localStorage.removeItem("znote:preferences"));
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const button = page.locator('[data-action="theme"]');
+  await expect(button).toHaveAttribute("data-theme-mode", "light");
+  await button.click();
+  await expect(button).toHaveAttribute("data-theme-mode", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await button.click();
+  await expect(button).toHaveAttribute("data-theme-mode", "system");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("znote:preferences")!).theme)).toBe("system");
+  await button.click();
+  await expect(button).toHaveAttribute("data-theme-mode", "light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+});
+
 test("Ctrl+P is handled by the app instead of printing its chrome", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const canceled = await page.evaluate(() => {
@@ -27,7 +47,7 @@ test("Ctrl+P prints the current unsaved note from source mode", async ({ page })
         if (command === "renderer_info") return { versions: { zensical: "test" } };
         if (command === "render_markdown") return {
           html: `<h1>${args.text.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</h1>`,
-          toc: [], warnings: [], meta: {}, profile: "test", extensions: [], highlightCss: "",
+          toc: [], warnings: [], meta: {},
         };
         return null;
       },

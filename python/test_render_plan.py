@@ -49,7 +49,7 @@ class RenderPlanTests(unittest.TestCase):
         first = render({"text": "# Heading\n\n```python\nprint(1)\n```"})
         second = render({"text": "# Heading\n\n```python\nprint(1)\n```",
                          "settings": {"options": {"toc_permalink": False, "highlight_line_numbers": True}}})
-        self.assertNotEqual(first["plan"]["configRevision"], second["plan"]["configRevision"])
+        self.assertNotEqual(first["plan"]["revisions"]["parse"], second["plan"]["revisions"]["parse"])
         self.assertNotIn("headerlink", second["html"])
         self.assertIn("linenodiv", second["html"])
 
@@ -59,7 +59,7 @@ class RenderPlanTests(unittest.TestCase):
             "variant": "classic", "primary": "teal", "accent": "cyan", "customCss": css}})
         self.assertEqual({key: result["theme"][key] for key in ("variant", "primary", "accent")}, {"variant": "classic", "primary": "teal", "accent": "cyan"})
         self.assertEqual(result["plan"]["styles"], [{"source": "user-custom-css", "css": css}])
-        self.assertNotEqual(result["plan"]["configRevision"], render({"text": "# Heading"})["plan"]["configRevision"])
+        self.assertNotEqual(result["theme"], render({"text": "# Heading"})["theme"])
         night = render({"text": "# Heading", "settings": {"primary": "blue grey", "accent": "light blue"}})
         self.assertEqual(night["theme"]["primary"], "blue-grey")
         self.assertEqual(night["theme"]["accent"], "light-blue")
@@ -68,11 +68,21 @@ class RenderPlanTests(unittest.TestCase):
         base = render({"text": "# H\n\n## H2"})["plan"]
         theme = render({"text": "# H\n\n## H2", "settings": {"reader": {"preset": "book"}}})["plan"]
         self.assertEqual(base["revisions"]["parse"], theme["revisions"]["parse"])
-        self.assertNotEqual(base["revisions"]["style"], theme["revisions"]["style"])
-        self.assertNotEqual(base["configRevision"], theme["configRevision"])
-        changed = render({"text": "# H\n\n## H2", "settings": {"extensionConfigs": {"toc": {"toc_depth": "1"}}}})
+        self.assertEqual(base["revisions"]["runtime"], theme["revisions"]["runtime"])
+        self.assertNotIn("style", theme["revisions"])
+        changed = render({"text": "# H\n\n## H2", "settings": {"extensionConfigs": {"toc": {"toc_depth": "1"}}},
+                          "includeEffectiveConfig": True})
         self.assertEqual(len(changed["toc"][0]["children"]), 0)
-        self.assertEqual(changed["plan"]["effectiveConfig"]["extensionConfigs"]["toc"]["toc_depth"], "1")
+        self.assertEqual(changed["effectiveConfig"]["extensionConfigs"]["toc"]["toc_depth"], "1")
+
+    def test_runtime_protocol_excludes_diagnostic_fields_by_default(self):
+        result = render({"text": "# Heading"})
+        self.assertEqual(result["plan"]["schemaVersion"], 4)
+        for field in ("effectiveConfig", "profile", "extensions", "highlightCss"):
+            self.assertNotIn(field, result)
+        for field in ("engine", "engineVersion", "documentPath", "extensions",
+                      "dependencies", "configRevision", "effectiveConfig"):
+            self.assertNotIn(field, result["plan"])
 
     def test_math_input_syntax_macros_and_dependencies(self):
         result = render({"text": "$x$ and \\(y\\)", "settings": {
@@ -93,7 +103,7 @@ class RenderPlanTests(unittest.TestCase):
     def test_explicit_code_line_numbers_and_theme_owned_css(self):
         result = render({"text": '```python linenums="1"\na=1\nb=2\n```'})
         self.assertIn("linenodiv", result["html"])
-        self.assertEqual(result["highlightCss"], "")
+        self.assertNotIn("highlightCss", result)
 
 
 if __name__ == "__main__":

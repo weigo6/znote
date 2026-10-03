@@ -1,6 +1,7 @@
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { escapeHtml } from "./preview";
 import { PreviewSurface } from "./preview-surface";
+import { applyAppearanceToResult, effectiveWithAppearance, sameRenderInputs } from "./render-appearance";
 import {
   extensionSpecs,
   fieldSpecs,
@@ -196,6 +197,7 @@ export function mountRenderSettings(
     configDirty = false;
   const session = new AbortController(),
     surface = new PreviewSurface();
+  let lastResult: RenderResult | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const query = <T extends HTMLElement>(selector: string) =>
     root.querySelector<T>(selector)!;
@@ -278,15 +280,14 @@ export function mountRenderSettings(
             text: sample,
             path: null,
             settings: current,
+            includeEffectiveConfig: true,
           })
         : {
             html: "<h1>阅读，从一段普通文字开始</h1><p>字体、行距与栏宽决定阅读的节奏。这里没有链接或特殊语法，也能看出排版预设之间的差异。</p><h2>留下清晰的思路</h2><p>这是第二段笔记。底色与应用一致，切换深色时同样保持协调。</p>",
             toc: [],
             meta: {},
             warnings: [],
-            profile: "preview",
-            extensions: [],
-            highlightCss: "",
+            effectiveConfig: current,
             theme: {
               variant: current.variant,
               primary: current.primary,
@@ -294,12 +295,7 @@ export function mountRenderSettings(
               reader: current.reader,
             },
             plan: {
-              schemaVersion: 3,
-              engine: "preview",
-              engineVersion: "1",
-              configRevision: "preview",
-              documentPath: null,
-              extensions: [],
+              schemaVersion: 4,
               math: current.math,
               mermaid: current.mermaid,
               features: current.features,
@@ -307,17 +303,20 @@ export function mountRenderSettings(
               styles: current.customCss
                 ? [{ source: "user", css: current.customCss }]
                 : [],
-              dependencies: [],
             },
           };
       if (disposed || revision !== generation) return;
+      applyAppearanceToResult(result, settings);
       await surface.render(query("#settings-preview"), result);
-      if (!disposed && revision === generation)
+      if (!disposed && revision === generation) {
+        surface.updateAppearance(settings);
+        lastResult = result;
         query("#config-effective").textContent = JSON.stringify(
-          result.plan?.effectiveConfig ?? current,
+          effectiveWithAppearance(result.effectiveConfig, settings),
           null,
           2,
         );
+      }
     } catch (error) {
       if (!disposed && revision === generation)
         feedback("#render-setting-error", String(error));
@@ -338,11 +337,18 @@ export function mountRenderSettings(
       );
       return false;
     }
+    const previous = settings;
     settings = validated.settings;
     feedback(errorId, "");
     change(structuredClone(settings));
     sync();
-    schedule();
+    if (sameRenderInputs(previous, settings) && surface.updateAppearance(settings)) {
+      query("#config-effective").textContent = JSON.stringify(
+        effectiveWithAppearance(lastResult?.effectiveConfig, settings),
+        null,
+        2,
+      );
+    } else schedule();
     return true;
   };
   root.addEventListener(

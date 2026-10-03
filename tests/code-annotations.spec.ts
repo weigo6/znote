@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 
 const fixtures = JSON.parse(fs.readFileSync("tests/fixtures/rendered.json", "utf8"));
-const baseline = fixtures.results[fixtures.samples.regressions.trim()];
+const baseline = fixtures.results.regressions;
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/tests/preview.html");

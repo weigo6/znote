@@ -643,6 +643,7 @@ async fn render_markdown(
     text: String,
     path: Option<String>,
     settings: Value,
+    include_effective_config: Option<bool>,
 ) -> Result<Value> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
@@ -652,7 +653,8 @@ async fn render_markdown(
             .transpose()?;
         request(
             &state,
-            json!({"action":"render","text":text,"path":document,"settings":settings}),
+            json!({"action":"render","text":text,"path":document,"settings":settings,
+                   "includeEffectiveConfig":include_effective_config.unwrap_or(false)}),
             30,
         )
     })
