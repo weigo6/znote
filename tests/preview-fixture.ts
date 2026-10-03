@@ -6,14 +6,18 @@ const surface = new PreviewSurface();
 const host = document.querySelector<HTMLElement>("#surface")!;
 const warnings: string[] = [];
 let findShortcutCount = 0;
+let printShortcutCount = 0;
 const scrollLines: number[] = [];
 surface.onFindShortcut = () => {
   findShortcutCount++;
 };
+surface.onPrintShortcut = () => {
+  printShortcutCount++;
+};
 Object.assign(window, {
-  renderResult: (result: RenderResult, source?: string, documentId = "test") =>
+  renderResult: (result: RenderResult, source?: string, documentId = "test", renderAll = false) =>
     surface.render(host, result, undefined, (value) => warnings.push(value),
-      source === undefined ? undefined : { source, documentId }),
+      source === undefined && !renderAll ? undefined : { source: source ?? "", documentId, renderAll }),
   editorIntent: () => surface.editorIntent(),
   cursorSync: (source: string, line: number) => {
     if (surface.followsEditor) surface.scrollToSource(source, line, "editor");
@@ -48,6 +52,7 @@ Object.assign(window, {
   },
   warnings,
   getFindShortcutCount: () => findShortcutCount,
+  getPrintShortcutCount: () => printShortcutCount,
   findPreview: (query: string) => surface.find(query),
   nextPreviewFind: (direction: number) => surface.nextFind(direction),
   clearPreviewFind: () => surface.clearFind(),

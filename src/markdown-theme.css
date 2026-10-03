@@ -128,3 +128,52 @@
 .znote-footnote-tooltip p + p { margin-top: .7em; }
 .md-typeset .math-error { color: var(--md-code-fg-color); text-decoration: underline wavy var(--znote-code); }
 
+/* Code annotations are mounted by ZNote after the sanitized preview commits. */
+.znote-render-scope .znote-code-annotation {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.55em;
+  height: 1.55em;
+  padding: 0 .25em;
+  margin: 0 .2em;
+  border-radius: 1em;
+  vertical-align: -.25em;
+  line-height: 1;
+  font: 700 .75em/1 var(--md-code-font-family);
+  color: var(--md-default-bg-color);
+  background: var(--md-default-fg-color--lighter);
+  cursor: pointer;
+  user-select: none;
+}
+.znote-render-scope .znote-code-annotation::after {
+  content: attr(data-annotation-index);
+}
+.znote-render-scope .znote-code-annotation:is(:hover, :focus-visible, [aria-expanded="true"]) {
+  background: var(--md-accent-fg-color);
+}
+.znote-render-scope .znote-code-annotation:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+.znote-render-scope .znote-code-annotation-tooltip {
+  position: fixed;
+  z-index: 100;
+  box-sizing: border-box;
+  width: min(400px, calc(100vw - 24px));
+  max-height: min(50vh, 360px);
+  overflow: auto;
+  padding: 12px 16px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  color: var(--md-typeset-color);
+  background: var(--md-default-bg-color);
+  box-shadow: var(--md-shadow-z2);
+  font: 13px/1.6 var(--md-text-font-family);
+}
+.znote-render-scope .znote-code-annotation-tooltip > :first-child { margin-top: 0; }
+.znote-render-scope .znote-code-annotation-tooltip > :last-child { margin-bottom: 0; }
+@media print {
+  .znote-render-scope .znote-code-annotation-list[hidden] { display: block !important; }
+  .znote-render-scope .znote-code-annotation-tooltip { display: none !important; }
+}
+

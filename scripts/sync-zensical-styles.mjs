@@ -45,6 +45,7 @@ for (const variant of ["modern", "classic"]) {
         else if (
           selector.includes(".md-typeset") ||
           selector.includes(".md-icon") ||
+          selector.includes(".md-code__") ||
           /\.(?:highlight|highlighttable|linenodiv)(?=[\s.:#>+~[]|$)/.test(
             selector,
           )

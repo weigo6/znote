@@ -43,7 +43,7 @@ export interface RenderSettings {
   accent: string;
   customCss: string;
   mermaid: { enabled: boolean; theme: "auto" | "neutral" | "forest" | "dark" };
-  features: { footnoteTooltips: boolean; inlineStyles: boolean };
+  features: { footnoteTooltips: boolean; codeAnnotations: boolean; codeCopy: boolean; codeSelect: boolean; inlineStyles: boolean };
   extensions: Record<string, boolean>;
   extensionConfigs: Record<string, Record<string, OptionValue>>;
 }

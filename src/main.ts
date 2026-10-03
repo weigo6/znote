@@ -28,6 +28,7 @@ import {
   BookOpen,
   Code2,
   Sparkles,
+  Smile,
   ArrowUpRight,
   Command,
   Sun,
@@ -52,6 +53,9 @@ import {
 } from "lucide";
 import { openSearchPanel } from "@codemirror/search";
 import { NoteEditor, wrap, prefixLines } from "./editor";
+import { iconCollections, searchOnlineIcons } from "./icon-picker";
+import type { IconCollection, OnlineIcon } from "./icon-picker";
+import { IconPreviewLoader } from "./icon-preview-loader";
 import { welcome } from "./sample";
 import { headings, wordCount } from "./syntax";
 import { escapeHtml } from "./preview";
@@ -96,6 +100,7 @@ const iconSet = {
   BookOpen,
   Code2,
   Sparkles,
+  Smile,
   ArrowUpRight,
   Command,
   Sun,
@@ -182,7 +187,9 @@ try {
     autosave: stored.autosave ?? initial.autosave,
     syncPreview: typeof stored.syncPreview === "boolean" ? stored.syncPreview : initial.syncPreview,
     syncEditorScroll: typeof stored.syncEditorScroll === "boolean" ? stored.syncEditorScroll : initial.syncEditorScroll,
-    recent: Array.isArray(stored.recent) ? stored.recent : [],
+    recent: Array.isArray(stored.recent)
+      ? stored.recent.filter((path: unknown): path is string => typeof path === "string")
+      : [],
     lastWorkspace: stored.lastWorkspace,
     sidebarWidth: typeof stored.sidebarWidth === "number" && Number.isFinite(stored.sidebarWidth)
       ? Math.max(180, Math.min(480, stored.sidebarWidth))
@@ -203,6 +210,7 @@ let tabs: Tab[] = [],
   activeId = "",
   mode: Mode = prefs.mode,
   side: "files" | "outline" | "search" = "files";
+let closedFiles: string[] = [];
 let renderTimer: ReturnType<typeof setTimeout>,
   recoveryTimer: ReturnType<typeof setTimeout>,
   saveTimer: ReturnType<typeof setTimeout>;
@@ -220,12 +228,14 @@ const persistPrefs = () =>
 function toast(message: string, error = false) {
   const el = document.createElement("div");
   el.className = "toast" + (error ? " error" : "");
+  el.setAttribute("role", error ? "alert" : "status");
   el.innerHTML =
     icon(error ? "alert-triangle" : "check") +
     `<span>${escapeHtml(message)}</span>`;
   $("#toasts").append(el);
   icons();
   setTimeout(() => el.remove(), error ? 8500 : 3500);
+  return el;
 }
 function fail(error: unknown) {
   toast(String(error), true);
@@ -244,9 +254,26 @@ $("#app").innerHTML = `
     <div class="filter-wrap"><input id="file-filter" placeholder="筛选文件…" aria-label="筛选笔记文件" autocomplete="off"><input id="document-search" placeholder="搜索当前文档…" aria-label="搜索当前文档" autocomplete="off" hidden></div>
     <nav id="sidebar-content" aria-label="笔记列表"></nav>
     <div class="sidebar-footer"><button class="sidebar-add" data-action="new" title="新建笔记 Ctrl+N" aria-label="新建笔记">${icon("plus")}</button><button class="workspace-switch" data-action="folder" title="打开或切换文件夹">${icon("folder")}<span id="workspace-name">选择文件夹</span></button><button class="icon-btn sidebar-more" data-action="sidebar-menu" title="更多文件操作" aria-label="更多文件操作" aria-expanded="false">${icon("more-horizontal")}</button><span id="engine-label" class="visually-hidden">正在连接渲染器…</span></div>
-    <div class="sidebar-menu" id="sidebar-menu" hidden><div class="sidebar-menu-title">文件操作</div><button data-action="new">${icon("plus")}新建笔记</button><button data-action="search">${icon("search")}搜索当前文档</button><button data-action="open">${icon("file-plus")}打开文件</button><button data-action="folder">${icon("folder-open")}打开文件夹</button><button data-action="refresh">${icon("refresh-cw")}刷新文件</button><button data-action="close-workspace">${icon("x")}关闭文件夹</button></div>
+    <div class="sidebar-menu" id="sidebar-menu" hidden>
+      <div class="sidebar-menu-title">文件操作</div>
+      <button data-action="new">${icon("plus")}新建笔记</button>
+      <button data-action="search">${icon("search")}搜索当前文档</button>
+      <button data-action="open">${icon("file-plus")}打开文件</button>
+      <button data-action="folder">${icon("folder-open")}打开文件夹</button>
+      <button data-action="recent-menu" aria-expanded="false" aria-controls="recent-section">${icon("file-text")}最近打开${icon("chevron-right")}</button>
+      <button data-action="refresh">${icon("refresh-cw")}刷新文件</button>
+      <button data-action="close-workspace">${icon("x")}关闭文件夹</button>
+    </div>
     <div class="sidebar-resizer" role="separator" aria-label="调整侧边栏宽度" aria-orientation="vertical" aria-controls="sidebar" title="拖动调整侧边栏宽度"></div>
   </aside>
+  <div id="recent-section" class="recent-panel" aria-label="最近打开" hidden>
+    <button data-action="reopen-closed">${icon("refresh-cw")}重新打开关闭的文件<kbd>Ctrl+Shift+T</kbd></button>
+    <div class="sidebar-menu-title recent-group-title">文件</div>
+    <div id="recent-files"></div>
+    <div class="sidebar-menu-title recent-group-title">文件夹</div>
+    <div id="recent-folders"></div>
+    <button class="clear-recent" data-action="clear-recent">清空最近记录</button>
+  </div>
   <main class="main">
     <div class="tabs-bar"><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="新建笔记">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="快速操作 Ctrl+K" aria-label="快速操作">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="保存 Ctrl+S" aria-label="保存">${icon("save")}</button><button class="icon-btn" data-action="settings" title="渲染设置" aria-label="渲染设置">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn" data-action="theme" title="切换明暗主题" aria-label="切换明暗主题">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="专注模式 Ctrl+Shift+F" aria-label="专注模式" aria-pressed="false">${icon("focus")}</button></div></div>
     <div class="editor-toolbar"><div class="format-tools"><button class="icon-btn" data-format="heading" title="标题">H<span>1</span></button><button class="icon-btn" data-format="bold" title="粗体 Ctrl+B">${icon("bold")}</button><button class="icon-btn" data-format="italic" title="斜体 Ctrl+I">${icon("italic")}</button><span class="separator"></span><button class="icon-btn" data-format="quote" title="引用">${icon("quote")}</button><button class="icon-btn" data-format="list" title="列表">${icon("list")}</button><button class="icon-btn" data-format="task" title="任务列表">${icon("list-todo")}</button><button class="icon-btn" data-format="link" title="插入链接">${icon("link")}</button><button class="icon-btn" data-format="image" title="插入图片">${icon("image")}</button><button class="icon-btn" data-format="code" title="代码块">${icon("code")}</button><button class="icon-btn" data-format="table" title="表格">${icon("table")}</button><button class="insert-extension" data-action="insert">${icon("sparkles")}<span>扩展</span></button></div><div class="view-modes" role="group" aria-label="编辑模式"><button data-mode="source" title="Markdown 编辑">${icon("code-2")}<span>编辑</span></button><button data-mode="split" title="Python Markdown 对照预览">${icon("columns-2")}<span>对照</span></button><button data-mode="read" title="阅读模式">${icon("book-open")}<span>阅读</span></button></div></div>
@@ -258,6 +285,11 @@ $("#app").innerHTML = `
   <div id="selection-toolbar" class="selection-toolbar" role="toolbar" aria-label="选中文本操作" hidden><span id="selection-summary"></span><span class="selection-toolbar-divider"></span><button type="button" data-selection-action="copy" title="复制 Ctrl+C" aria-label="复制选中文本">${icon("copy")}</button><button type="button" data-selection-action="bold" title="粗体 Ctrl+B" aria-label="将选中文本设为粗体">${icon("bold")}</button><button type="button" data-selection-action="italic" title="斜体 Ctrl+I" aria-label="将选中文本设为斜体">${icon("italic")}</button><button type="button" data-selection-action="code" title="行内代码" aria-label="将选中文本设为代码">${icon("code")}</button><button type="button" data-selection-action="link" title="插入链接" aria-label="将选中文本设为链接">${icon("link")}</button></div>
   <div id="toasts" aria-live="polite"></div><div id="modal-root"></div><div id="editor-context-root"></div><input id="image-picker" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
 `;
+
+$<HTMLElement>(".format-tools .insert-extension").insertAdjacentHTML(
+  "beforebegin",
+  `<button class="insert-extension" data-action="icons" title="在线选择图标 Ctrl+Shift+E" aria-label="在线选择图标">${icon("smile")}<span>图标</span></button>`,
+);
 
 const sidebar = $<HTMLElement>("#sidebar");
 const sidebarResizer = $<HTMLElement>(".sidebar-resizer");
@@ -388,16 +420,95 @@ function applyPrefs() {
   renderedKey = "";
   scheduleRender();
 }
+let recentMenuVersion = 0;
+let recentCloseTimer: ReturnType<typeof setTimeout> | undefined;
+function cancelRecentClose() {
+  clearTimeout(recentCloseTimer);
+  recentCloseTimer = undefined;
+}
+function closeRecentMenu() {
+  cancelRecentClose();
+  recentMenuVersion++;
+  $("#recent-section").hidden = true;
+  $('[data-action="recent-menu"]').setAttribute("aria-expanded", "false");
+}
+function scheduleRecentClose() {
+  cancelRecentClose();
+  recentCloseTimer = setTimeout(closeRecentMenu, 250);
+}
 function closeSidebarMenu() {
+  closeRecentMenu();
   $("#sidebar-menu").hidden = true;
   $(".sidebar-more").setAttribute("aria-expanded", "false");
 }
 function toggleSidebarMenu() {
   const menu = $("#sidebar-menu");
+  if (!menu.hidden) {
+    closeSidebarMenu();
+    return;
+  }
   menu.hidden = !menu.hidden;
   $(".sidebar-more").setAttribute("aria-expanded", String(!menu.hidden));
   menu.querySelectorAll<HTMLButtonElement>("[data-action='refresh'], [data-action='close-workspace']")
     .forEach((button) => (button.disabled = !workspace));
+}
+function recentRow(path: string, kind: "file" | "folder") {
+  const name = path.split(/[\\/]/).pop() || path;
+  const directory = path.slice(0, Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")));
+  const attribute = kind === "file" ? "data-recent-file" : "data-recent-folder";
+  return `<button class="recent-item" ${attribute}="${escapeHtml(path)}" title="${escapeHtml(path)}">${icon(kind === "file" ? "file-text" : "folder")}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(directory)}</small></span></button>`;
+}
+function renderRecentFolders() {
+  $("#recent-folders").innerHTML = prefs.recent.length
+    ? prefs.recent.map((path) => recentRow(path, "folder")).join("")
+    : '<div class="recent-empty">暂无最近文件夹</div>';
+}
+function positionRecentMenu() {
+  const section = $("#recent-section");
+  if (section.hidden) return;
+  const trigger = $('[data-action="recent-menu"]').getBoundingClientRect();
+  const menu = $("#sidebar-menu").getBoundingClientRect();
+  const gap = 6;
+  const availableRight = innerWidth - menu.right - gap - 8;
+  const preferredWidth = Math.min(460, innerWidth - 16);
+  const fitsRight = availableRight >= Math.min(280, preferredWidth);
+  const width = fitsRight ? Math.min(preferredWidth, availableRight) : preferredWidth;
+  section.style.width = `${width}px`;
+  section.style.left = `${fitsRight ? menu.right + gap : Math.max(8, innerWidth - width - 8)}px`;
+  section.style.top = `${Math.max(8, Math.min(trigger.top - 8, innerHeight - section.offsetHeight - 8))}px`;
+}
+async function openRecentMenu() {
+  cancelRecentClose();
+  const section = $("#recent-section");
+  if (!section.hidden) return;
+  section.hidden = false;
+  $('[data-action="recent-menu"]').setAttribute("aria-expanded", "true");
+  recentMenuVersion++;
+  $<HTMLButtonElement>('[data-action="reopen-closed"]').disabled = !closedFiles.length;
+  renderRecentFolders();
+  positionRecentMenu();
+  if (!native) {
+    $("#recent-files").innerHTML = '<div class="recent-empty">桌面版中显示最近文件</div>';
+    icons();
+    positionRecentMenu();
+    return;
+  }
+  $("#recent-files").innerHTML = '<div class="recent-files-empty">正在加载…</div>';
+  const version = recentMenuVersion;
+  try {
+    const files = await invoke<string[]>("list_recent_files");
+    if (version !== recentMenuVersion || section.hidden) return;
+    $("#recent-files").innerHTML = files.length
+      ? files.map((path) => recentRow(path, "file")).join("")
+      : '<div class="recent-empty">暂无最近文件</div>';
+    icons();
+    positionRecentMenu();
+  } catch (error) {
+    if (version !== recentMenuVersion) return;
+    $("#recent-files").innerHTML = '<div class="recent-empty">无法读取最近文件</div>';
+    positionRecentMenu();
+    fail(error);
+  }
 }
 function updatePreviewFind(state: ReturnType<PreviewSurface["find"]>) {
   $("#preview-find-count").textContent = state.count
@@ -416,6 +527,7 @@ function openPreviewFind() {
   input.select();
 }
 previewSurface.onFindShortcut = openPreviewFind;
+previewSurface.onPrintShortcut = () => void printCurrent();
 function flatten(entries: FileEntry[]): FileEntry[] {
   return entries.flatMap((e) => (e.directory ? flatten(e.children) : [e]));
 }
@@ -585,7 +697,11 @@ function mountTab(tab: Tab) {
 }
 function activate(id: string) {
   hideSelectionToolbar();
-  if (activeId && activeId !== id) closePreviewFind();
+  if (activeId && activeId !== id) {
+    closePreviewFind();
+    if (/^#__codelineno-[^:#]+-\d+(?::\d+)?$/.test(window.location.hash))
+      window.history.replaceState(null, "", window.location.href.split("#")[0]);
+  }
   activeId = id;
   const tab = current();
   if (!tab) return;
@@ -602,6 +718,7 @@ function activate(id: string) {
       .catch(() => {});
 }
 function addTab(doc?: DiskDocument, text = "") {
+  if (doc) closedFiles = closedFiles.filter((path) => path !== doc.path);
   const existing = doc && tabs.find((t) => t.path === doc.path);
   if (existing) {
     activate(existing.id);
@@ -638,28 +755,78 @@ function showWelcome() {
   activate(t.id);
   t.editor?.jump(welcome.indexOf("# 让写作"));
 }
-async function openFile(path?: string) {
-  if (!requireNative()) return;
+async function openFile(path?: string): Promise<boolean> {
+  if (!requireNative()) return false;
   try {
     const doc = path
       ? await invoke<DiskDocument>("read_file", { path })
       : await invoke<DiskDocument | null>("choose_file");
-    if (doc) addTab(doc);
+    if (doc) {
+      addTab(doc);
+      await rememberRecentFile(doc.path);
+      return true;
+    }
   } catch (e) {
     fail(e);
   }
+  return false;
 }
-async function setWorkspace(next: Workspace) {
+async function rememberRecentFile(path: string) {
+  try {
+    await invoke<void>("remember_recent_file", { path });
+  } catch (error) {
+    fail("最近文件记录失败：" + error);
+  }
+}
+async function openRecentFile(path: string) {
+  if (!requireNative()) return;
+  try {
+    addTab(await invoke<DiskDocument>("open_recent_file", { path }));
+  } catch (error) {
+    fail(error);
+  }
+}
+async function openRecentFolder(path: string) {
+  if (!requireNative()) return;
+  try {
+    await setWorkspace(await invoke<Workspace>("restore_workspace", { path }));
+  } catch (error) {
+    fail(error);
+  }
+}
+async function reopenClosedFile() {
+  const path = closedFiles.shift();
+  if (!path) return;
+  await openFile(path);
+}
+async function clearRecentHistory() {
+  try {
+    if (native) await invoke<void>("clear_recent_files");
+    prefs.recent = [];
+    closedFiles = [];
+    persistPrefs();
+    recentMenuVersion++;
+    $("#recent-files").innerHTML = '<div class="recent-empty">暂无最近文件</div>';
+    renderRecentFolders();
+    $<HTMLButtonElement>('[data-action="reopen-closed"]').disabled = true;
+    positionRecentMenu();
+    toast("最近记录已清空");
+  } catch (error) {
+    fail(error);
+  }
+}
+async function setWorkspace(next: Workspace, remember = true) {
   workspace = next;
   for (const tab of tabs) {
     tab.plan = undefined;
   }
   renderedKey = "";
   prefs.lastWorkspace = next.root;
-  prefs.recent = [
-    next.root,
-    ...prefs.recent.filter((p) => p !== next.root),
-  ].slice(0, 7);
+  if (remember)
+    prefs.recent = [
+      next.root,
+      ...prefs.recent.filter((p) => p !== next.root),
+    ].slice(0, 10);
   persistPrefs();
   $("#workspace-name").textContent = next.name;
   renderSidebar();
@@ -680,7 +847,7 @@ async function chooseFolder() {
 async function refresh() {
   if (!workspace) return;
   try {
-    await setWorkspace(await invoke<Workspace>("refresh_workspace"));
+    await setWorkspace(await invoke<Workspace>("refresh_workspace"), false);
   } catch (e) {
     fail(e);
   }
@@ -697,7 +864,9 @@ async function newNote() {
   );
   if (!name) return;
   try {
-    addTab(await invoke<DiskDocument>("create_note", { name }));
+    const doc = await invoke<DiskDocument>("create_note", { name });
+    addTab(doc);
+    await rememberRecentFile(doc.path);
     await refresh();
   } catch (e) {
     fail(e);
@@ -733,6 +902,7 @@ async function save(
     if (!doc) return false;
     const previousPath = tab.path;
     tab.path = doc.path;
+    if (previousPath !== doc.path) await rememberRecentFile(doc.path);
     tab.name = doc.path.split(/[\\/]/).pop()!;
     tab.hash = doc.hash;
     tab.bom = doc.bom;
@@ -816,6 +986,8 @@ async function closeTab(id: string) {
       if (!(await save(tab))) return;
     } else if (result !== "discard") return;
   }
+  if (tab.path && tab.id !== "welcome")
+    closedFiles = [tab.path, ...closedFiles.filter((path) => path !== tab.path)].slice(0, 10);
   tab.editor?.destroy();
   tab.host?.remove();
   tabs = tabs.filter((t) => t.id !== id);
@@ -1217,6 +1389,167 @@ function insertMenu() {
       }),
   );
 }
+function openIconPicker() {
+  const tab = current();
+  const editor = tab?.editor;
+  if (!tab || !editor) {
+    toast("请先打开笔记后再插入图标", true);
+    return;
+  }
+  if (mode === "read") setMode("source");
+  const { from, to } = editor.view.state.selection.main;
+  closeModal();
+  modal(
+    "在线选择图标",
+    `<div class="icon-picker" id="icon-picker">
+      <p class="muted">搜索在线图标库，选中后在光标处插入 Zensical 短码。</p>
+      <div class="icon-picker-controls">
+        <input id="icon-query" type="search" placeholder="搜索英文名称，如 home、star、github" aria-label="搜索图标" autocomplete="off" spellcheck="false">
+        <select id="icon-collection" aria-label="筛选图标库"><option value="all">全部图标库</option>${iconCollections.map((item) => `<option value="${item.prefix}">${escapeHtml(item.label)}</option>`).join("")}</select>
+      </div>
+      <div class="icon-picker-examples">试试：${["home", "star", "heart", "github"].map((word) => `<button type="button" data-icon-example="${word}">${word}</button>`).join("")}</div>
+      <p class="icon-picker-status" id="icon-picker-status" role="status" aria-live="polite">输入关键词开始搜索</p>
+      <div class="icon-picker-grid" id="icon-picker-results" aria-label="图标搜索结果"></div>
+    </div>`,
+  );
+  const root = $<HTMLElement>("#icon-picker");
+  const input = $<HTMLInputElement>("#icon-query");
+  const collection = $<HTMLSelectElement>("#icon-collection");
+  const status = $<HTMLElement>("#icon-picker-status");
+  const grid = $<HTMLElement>("#icon-picker-results");
+  let results: OnlineIcon[] = [];
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let request: AbortController | undefined;
+  let previewLoader: IconPreviewLoader | undefined;
+  let previewObserver: IntersectionObserver | undefined;
+  let inserted = false;
+  let searching = false;
+  const setSearching = (value: boolean) => {
+    searching = value;
+    grid.inert = value;
+    grid.setAttribute("aria-busy", String(value));
+  };
+  const stopPreviews = () => {
+    previewObserver?.disconnect();
+    previewObserver = undefined;
+    previewLoader?.dispose();
+    previewLoader = undefined;
+  };
+  modalDispose = () => {
+    clearTimeout(timer);
+    request?.abort();
+    stopPreviews();
+    if (!inserted && current()?.editor === editor) editor.view.focus();
+  };
+  const select = (index: number) => {
+    const selected = results[index];
+    if (searching || !selected || current()?.editor !== editor) return;
+    inserted = true;
+    closeModal();
+    const end = Math.min(to, editor.view.state.doc.length);
+    const start = Math.min(from, end);
+    editor.view.dispatch({
+      changes: { from: start, to: end, insert: selected.shortcode },
+      selection: { anchor: start + selected.shortcode.length },
+      scrollIntoView: true,
+    });
+    editor.view.focus();
+  };
+  const search = async () => {
+    clearTimeout(timer);
+    const query = input.value.trim();
+    request?.abort();
+    stopPreviews();
+    if (!query) {
+      setSearching(false);
+      results = [];
+      grid.innerHTML = "";
+      status.textContent = "输入关键词开始搜索";
+      return;
+    }
+    setSearching(true);
+    const next = new AbortController();
+    request = next;
+    status.textContent = "正在搜索…";
+    try {
+      const icons = await searchOnlineIcons(query, collection.value as IconCollection | "all", next.signal);
+      if (next.signal.aborted || !root.isConnected) return;
+      results = icons;
+      status.textContent = icons.length ? `找到 ${icons.length} 个候选（最多显示 64 个）` : "没有找到图标，请换个关键词";
+      grid.innerHTML = icons.map((item, index) =>
+        `<button type="button" class="icon-picker-result" data-icon-index="${index}" title="${escapeHtml(item.shortcode)}" aria-label="插入 ${escapeHtml(item.shortcode)}">
+          <span class="icon-picker-preview"><img data-preview-index="${index}" alt="" width="28" height="28"></span>
+          <span class="icon-picker-name">${escapeHtml(item.label)}</span>
+          <span class="icon-picker-source">${escapeHtml(item.collection)}</span>
+        </button>`,
+      ).join("");
+      setSearching(false);
+      const loader = new IconPreviewLoader();
+      previewLoader = loader;
+      const loadPreview = (image: HTMLImageElement) => {
+        const item = icons[Number(image.dataset.previewIndex)];
+        if (!item) return;
+        void loader.load(item.previewUrl).then((src) => {
+          if (previewLoader === loader && image.isConnected) image.src = src;
+        }).catch(() => {
+          if (previewLoader === loader && image.isConnected)
+            image.closest(".icon-picker-result")?.classList.add("preview-error");
+        });
+      };
+      const images = grid.querySelectorAll<HTMLImageElement>("img[data-preview-index]");
+      if (typeof IntersectionObserver === "undefined") images.forEach(loadPreview);
+      else {
+        previewObserver = new IntersectionObserver((entries, observer) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            observer.unobserve(entry.target);
+            loadPreview(entry.target as HTMLImageElement);
+          }
+        }, { root: grid, rootMargin: "120px 0px" });
+        images.forEach((image) => previewObserver!.observe(image));
+      }
+    } catch (error) {
+      if (next.signal.aborted || !root.isConnected) return;
+      results = [];
+      grid.innerHTML = "";
+      setSearching(false);
+      status.textContent = `搜索失败：${error instanceof Error ? error.message : String(error)}`;
+    }
+  };
+  const scheduleSearch = () => {
+    clearTimeout(timer);
+    request?.abort();
+    stopPreviews();
+    if (!input.value.trim()) {
+      results = [];
+      grid.innerHTML = "";
+      setSearching(false);
+      status.textContent = "输入关键词开始搜索";
+      return;
+    }
+    setSearching(true);
+    status.textContent = "正在搜索…";
+    timer = setTimeout(() => void search(), 250);
+  };
+  input.addEventListener("input", scheduleSearch);
+  collection.addEventListener("change", () => void search());
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      select(0);
+    } else if (event.key === "ArrowDown") {
+      const first = grid.querySelector<HTMLButtonElement>("button");
+      if (first) { event.preventDefault(); first.focus(); }
+    }
+  });
+  grid.addEventListener("click", (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-icon-index]");
+    if (button) select(Number(button.dataset.iconIndex));
+  });
+  root.querySelectorAll<HTMLButtonElement>("[data-icon-example]").forEach((button) => {
+    button.onclick = () => { input.value = button.dataset.iconExample!; input.focus(); void search(); };
+  });
+}
 function format(kind: string) {
   const editor = current()?.editor;
   if (!editor) return;
@@ -1541,6 +1874,10 @@ function runEditorContextAction(action: string) {
   const editor = current()?.editor;
   if (!editor) return;
   closeEditorContextMenu();
+  if (action === "icons") {
+    openIconPicker();
+    return;
+  }
   const view = editor.view;
   if (["copy", "cut", "paste", "paste-quote"].includes(action)) {
     void editorClipboard(action, editor);
@@ -1630,8 +1967,25 @@ contextRoot.addEventListener("click", (event) => {
 document.addEventListener("pointerdown", (event) => {
   if (!contextRoot.contains(event.target as Node)) closeEditorContextMenu();
   if (!selectionToolbar.contains(event.target as Node)) hideSelectionToolbar();
-  if (!(event.target as HTMLElement).closest("#sidebar-menu, .sidebar-more")) closeSidebarMenu();
+  if (!(event.target as HTMLElement).closest("#sidebar-menu, #recent-section, .sidebar-more")) closeSidebarMenu();
 });
+const recentTrigger = $('[data-action="recent-menu"]');
+recentTrigger.addEventListener("pointerenter", (event) => {
+  if (event.pointerType !== "touch") void openRecentMenu();
+});
+recentTrigger.addEventListener("pointerleave", scheduleRecentClose);
+recentTrigger.addEventListener("focus", () => void openRecentMenu());
+recentTrigger.addEventListener("blur", scheduleRecentClose);
+$("#recent-section").addEventListener("pointerenter", cancelRecentClose);
+$("#recent-section").addEventListener("pointerleave", scheduleRecentClose);
+$("#recent-section").addEventListener("focusin", cancelRecentClose);
+$("#recent-section").addEventListener("focusout", scheduleRecentClose);
+$("#sidebar-menu").addEventListener("pointerover", (event) => {
+  const button = (event.target as HTMLElement).closest("button");
+  if (button && button !== recentTrigger) closeRecentMenu();
+});
+$("#sidebar-menu").addEventListener("scroll", positionRecentMenu);
+window.addEventListener("resize", positionRecentMenu);
 window.addEventListener("resize", () => {
   closeEditorContextMenu();
   hideSelectionToolbar();
@@ -1640,8 +1994,62 @@ $("#editor-stage").addEventListener("scroll", () => {
   closeEditorContextMenu();
   hideSelectionToolbar();
 }, true);
+let printInProgress = false;
+async function printCurrent() {
+  const tab = current();
+  if (!tab) return;
+  if (!requireNative() || printInProgress) return;
+  printInProgress = true;
+  const source = tab.text;
+  const path = tab.path;
+  const settings = prefs.render;
+  let surface: PreviewSurface | undefined;
+  let host: HTMLElement | undefined;
+  let finished = false;
+  let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+  const previousFocus = document.activeElement as HTMLElement | null;
+  const cleanup = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(cleanupTimer);
+    surface?.dispose();
+    host?.remove();
+    printInProgress = false;
+    if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+  };
+  try {
+    const result = await invoke<RenderResult>("render_markdown", {
+      text: source,
+      path: path || null,
+      settings,
+    });
+    host = document.createElement("div");
+    host.className = "print-surface-host";
+    host.setAttribute("aria-hidden", "true");
+    document.body.append(host);
+    surface = new PreviewSurface();
+    await surface.render(host, result, path, () => {}, {
+      source,
+      documentId: tab.id,
+      renderAll: true,
+    });
+    const view = host.querySelector("iframe")?.contentWindow;
+    if (!view) throw new Error("打印预览未能载入");
+    view.addEventListener("afterprint", cleanup, { once: true });
+    cleanupTimer = setTimeout(cleanup, 300000);
+    view.focus();
+    view.print();
+  } catch (error) {
+    cleanup();
+    fail(error);
+  }
+}
+
 const actions: Record<string, () => unknown> = {
   "sidebar-menu": toggleSidebarMenu,
+  "recent-menu": openRecentMenu,
+  "reopen-closed": reopenClosedFile,
+  "clear-recent": clearRecentHistory,
   search: () => {
     side = "search";
     renderSidebar();
@@ -1675,6 +2083,7 @@ const actions: Record<string, () => unknown> = {
   new: newNote,
   save: () => save(),
   saveas: () => save(current(), true),
+  print: () => void printCurrent(),
   refresh,
   welcome: showWelcome,
   sidebar: () => {
@@ -1697,6 +2106,7 @@ const actions: Record<string, () => unknown> = {
     applyPrefs();
   },
   insert: insertMenu,
+  icons: openIconPicker,
   commands: commandPalette,
   external: showExternal,
   find: () => {
@@ -1713,13 +2123,16 @@ function commandPalette() {
     ["new", "新建笔记", "Ctrl N"],
     ["open", "打开 Markdown 文件", "Ctrl O"],
     ["folder", "浏览 Markdown 文件夹", ""],
+    ["reopen-closed", "重新打开关闭的文件", "Ctrl Shift T"],
     ["close-workspace", "关闭文件夹，保留打开的文件", ""],
     ["render-info", "查看当前渲染配置", ""],
     ["save", "保存笔记", "Ctrl S"],
     ["saveas", "另存为", "Ctrl Shift S"],
+    ["print", "打印当前笔记", "Ctrl P"],
     ["find", "查找内容", "Ctrl F"],
     ["replace", "查找与替换", "Ctrl H"],
     ["insert", "插入 Zensical 扩展", ""],
+    ["icons", "在线选择图标", "Ctrl Shift E"],
     ["sidebar", "切换侧边栏", "Ctrl Shift L"],
     ["focus", "切换专注模式", "Ctrl Shift F"],
     ["settings", "设置", ""],
@@ -1765,8 +2178,21 @@ document.addEventListener("click", (e) => {
   }
   const action = target.closest<HTMLElement>("[data-action]");
   if (action) {
-    if (action.dataset.action !== "sidebar-menu") closeSidebarMenu();
+    if (!["sidebar-menu", "recent-menu", "clear-recent"].includes(action.dataset.action!))
+      closeSidebarMenu();
     actions[action.dataset.action!]?.();
+    return;
+  }
+  const recentFile = target.closest<HTMLElement>("[data-recent-file]");
+  if (recentFile) {
+    closeSidebarMenu();
+    void openRecentFile(recentFile.dataset.recentFile!);
+    return;
+  }
+  const recentFolder = target.closest<HTMLElement>("[data-recent-folder]");
+  if (recentFolder) {
+    closeSidebarMenu();
+    void openRecentFolder(recentFolder.dataset.recentFolder!);
     return;
   }
   const modeButton = target.closest<HTMLElement>("[data-mode]");
@@ -1832,9 +2258,11 @@ document.addEventListener(
     else if (key === "o") action = e.shiftKey ? "folder" : "open";
     else if (key === "n") action = "new";
     else if (key === "s") action = e.shiftKey ? "saveas" : "save";
+    else if (key === "p" && !e.shiftKey) action = "print";
     else if (key === "l" && e.shiftKey) action = "sidebar";
     else if (key === "f") action = e.shiftKey ? "focus" : "find";
     else if (key === "h") action = "replace";
+    else if (key === "t" && e.shiftKey) action = "reopen-closed";
     else if (key === "w") {
       e.preventDefault();
       void closeTab(activeId);
@@ -1876,8 +2304,14 @@ $<HTMLInputElement>("#image-picker").onchange = (e) => {
   if (file) void insertImage(file);
   input.value = "";
 };
+let copyToast: HTMLElement | undefined;
+$("#app").addEventListener("code-copy-feedback", (event) => {
+  const { success } = (event as CustomEvent<{ success: boolean }>).detail;
+  copyToast?.remove();
+  copyToast = toast(success ? "代码已复制到剪贴板" : "复制失败，无法访问剪贴板", !success);
+});
 $("#app").addEventListener("note-link", (event) => {
-  const href = (event as CustomEvent<string>).detail.split("#")[0];
+  const [href, fragment] = (event as CustomEvent<string>).detail.split("#", 2);
   const tab = current();
   if (!href || !tab?.path) return;
   try {
@@ -1885,7 +2319,16 @@ $("#app").addEventListener("note-link", (event) => {
       document: tab.path,
       relative: decodeURIComponent(href),
     })
-      .then((doc) => addTab(doc))
+      .then((doc) => {
+        addTab(doc);
+        void rememberRecentFile(doc.path);
+        let codeFragment = fragment;
+        if (fragment) try { codeFragment = decodeURIComponent(fragment); } catch { /* Preserve literal percent. */ }
+        if (codeFragment && /^__codelineno-[^:#]+-\d+(?::\d+)?$/.test(codeFragment)) {
+          window.history.replaceState(null, "", `#${codeFragment}`);
+          window.dispatchEvent(new HashChangeEvent("hashchange"));
+        }
+      })
       .catch(fail);
   } catch (error) {
     fail(error);
@@ -1959,6 +2402,7 @@ async function start() {
           await invoke<Workspace>("restore_workspace", {
             path: prefs.lastWorkspace,
           }),
+          false,
         );
       } catch {}
     await restoreDrafts();

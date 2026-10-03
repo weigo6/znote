@@ -76,7 +76,7 @@ export interface RenderPlan {
   documentPath: string | null;
   extensions: string[];
   math: MathSettings;
-  features?: { footnoteTooltips: boolean; inlineStyles: boolean };
+  features?: { footnoteTooltips: boolean; codeAnnotations?: boolean; codeCopy?: boolean; codeSelect?: boolean; inlineStyles: boolean };
   mermaid?: { enabled: boolean; theme: "auto" | "neutral" | "forest" | "dark" };
   effectiveConfig?: Record<string, unknown>;
   revisions?: { parse: string; runtime: string; style: string };

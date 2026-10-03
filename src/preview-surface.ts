@@ -48,6 +48,7 @@ export class PreviewSurface {
   private cursorFrame = 0;
   private cursorTarget?: { source: string; line: number; cause: "editor" | "navigation" };
   onFindShortcut?: () => void;
+  onPrintShortcut?: () => void;
 
   get followsEditor() { return this.intent === "editor"; }
 
@@ -371,7 +372,7 @@ export class PreviewSurface {
     const frame = (this.frame = document.createElement("iframe"));
     frame.title = "Markdown 正文预览";
     frame.className = "document-preview-frame";
-    frame.setAttribute("sandbox", "allow-same-origin");
+    frame.setAttribute("sandbox", "allow-same-origin allow-modals");
     const loaded = new Promise<void>((resolve) => {
       this.resolveReady = resolve;
       frame.onload = () => resolve();
@@ -404,6 +405,7 @@ export class PreviewSurface {
       );
       this.highlightStyle = style("");
       this.customStyle = style("");
+      style("@page{margin:16mm;}@media print{html,body{min-height:0!important;overflow:visible!important;}body{padding:0!important;background:#fff!important;}article{max-width:none!important;}.md-typeset__scrollwrap,.md-typeset__table,pre{max-height:none!important;overflow:visible!important;}img,svg{max-width:100%;}pre,blockquote,img,svg{break-inside:avoid;}}");
       this.syncTheme = () => {
         const appStyle = getComputedStyle(document.documentElement);
         const font = appStyle.getPropertyValue("--editor-font") || "17px";
@@ -437,17 +439,24 @@ export class PreviewSurface {
           }),
         ),
       );
+      doc.querySelector("article")!.addEventListener("code-copy-feedback", (event) =>
+        host.dispatchEvent(
+          new CustomEvent("code-copy-feedback", {
+            bubbles: true,
+            detail: (event as CustomEvent<{ success: boolean }>).detail,
+          }),
+        ),
+      );
       doc.addEventListener(
         "keydown",
         (event) => {
-          if (
-            (event.ctrlKey || event.metaKey) &&
-            event.key.toLowerCase() === "f" &&
-            !event.shiftKey
-          ) {
+          if (!(event.ctrlKey || event.metaKey) || event.shiftKey) return;
+          const key = event.key.toLowerCase();
+          if (key === "f" || key === "p") {
             event.preventDefault();
             event.stopPropagation();
-            this.onFindShortcut?.();
+            if (key === "f") this.onFindShortcut?.();
+            else this.onPrintShortcut?.();
           }
         },
         true,
@@ -522,7 +531,7 @@ export class PreviewSurface {
     result: RenderResult,
     path?: string,
     diagnostic: (value: string) => void = () => {},
-    context?: { source: string; documentId: string; onCommit?: () => void },
+    context?: { source: string; documentId: string; onCommit?: () => void; renderAll?: boolean },
   ) {
     if (this.frame && this.frame.parentElement !== host) this.dispose();
     this.cancel();
@@ -610,6 +619,7 @@ export class PreviewSurface {
       },
       session.signal,
       {
+        renderAll: context?.renderAll,
         beforeCommit: () => {
           // Theme, styles and body commit together; a cancelled render cannot leak them.
           if (this.intent === "preview") this.rememberReadingPosition();

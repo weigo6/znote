@@ -24,6 +24,30 @@ test("preview find highlights only visible article text and navigates exact matc
   expect(await page.frameLocator("iframe").locator("article").evaluate(() => CSS.highlights.has("znote-find-matches"))).toBe(false);
 });
 
+test("print preparation renders the full note and forwards Ctrl+P from the preview", async ({ page }) => {
+  const html = Array.from({ length: 81 }, (_, index) =>
+    `<p class="arithmatex">\\(x_{${index}}\\)</p>`,
+  ).join("");
+  await page.evaluate(async (markup) => {
+    const result = {
+      html: markup,
+      toc: [], meta: {}, warnings: [], profile: "test", extensions: [],
+      highlightCss: "",
+      plan: { schemaVersion: 3, engine: "test", engineVersion: "1", configRevision: "1",
+        documentPath: null, math: { engine: "katex", macros: {} },
+        runtimes: [], features: {}, sources: [], extensions: [], styles: [], dependencies: [] },
+    };
+    await (window as any).renderResult(result, "", "print-note", true);
+  }, html);
+  const frame = page.frameLocator("iframe");
+  await expect(frame.locator(".arithmatex .katex")).toHaveCount(81);
+  await frame.locator("article").click();
+  await page.keyboard.press("Control+p");
+  expect(await page.evaluate(() => (window as any).getPrintShortcutCount())).toBe(1);
+  await page.emulateMedia({ media: "print" });
+  await expect(frame.locator("body")).toHaveCSS("padding", "0px");
+});
+
 test("user CSS is isolated and formulas switch between offline engines", async ({
   page,
 }) => {

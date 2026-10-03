@@ -28,6 +28,13 @@ export async function hydrate(
       e.stopPropagation();
       const href = link.getAttribute("href") || "";
       if (href.startsWith("#")) {
+        let codeHash = href;
+        try { codeHash = decodeURIComponent(href); } catch { /* Preserve literal percent. */ }
+        if (/^#__codelineno-[^:#]+-\d+(?::\d+)?$/.test(codeHash)) {
+          window.history.replaceState(null, "", codeHash);
+          window.dispatchEvent(new HashChangeEvent("hashchange"));
+          return;
+        }
         let fragment = href.slice(1);
         try {
           fragment = decodeURIComponent(fragment);
@@ -86,6 +93,7 @@ const sessions = new WeakMap<HTMLElement, AbortController>();
 export interface RenderCommitHooks {
   beforeCommit?: () => void;
   afterCommit?: () => void;
+  renderAll?: boolean;
 }
 export async function setRendered(
   container: HTMLElement,
@@ -163,7 +171,7 @@ export async function setRendered(
   const mathCount = staged.querySelectorAll(".arithmatex").length;
   const diagramCount = staged.querySelectorAll(".mermaid").length;
   const imageCount = staged.querySelectorAll("img").length;
-  const deferHeavy = mathCount > 80 || diagramCount > 8 || imageCount > 20;
+  const deferHeavy = !hooks.renderAll && (mathCount > 80 || diagramCount > 8 || imageCount > 20);
   const hasMathDefinitions = /\\(?:gdef|def|let|newcommand|renewcommand|providecommand|global)\b/.test(result.html);
   const reuseMath = !hasMathDefinitions && !mathDefinitions.get(container);
   const mathMarkup = new WeakMap<HTMLElement, string>();
@@ -179,6 +187,12 @@ export async function setRendered(
   const reusedLocations: [Node, Node][] = [];
   for (const node of Array.from(container.childNodes)) {
     if (node.nodeType === 1 && (node as HTMLElement).dataset.znPending) continue;
+    // Annotation badges and their hidden source lists are rebuilt together
+    // when either side changes, including blocks inside tabs or admonitions.
+    if (node.nodeType === 1 && (
+      (node as Element).matches("[data-zn-code-annotations], .znote-code-annotation-list") ||
+      (node as Element).querySelector("[data-zn-code-annotations], .znote-code-annotation-list")
+    )) continue;
     const signature = blockSignatures.get(node);
     if (!signature) continue;
     const matches = reusable.get(signature) || [];

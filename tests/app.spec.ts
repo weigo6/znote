@@ -1,5 +1,70 @@
 import { test, expect } from "@playwright/test";
 
+test("Ctrl+P is handled by the app instead of printing its chrome", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const canceled = await page.evaluate(() => {
+    const event = new KeyboardEvent("keydown", {
+      key: "p", ctrlKey: true, bubbles: true, cancelable: true,
+    });
+    document.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+  expect(canceled).toBe(true);
+  await expect(page.locator("#toasts")).toContainText("请在 ZNote 桌面应用中使用文件和 Python 渲染功能");
+});
+
+test("Ctrl+P prints the current unsaved note from source mode", async ({ page }) => {
+  await page.addInitScript(() => {
+    const appWindow = window as any;
+    appWindow.isTauri = true;
+    let callback = 0;
+    appWindow.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: "main" }, currentWebview: { label: "main", windowLabel: "main" } },
+      transformCallback: () => ++callback,
+      unregisterCallback: () => {},
+      invoke: async (command: string, args: any) => {
+        if (command === "read_recovery") return [];
+        if (command === "renderer_info") return { versions: { zensical: "test" } };
+        if (command === "render_markdown") return {
+          html: `<h1>${args.text.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</h1>`,
+          toc: [], warnings: [], meta: {}, profile: "test", extensions: [], highlightCss: "",
+        };
+        return null;
+      },
+    };
+    Object.defineProperty(window, "print", { configurable: true, value: () => {
+      (window.top as any).printedNote = {
+        inFrame: window !== window.top,
+        text: document.body.innerText,
+      };
+      window.dispatchEvent(new Event("afterprint"));
+    } });
+  });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
+  await page.locator(".tab-editor:not([hidden]) .cm-content").click();
+  await page.keyboard.type("尚未保存的打印内容");
+  await page.keyboard.press("Control+p");
+  await expect.poll(() => page.evaluate(() => (window as any).printedNote)).toMatchObject({
+    inFrame: true,
+    text: "尚未保存的打印内容",
+  });
+  await expect(page.locator(".writing-area")).toHaveAttribute("data-mode", "source");
+});
+
+test("code copy feedback uses the application toast", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator("#app").evaluate((app) => app.dispatchEvent(new CustomEvent("code-copy-feedback", {
+    bubbles: true, detail: { success: true },
+  })));
+  await expect(page.locator("#toasts [role='status']")).toContainText("代码已复制到剪贴板");
+  await page.locator("#app").evaluate((app) => app.dispatchEvent(new CustomEvent("code-copy-feedback", {
+    bubbles: true, detail: { success: false },
+  })));
+  await expect(page.locator("#toasts [role='alert']")).toContainText("复制失败，无法访问剪贴板");
+  await expect(page.locator("#toasts .toast")).toHaveCount(1);
+});
+
 test("sidebar width can be dragged and restored", async ({
   page,
 }) => {

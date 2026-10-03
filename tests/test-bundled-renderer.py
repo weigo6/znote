@@ -24,8 +24,15 @@ try:
     info = request({"action": "info"})
     assert "zensical" in info["versions"]
     assert info["capabilities"]["schemaVersion"] == 3
+    for field in ("features.codeAnnotations", "features.codeCopy", "features.codeSelect"):
+        assert field in info["capabilities"]["fields"], f"Packaged renderer lacks {field}"
     default = request({"action": "render", "text": "!!! note\n\n    你好 😀"})
     assert "admonition note" in default["html"]
+    controls = request({"action": "render", "text": "```python {.copy .select}\nprint(1)\n```",
+                        "settings": {"features": {"codeAnnotations": True, "codeCopy": True,
+                                                 "codeSelect": True}}})
+    assert not controls["warnings"], controls["warnings"]
+    assert "copy select highlight" in controls["html"]
     assert default["sourceMap"]["version"] == 1
     assert default["sourceMap"]["offsetEncoding"] == "utf-16"
     assert any(entry["precision"] == "exact" for entry in default["sourceMap"]["entries"])

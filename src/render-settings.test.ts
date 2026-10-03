@@ -26,9 +26,16 @@ describe("Markdown rendering settings", () => {
     expect(settings.extensions.admonition).toBe(false);
     expect(settings.extensions.tables).toBe(true);
     expect(settings.variant).toBe("classic");
+    expect(settings.features.codeAnnotations).toBe(false);
+    expect(settings.features.codeCopy).toBe(true);
+    expect(settings.features.codeSelect).toBe(false);
     expect(
       extensionGroups.reduce((count, group) => count + group.items.length, 0),
     ).toBeGreaterThan(20);
+  });
+  it("accepts the code annotation interaction setting", () => {
+    const settings = normalizeRenderSettings({ features: { codeAnnotations: true } });
+    expect(settings.features.codeAnnotations).toBe(true);
   });
   it("ignores invalid persisted values", () => {
     const settings = normalizeRenderSettings({

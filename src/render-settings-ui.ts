@@ -66,6 +66,9 @@ export function renderSettingsMarkup(settings: RenderSettings) {
       <div class="settings-preview" id="settings-preview" aria-label="阅读效果预览"></div></div>
       <div class="settings-section"><h3>内容交互</h3>
       ${check("features.footnoteTooltips", "脚注悬浮提示", "悬浮或键盘聚焦时查看脚注正文。")}
+      ${check("features.codeAnnotations", "代码注释", "将代码注释中的编号与后续有序列表关联。")}
+      ${check("features.codeCopy", "代码复制按钮", "复制代码块中的代码文本。")}
+      ${check("features.codeSelect", "代码逐行选择", "点击代码行并用 Shift 扩展选择范围。")}
       ${check("mermaid.enabled", "Mermaid 图表")}
       ${select("mermaid.theme", "图表配色", [
         ["auto", "跟随应用"],

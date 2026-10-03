@@ -1,5 +1,7 @@
 import DOMPurify from "dompurify";
 import type { RenderPlan } from "./types";
+import { mountCodeAnnotations } from "./code-annotations";
+import { mountZensicalCodeBlocks } from "./zensical-code";
 let sequence = 0;
 let mermaidReady: Promise<(typeof import("mermaid"))["default"]> | undefined;
 let mermaidQueue: Promise<unknown> = Promise.resolve();
@@ -192,7 +194,14 @@ export async function mountRuntimes(
 
 /** Interactions attach to the committed article, including reused nodes. */
 export function mountInteractions({ container, plan, signal }: RuntimeContext) {
-  if (!plan?.features?.footnoteTooltips || signal.aborted) return;
+  if (signal.aborted) return;
+  mountZensicalCodeBlocks(container, {
+    copy: plan?.features?.codeCopy === true,
+    select: plan?.features?.codeSelect === true,
+  }, signal);
+  mountCodeAnnotations(container, plan?.features?.codeAnnotations === true, signal,
+    plan?.documentPath || undefined);
+  if (!plan?.features?.footnoteTooltips) return;
   const doc = container.ownerDocument,
     view = doc.defaultView!;
   let tooltip: HTMLElement | undefined, active: HTMLAnchorElement | undefined;

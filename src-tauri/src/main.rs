@@ -23,9 +23,11 @@ struct Access {
 }
 struct AppState {
     access: Mutex<Access>,
+    recent_files: Mutex<Vec<PathBuf>>,
     worker: Mutex<Option<Worker>>,
     data: PathBuf,
     renderer: PathBuf,
+    renderer_args: Vec<PathBuf>,
 }
 struct Worker {
     child: Child,
@@ -39,9 +41,10 @@ impl Drop for Worker {
     }
 }
 impl Worker {
-    fn start(exe: &Path) -> Result<Self> {
+    fn start(exe: &Path, args: &[PathBuf]) -> Result<Self> {
         let mut command = Command::new(exe);
         command
+            .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null());
@@ -93,7 +96,7 @@ impl Worker {
 fn request(state: &AppState, value: Value, timeout: u64) -> Result<Value> {
     let mut worker = state.worker.lock().map_err(|e| e.to_string())?;
     if worker.is_none() {
-        *worker = Some(Worker::start(&state.renderer)?);
+        *worker = Some(Worker::start(&state.renderer, &state.renderer_args)?);
     }
     let result = worker.as_mut().unwrap().request(value, timeout);
     if result.is_err() {
@@ -139,6 +142,84 @@ fn atomic_write(path: &Path, bytes: &[u8]) -> Result<()> {
         .map_err(|e| e.to_string())?;
     file.persist(path).map_err(|e| e.to_string())?;
     Ok(())
+}
+const RECENT_FILES_LIMIT: usize = 10;
+
+fn save_recent_files(state: &AppState, files: &[PathBuf]) -> Result<()> {
+    let bytes = serde_json::to_vec(files).map_err(|e| e.to_string())?;
+    atomic_write(&state.data.join("recent-files.json"), &bytes)
+}
+
+fn remember_recent_path(state: &AppState, path: PathBuf) -> Result<()> {
+    let mut files = state.recent_files.lock().map_err(|e| e.to_string())?;
+    let mut updated = vec![path.clone()];
+    updated.extend(
+        files
+            .iter()
+            .filter(|old| **old != path)
+            .take(RECENT_FILES_LIMIT - 1)
+            .cloned(),
+    );
+    save_recent_files(state, &updated)?;
+    *files = updated;
+    Ok(())
+}
+
+#[tauri::command]
+fn list_recent_files(state: tauri::State<AppState>) -> Result<Vec<String>> {
+    let files = state.recent_files.lock().map_err(|e| e.to_string())?;
+    Ok(files
+        .iter()
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect())
+}
+
+#[tauri::command]
+fn clear_recent_files(state: tauri::State<AppState>) -> Result<()> {
+    clear_recent_paths(&state)
+}
+
+fn clear_recent_paths(state: &AppState) -> Result<()> {
+    let mut files = state.recent_files.lock().map_err(|e| e.to_string())?;
+    save_recent_files(state, &[])?;
+    files.clear();
+    Ok(())
+}
+
+#[tauri::command]
+fn remember_recent_file(state: tauri::State<AppState>, path: String) -> Result<()> {
+    let path = authorize(&state, &path, false)?;
+    remember_recent_path(&state, path)
+}
+
+#[tauri::command]
+fn open_recent_file(state: tauri::State<AppState>, path: String) -> Result<Document> {
+    open_recent_path(&state, &path)
+}
+
+fn open_recent_path(state: &AppState, path: &str) -> Result<Document> {
+    let saved = state
+        .recent_files
+        .lock()
+        .map_err(|e| e.to_string())?
+        .iter()
+        .any(|p| p.to_string_lossy() == path);
+    if !saved {
+        return Err("文件不在最近打开记录中。".into());
+    }
+    let canonical = normalize_existing(&path)?;
+    if canonical.to_string_lossy() != path {
+        return Err("文件路径已改变，请通过打开文件重新选择。".into());
+    }
+    let doc = read_document(&canonical)?;
+    state
+        .access
+        .lock()
+        .map_err(|e| e.to_string())?
+        .files
+        .insert(canonical.clone());
+    remember_recent_path(&state, canonical)?;
+    Ok(doc)
 }
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -620,21 +701,38 @@ fn main() {
         .setup(|app| {
             let data = app.path().app_data_dir()?;
             fs::create_dir_all(&data)?;
+            let recent_files: Vec<PathBuf> = fs::read(data.join("recent-files.json"))
+                .ok()
+                .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+                .unwrap_or_default();
             let bundled = app
                 .path()
                 .resource_dir()?
                 .join("bin/znote-renderer/znote-renderer.exe");
-            let renderer = if cfg!(debug_assertions) {
-                PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                    .join("../build/renderer-dist/znote-renderer/znote-renderer.exe")
+            let (renderer, renderer_args) = if cfg!(dev) {
+                let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+                let python = root.join(".venv/Scripts/python.exe");
+                let script = root.join("python/znote_renderer.py");
+                if python.is_file() && script.is_file() {
+                    (python, vec![script])
+                } else {
+                    (
+                        root.join("build/renderer-dist/znote-renderer/znote-renderer.exe"),
+                        vec![],
+                    )
+                }
             } else {
-                bundled
+                (bundled, vec![])
             };
             app.manage(AppState {
                 access: Mutex::new(Access::default()),
+                recent_files: Mutex::new(
+                    recent_files.into_iter().take(RECENT_FILES_LIMIT).collect(),
+                ),
                 worker: Mutex::new(None),
                 data,
                 renderer,
+                renderer_args,
             });
             Ok(())
         })
@@ -644,6 +742,10 @@ fn main() {
             refresh_workspace,
             choose_file,
             read_file,
+            list_recent_files,
+            clear_recent_files,
+            remember_recent_file,
+            open_recent_file,
             open_note_link,
             file_hash,
             search_workspace,
@@ -703,5 +805,49 @@ mod tests {
         let e = entries(d.path(), 0, &mut 100);
         assert_eq!(e.len(), 1);
         assert_eq!(e[0].name, "note.md");
+    }
+    #[test]
+    fn recent_files_persist_dedupe_and_reopen_only_saved_paths() {
+        let dir = tempfile::tempdir().unwrap();
+        let state = AppState {
+            access: Mutex::new(Access::default()),
+            recent_files: Mutex::new(Vec::new()),
+            worker: Mutex::new(None),
+            data: dir.path().to_path_buf(),
+            renderer: PathBuf::new(),
+            renderer_args: Vec::new(),
+        };
+        let first = dir.path().join("first.md");
+        let other = dir.path().join("other.md");
+        fs::write(&first, "first").unwrap();
+        fs::write(&other, "other").unwrap();
+        let first = first.canonicalize().unwrap();
+        let other = other.canonicalize().unwrap();
+        remember_recent_path(&state, first.clone()).unwrap();
+        remember_recent_path(&state, first.clone()).unwrap();
+        assert!(open_recent_path(&state, &other.to_string_lossy()).is_err());
+        assert_eq!(
+            open_recent_path(&state, &first.to_string_lossy())
+                .unwrap()
+                .text,
+            "first"
+        );
+        let saved: Vec<PathBuf> =
+            serde_json::from_slice(&fs::read(dir.path().join("recent-files.json")).unwrap())
+                .unwrap();
+        assert_eq!(saved, vec![first]);
+        for index in 0..12 {
+            remember_recent_path(&state, dir.path().join(format!("{index}.md"))).unwrap();
+        }
+        let files = state.recent_files.lock().unwrap();
+        assert_eq!(files.len(), RECENT_FILES_LIMIT);
+        assert_eq!(files[0], dir.path().join("11.md"));
+        drop(files);
+        clear_recent_paths(&state).unwrap();
+        assert!(state.recent_files.lock().unwrap().is_empty());
+        let saved: Vec<PathBuf> =
+            serde_json::from_slice(&fs::read(dir.path().join("recent-files.json")).unwrap())
+                .unwrap();
+        assert!(saved.is_empty());
     }
 }

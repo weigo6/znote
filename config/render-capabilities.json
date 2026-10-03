@@ -278,6 +278,9 @@
       "values": ["left", "right"]
     },
     "features.footnoteTooltips": { "type": "boolean", "default": true },
+    "features.codeAnnotations": { "type": "boolean", "default": false },
+    "features.codeCopy": { "type": "boolean", "default": true },
+    "features.codeSelect": { "type": "boolean", "default": false },
     "features.inlineStyles": { "type": "boolean", "default": true },
     "mermaid.enabled": { "type": "boolean", "default": true },
     "mermaid.theme": {

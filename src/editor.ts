@@ -27,6 +27,7 @@ export class NoteEditor {
         return wrap(view, String.fromCharCode(96));
       } },
       { key: "Mod-Shift-i", run: () => { callbacks.command?.("image"); return !!callbacks.command; } },
+      { key: "Mod-Shift-e", run: () => { callbacks.command?.("icons"); return !!callbacks.command; } },
       { key: "Mod-t", run: () => { callbacks.command?.("table"); return !!callbacks.command; } },
       { key: "Mod-Shift-m", run: () => { callbacks.command?.("math"); return !!callbacks.command; } },
       { key: "Mod-/", run: toggleComment },
