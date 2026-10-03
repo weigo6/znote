@@ -1,3 +1,4 @@
+import { tr } from "./i18n";
 import type { MathSettings, ReaderSettings } from "./types";
 import {
   capabilities,
@@ -92,7 +93,7 @@ export function validateRenderSettings(input: unknown): {
     schemaVersion: capabilities.schemaVersion,
   };
   const issues: ConfigIssue[] = [];
-  const issue = (path: string, message = "参数类型或取值无效") =>
+  const issue = (path: string, message = tr("参数类型或取值无效")) =>
     issues.push({ path, message });
   const original = record(input);
   if (
@@ -101,18 +102,18 @@ export function validateRenderSettings(input: unknown): {
       typeof original.extensionConfigs !== "object" ||
       Array.isArray(original.extensionConfigs))
   )
-    issue("extensionConfigs", "应为配置对象");
+    issue("extensionConfigs", tr("应为配置对象"));
   if (
     input !== undefined &&
     (input === null || typeof input !== "object" || Array.isArray(input))
   )
-    issue("settings", "设置应为配置对象");
+    issue("settings", tr("设置应为配置对象"));
   if (
     data.schemaVersion !== undefined &&
     (typeof data.schemaVersion !== "number" ||
       ![1, 2, 3].includes(data.schemaVersion))
   )
-    issue("schemaVersion", "配置版本不受支持");
+    issue("schemaVersion", tr("配置版本不受支持"));
   const preset = capabilities.readerPresets.find(
     (item) => item.id === getField(data, "reader.preset"),
   );
@@ -150,7 +151,7 @@ export function validateRenderSettings(input: unknown): {
     data.customCss !== undefined &&
     (typeof data.customCss !== "string" || data.customCss.length > 262144)
   )
-    issue("customCss", "CSS 必须为文本，且不超过 256 KB");
+    issue("customCss", tr("CSS 必须为文本，且不超过 256 KB"));
   result.customCss =
     typeof data.customCss === "string" ? data.customCss.slice(0, 262144) : "";
   const enabled = record(data.extensions),
@@ -161,7 +162,7 @@ export function validateRenderSettings(input: unknown): {
       typeof data.extensions !== "object" ||
       Array.isArray(data.extensions))
   )
-    issue("extensions", "应为配置对象");
+    issue("extensions", tr("应为配置对象"));
   result.extensions = Object.fromEntries(
     extensionSpecs.map((item) => {
       if (
@@ -187,7 +188,7 @@ export function validateRenderSettings(input: unknown): {
       if (!spec)
         issue(
           `extensionConfigs.${extension.id}.${key}`,
-          "此参数未开放，不能覆盖内部渲染契约",
+          tr("此参数未开放，不能覆盖内部渲染契约"),
         );
       else if (
         !validOption(value, spec) ||
@@ -202,14 +203,14 @@ export function validateRenderSettings(input: unknown): {
   }
   const ids = new Set(extensionSpecs.map((item) => item.id));
   for (const id of Object.keys(enabled))
-    if (!ids.has(id)) issue(`extensions.${id}`, "未内置此扩展");
+    if (!ids.has(id)) issue(`extensions.${id}`, tr("未内置此扩展"));
   for (const id of Object.keys(configs))
-    if (!ids.has(id)) issue(`extensionConfigs.${id}`, "未内置此扩展");
+    if (!ids.has(id)) issue(`extensionConfigs.${id}`, tr("未内置此扩展"));
   result.extensionConfigs = normalized;
   const macros = record(getField(data, "math.macros"));
   const normalizedMacros: MathSettings["macros"] = Object.create(null);
   if (Object.keys(macros).length > 100)
-    issue("math.macros", "最多定义 100 个宏");
+    issue("math.macros", tr("最多定义 100 个宏"));
   const rawMacros = getField(data, "math.macros");
   if (
     rawMacros !== undefined &&
@@ -217,7 +218,7 @@ export function validateRenderSettings(input: unknown): {
       typeof rawMacros !== "object" ||
       Array.isArray(rawMacros))
   )
-    issue("math.macros", "宏应为配置对象");
+    issue("math.macros", tr("宏应为配置对象"));
   for (const [rawName, raw] of Object.entries(macros).slice(0, 100)) {
     const name = rawName.replace(/^\\/, ""),
       value =
@@ -243,10 +244,10 @@ export function validateRenderSettings(input: unknown): {
     )
       issue(
         `math.macros.${rawName}`,
-        "宏名仅含英文字母；参数数为 0–9；展开内容不超过 4096 字符",
+        tr("宏名仅含英文字母；参数数为 0–9；展开内容不超过 4096 字符"),
       );
     else if (Object.hasOwn(normalizedMacros, name))
-      issue(`math.macros.${rawName}`, "宏名重复");
+      issue(`math.macros.${rawName}`, tr("宏名重复"));
     else
       normalizedMacros[name] = { body: value.body, args: Number(value.args) };
   }
@@ -265,7 +266,7 @@ export function validateRenderSettings(input: unknown): {
     "extensionConfigs",
   ]);
   for (const key of Object.keys(data))
-    if (!topKeys.has(key)) issue(key, "未知配置字段");
+    if (!topKeys.has(key)) issue(key, tr("未知配置字段"));
   for (const branch of [
     "reader",
     "features",
@@ -279,7 +280,7 @@ export function validateRenderSettings(input: unknown): {
       value !== undefined &&
       (value === null || typeof value !== "object" || Array.isArray(value))
     ) {
-      issue(branch, "应为配置对象");
+      issue(branch, tr("应为配置对象"));
       continue;
     }
     for (const key of Object.keys(record(value))) {
@@ -290,7 +291,7 @@ export function validateRenderSettings(input: unknown): {
           (field) => field === path || field.startsWith(`${path}.`),
         )
       )
-        issue(path, "未知配置字段");
+        issue(path, tr("未知配置字段"));
     }
   }
   return { settings: result as unknown as RenderSettings, issues };

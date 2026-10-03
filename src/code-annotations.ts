@@ -1,9 +1,4 @@
-/*
- * Marker discovery is adapted from Zensical UI 0.0.66's mountAnnotationList.
- * Copyright (c) 2025-2026 Zensical and contributors. MIT license:
- * public/vendor/zensical/LICENSE.md
- * Upstream: https://github.com/zensical/ui/blob/master/src/assets/javascripts/components/content/annotation/list/index.ts
- */
+import { tr } from "./i18n";
 import { invoke } from "@tauri-apps/api/core";
 
 let annotationSequence = 0;
@@ -33,7 +28,7 @@ function badge(doc: Document, index: number): HTMLButtonElement {
   button.type = "button";
   button.className = "znote-code-annotation";
   button.dataset.annotationIndex = String(index);
-  button.setAttribute("aria-label", `代码注释 ${index}`);
+  button.setAttribute("aria-label", tr("代码注释 {0}", [index]));
   button.setAttribute("aria-expanded", "false");
   return button;
 }
@@ -140,7 +135,7 @@ export function mountCodeAnnotations(
     const panel = doc.createElement("aside");
     panel.className = "md-typeset znote-code-annotation-tooltip";
     panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-label", `代码注释 ${button.dataset.annotationIndex}`);
+    panel.setAttribute("aria-label", tr("代码注释 {0}", [button.dataset.annotationIndex]));
     panel.id = `znote-code-annotation-${annotationSequence++}`;
     for (const child of Array.from(item.childNodes)) panel.append(child.cloneNode(true));
     panel.querySelectorAll<HTMLElement>("[id], [name], [for], [data-zn-node]").forEach((node) => {
@@ -165,7 +160,7 @@ export function mountCodeAnnotations(
         image.src = data;
         delete image.dataset.znSrc;
       }).catch(() => {
-        image.alt = image.alt || `找不到图片：${source}`;
+        image.alt = image.alt || tr("找不到图片：{0}", [source]);
       });
     }
     button.setAttribute("aria-expanded", "true");

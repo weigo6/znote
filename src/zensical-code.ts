@@ -1,10 +1,4 @@
-/*
- * Adapted from Zensical UI 0.0.66 code block and clipboard components.
- * Copyright (c) 2025-2026 Zensical and contributors. MIT license:
- * public/vendor/zensical/LICENSE.md
- * Upstream: https://github.com/zensical/ui/blob/master/src/assets/javascripts/components/content/code/_/index.ts
- */
-
+import { tr } from "./i18n";
 const sourceText = new WeakMap<HTMLElement, string>();
 const restoredHash = new WeakMap<HTMLElement, string>();
 const originalId = (id: string) => id.replace(/-zn-render-\d+-$/, "");
@@ -95,12 +89,12 @@ export function mountZensicalCodeBlocks(
 
     const nav = doc.createElement("nav");
     nav.className = "md-code__nav";
-    nav.setAttribute("aria-label", "代码块操作");
+    nav.setAttribute("aria-label", tr("代码块操作"));
     pre.insertBefore(nav, code);
     if (spans.length) code.classList.add("md-code__content");
 
     if (select) {
-      const button = control(doc, "select", "选择代码行");
+      const button = control(doc, "select", tr("选择代码行"));
       button.setAttribute("aria-pressed", "false");
       nav.append(button);
       let active = false;
@@ -169,7 +163,7 @@ export function mountZensicalCodeBlocks(
     }
 
     if (copy) {
-      const button = control(doc, "copy", "复制代码");
+      const button = control(doc, "copy", tr("复制代码"));
       nav.append(button);
       let resetTimer: ReturnType<typeof setTimeout> | undefined;
       button.addEventListener("click", async () => {
@@ -179,11 +173,11 @@ export function mountZensicalCodeBlocks(
         try {
           await copyText(sourceText.get(code) ?? cleanCode(code));
           success = true;
-          button.title = "已复制";
-          button.setAttribute("aria-label", "已复制");
+          button.title = tr("已复制");
+          button.setAttribute("aria-label", tr("已复制"));
         } catch {
-          button.title = "复制失败";
-          button.setAttribute("aria-label", "复制失败");
+          button.title = tr("复制失败");
+          button.setAttribute("aria-label", tr("复制失败"));
         } finally {
           button.disabled = false;
           button.removeAttribute("aria-busy");
@@ -195,8 +189,8 @@ export function mountZensicalCodeBlocks(
         if (resetTimer) clearTimeout(resetTimer);
         resetTimer = setTimeout(() => {
           if (!button.isConnected) return;
-          button.title = "复制代码";
-          button.setAttribute("aria-label", "复制代码");
+          button.title = tr("复制代码");
+          button.setAttribute("aria-label", tr("复制代码"));
         }, 1600);
       }, { signal });
     }

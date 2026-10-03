@@ -22,6 +22,7 @@ test("theme button cycles light, dark, and system and follows OS changes", async
 
 test("Ctrl+P is handled by the app instead of printing its chrome", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   const canceled = await page.evaluate(() => {
     const event = new KeyboardEvent("keydown", {
       key: "p", ctrlKey: true, bubbles: true, cancelable: true,
@@ -136,6 +137,7 @@ test("sidebar width can be dragged and restored", async ({
 
 test("split view divider resizes both panes and restores its ratio", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   const editor = page.locator("#editor-stage");
   const divider = page.getByRole("separator", {
     name: "调整编辑区与渲染区宽度",
@@ -167,6 +169,7 @@ test("split view divider resizes both panes and restores its ratio", async ({ pa
   );
   expect(savedRatio).toBeCloseTo(0.65, 1);
   await page.reload();
+  await page.locator(".sidebar-add").click();
   await expect(divider).toBeVisible();
   await expect
     .poll(async () =>
@@ -247,6 +250,7 @@ test("Ctrl+F opens the preview finder in reading mode and the editor finder in s
   page,
 }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   await page.locator('[data-mode="read"]').click();
   await page.keyboard.press("Control+f");
   await expect(page.locator("#preview-find")).toBeVisible();
@@ -278,6 +282,7 @@ test("Markdown settings expose extension switches without project actions", asyn
   await expect(page.locator('[data-extension="admonition"]')).toBeChecked();
   await expect(page.locator("#sync-preview")).toBeChecked();
   await expect(page.locator("#sync-editor-scroll")).toBeChecked();
+  await page.locator('[data-settings-tab="writing"]').click();
   await page.locator("#sync-preview").uncheck();
   await expect(page.locator("#sync-editor-scroll")).toBeChecked();
   await page.locator("#sync-editor-scroll").uncheck();
@@ -351,8 +356,9 @@ test("named configurations persist and JSON drafts survive edits in other contro
 }) => {
   await page.goto("/");
   await page.locator('[data-action="settings"]').first().click();
+  await page.locator('[data-settings-tab="reading"]').click();
   await page.locator('[data-config="reader.preset"]').selectOption("book");
-  await page.locator(".profile-library summary").click();
+  await page.locator('[data-settings-tab="profiles"]').click();
   await page.locator("#profile-name").fill("长文阅读");
   await page.locator("#profile-save").click();
   await expect(page.locator("#profile-feedback")).toContainText("已保存");
@@ -361,19 +367,21 @@ test("named configurations persist and JSON drafts survive edits in other contro
   await page.locator("#render-config-json").fill(draft);
   await page.locator('[data-config="primary"]').selectOption("teal");
   await expect(page.locator("#render-config-json")).toHaveValue(draft);
+  await page.locator('[data-settings-tab="profiles"]').click();
   await page.locator("#render-profile").selectOption("0");
   await page.locator("#profile-load").click();
   await expect(page.locator('[data-config="primary"]')).toHaveValue("app");
   await page.reload();
   await page.locator('[data-action="settings"]').first().click();
+  await page.locator('[data-settings-tab="reading"]').click();
   await page.locator('[data-config="reader.preset"]').selectOption("compact");
-  await page.locator(".profile-library summary").click();
+  await page.locator('[data-settings-tab="profiles"]').click();
   await page.locator("#render-profile").selectOption("0");
   await page.locator("#profile-load").click();
   await expect(page.locator('[data-config="reader.preset"]')).toHaveValue(
     "book",
   );
-  await page.locator(".profile-library summary").click();
+  await page.locator('[data-settings-tab="reading"]').click();
   await expect(
     page.frameLocator("#settings-preview iframe").locator("h1"),
   ).toBeVisible();
@@ -407,6 +415,7 @@ test("legacy live preference opens the source editor and all view switches prese
     localStorage.removeItem("znote:drafts");
   });
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   await expect(page.locator('[data-mode="source"].active')).toHaveCount(1);
   await expect(page.locator(".writing-area")).toHaveAttribute(
     "data-mode",

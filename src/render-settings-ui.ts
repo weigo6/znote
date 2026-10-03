@@ -1,3 +1,4 @@
+import { tr, onLanguageChange, localizeUi, localizeError } from "./i18n";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { escapeHtml } from "./preview";
 import { PreviewSurface } from "./preview-surface";
@@ -19,6 +20,7 @@ import {
 import type { RenderSettings } from "./render-config";
 import type { RenderResult } from "./types";
 import { readRenderProfiles, writeRenderProfiles } from "./render-profiles";
+import { settingsPageHeading } from "./settings-navigation";
 
 const select = (path: string, label: string, choices: [string, string][]) =>
   `<div class="setting-row"><label for="${path}">${label}</label><select id="${path}" data-config="${path}">${choices.map(([value, text]) => `<option value="${value}">${text}</option>`).join("")}</select></div>`;
@@ -41,75 +43,68 @@ function optionMarkup(
 
 export function renderSettingsMarkup(settings: RenderSettings) {
   return `<div id="render-settings">
-    <details class="profile-library"><summary>保存的渲染配置</summary><div class="setting-row"><label for="render-profile">选择配置</label><select id="render-profile"><option value="">选择已保存的配置…</option></select></div><div class="theme-css-actions"><input id="profile-name" type="text" maxlength="60" placeholder="配置名称，如：数学笔记" aria-label="配置名称"><button type="button" id="profile-save">保存当前配置</button><button type="button" id="profile-load">使用配置</button><button type="button" id="profile-remove">删除</button></div><p id="profile-feedback" class="config-feedback" role="status"></p></details>
-    <nav class="settings-tabs" aria-label="渲染设置分类">${[
-      ["reading", "阅读"],
-      ["math", "公式"],
-      ["extensions", "语法扩展"],
-      ["advanced", "高级"],
-    ]
-      .map(
-        ([id, label], i) =>
-          `<button type="button" data-settings-tab="${id}" aria-pressed="${!i}">${label}</button>`,
-      )
-      .join("")}</nav>
-    <div data-settings-panel="reading">
-      <div class="settings-section"><h3>阅读排版</h3>
-      ${select("reader.preset", "排版预设", [...readerPresets.map((p) => [p.id, p.name] as [string, string]), ["custom", "自定义排版"]])}
+    <div data-settings-panel="profiles" hidden>${settingsPageHeading("profiles")}
+      <div class="settings-section profile-library"><h3>${tr("保存的渲染配置")}</h3><div class="setting-row"><label for="render-profile">${tr("选择配置")}</label><select id="render-profile"><option value="">${tr("选择已保存的配置…")}</option></select></div>
+      <div class="theme-css-actions"><button type="button" id="profile-load">${tr("使用配置")}</button><button type="button" id="profile-remove">${tr("删除")}</button></div><p class="muted">${tr("配置包含阅读排版、公式、语法扩展和自定义样式，不包含界面主题与保存习惯。")}</p></div>
+      <div class="settings-section"><h3>${tr("保存当前配置")}</h3><div class="setting-row"><label for="profile-name">${tr("配置名称")}</label><input id="profile-name" type="text" maxlength="60" placeholder="${tr("如：数学笔记")}" aria-label="${tr("配置名称")}"></div><button type="button" class="settings-action" id="profile-save">${tr("保存当前配置")}</button><p id="profile-feedback" class="config-feedback" role="status"></p></div>
+    </div>
+    <div data-settings-panel="reading" hidden>${settingsPageHeading("reading")}
+      <div class="settings-section"><h3>${tr("阅读排版")}</h3>
+      ${select("reader.preset", tr("排版预设"), [...readerPresets.map((p) => [p.id, p.name] as [string, string]), ["custom", tr("自定义排版")]])}
       <p id="reader-preset-description" class="muted"></p>
-      ${select("reader.font", "正文字体", [
-        ["sans", "无衬线"],
-        ["serif", "宋体 / 衬线"],
+      ${select("reader.font", tr("正文字体"), [
+        ["sans", tr("无衬线")],
+        ["serif", tr("宋体 / 衬线")],
       ])}
-      <label class="setting-row"><span>正文行距</span><input type="number" data-config="reader.lineHeight" min="1.4" max="2.2" step="0.1"></label>
-      <label class="setting-row"><span>最大栏宽（px）</span><input type="number" data-config="reader.width" min="600" max="1200" step="20"></label>
-      <p class="muted">阅读与对照区共用应用底色，并跟随浅色 / 深色。排版预设影响普通正文的字体、行距与栏宽。</p>
-      <div class="settings-preview" id="settings-preview" aria-label="阅读效果预览"></div></div>
-      <div class="settings-section"><h3>内容交互</h3>
-      ${check("features.footnoteTooltips", "脚注悬浮提示", "悬浮或键盘聚焦时查看脚注正文。")}
-      ${check("features.codeAnnotations", "代码注释", "将代码注释中的编号与后续有序列表关联。")}
-      ${check("features.codeCopy", "代码复制按钮", "复制代码块中的代码文本。")}
-      ${check("features.codeSelect", "代码逐行选择", "点击代码行并用 Shift 扩展选择范围。")}
-      ${check("mermaid.enabled", "Mermaid 图表")}
-      ${select("mermaid.theme", "图表配色", [
-        ["auto", "跟随应用"],
-        ["neutral", "中性"],
-        ["forest", "森林"],
-        ["dark", "深色"],
+      <label class="setting-row"><span>${tr("正文行距")}</span><input type="number" data-config="reader.lineHeight" min="1.4" max="2.2" step="0.1"></label>
+      <label class="setting-row"><span>${tr("最大栏宽（px）")}</span><input type="number" data-config="reader.width" min="600" max="1200" step="20"></label>
+      <p class="muted">${tr("阅读与对照区共用应用底色，并跟随浅色 / 深色。排版预设影响普通正文的字体、行距与栏宽。")}</p>
+      <div class="settings-preview" id="settings-preview" aria-label="${tr("阅读效果预览")}"></div></div>
+      <div class="settings-section"><h3>${tr("内容交互")}</h3>
+      ${check("features.footnoteTooltips", tr("脚注悬浮提示"), tr("悬浮或键盘聚焦时查看脚注正文。"))}
+      ${check("features.codeAnnotations", tr("代码注释"), tr("将代码注释中的编号与后续有序列表关联。"))}
+      ${check("features.codeCopy", tr("代码复制按钮"), tr("复制代码块中的代码文本。"))}
+      ${check("features.codeSelect", tr("代码逐行选择"), tr("点击代码行并用 Shift 扩展选择范围。"))}
+      ${check("mermaid.enabled", tr("Mermaid 图表"))}
+      ${select("mermaid.theme", tr("图表配色"), [
+        ["auto", tr("跟随应用")],
+        ["neutral", tr("中性")],
+        ["forest", tr("森林")],
+        ["dark", tr("深色")],
       ])}
       </div>
     </div>
-    <div data-settings-panel="math" hidden><div class="settings-section"><h3>数学公式</h3>
-      ${select("math.engine", "公式引擎", [
+    <div data-settings-panel="math" hidden>${settingsPageHeading("math")}<div class="settings-section"><h3>${tr("数学公式")}</h3>
+      ${select("math.engine", tr("公式引擎"), [
         ["katex", "KaTeX"],
         ["mathjax", "MathJax"],
-        ["none", "保留公式原文"],
+        ["none", tr("保留公式原文")],
       ])}
-      <p id="math-dependency" class="muted" hidden>数学语法扩展已关闭；此配置会保留，重新启用后生效。</p>
-      ${select("math.errorMode", "排版失败时", [
-        ["source", "保留原文并提示"],
-        ["inline", "在正文标出错误"],
+      <p id="math-dependency" class="muted" hidden>${tr("数学语法扩展已关闭；此配置会保留，重新启用后生效。")}</p>
+      ${select("math.errorMode", tr("排版失败时"), [
+        ["source", tr("保留原文并提示")],
+        ["inline", tr("在正文标出错误")],
       ])}
-      <fieldset data-math-engine="katex"><legend>KaTeX 排版</legend>
-        ${check("math.katex.fleqn", "块公式左对齐")}${check("math.katex.leqno", "公式标签显示在左侧")}
-        ${select("math.katex.strict", "TeX 严格程度", [
-          ["warn", "提示差异"],
-          ["ignore", "兼容写法"],
-          ["error", "严格校验"],
+      <fieldset data-math-engine="katex"><legend>${tr("KaTeX 排版")}</legend>
+        ${check("math.katex.fleqn", tr("块公式左对齐"))}${check("math.katex.leqno", tr("公式标签显示在左侧"))}
+        ${select("math.katex.strict", tr("TeX 严格程度"), [
+          ["warn", tr("提示差异")],
+          ["ignore", tr("兼容写法")],
+          ["error", tr("严格校验")],
         ])}
       </fieldset>
-      <fieldset data-math-engine="mathjax"><legend>MathJax 排版</legend>
-        ${select("math.mathjax.tagSide", "公式标签位置", [
-          ["right", "右侧"],
-          ["left", "左侧"],
+      <fieldset data-math-engine="mathjax"><legend>${tr("MathJax 排版")}</legend>
+        ${select("math.mathjax.tagSide", tr("公式标签位置"), [
+          ["right", tr("右侧")],
+          ["left", tr("左侧")],
         ])}
       </fieldset>
-      <label class="field-label" for="math-macros">自定义命令（JSON）</label>
-      <p class="muted">例如 <code>{"RR":"\\\\mathbb{R}"}</code>；参数宏使用 <code>{"norm":{"body":"\\\\lVert #1\\\\rVert","args":1}}</code>。切换引擎会保留命令。</p>
+      <label class="field-label" for="math-macros">${tr("自定义命令（JSON）")}</label>
+      <p class="muted">${tr("例如")} <code>{"RR":"\\\\mathbb{R}"}</code>${tr("；参数宏使用")} <code>{"norm":{"body":"\\\\lVert #1\\\\rVert","args":1}}</code>${tr("。切换引擎会保留命令。")}</p>
       <textarea id="math-macros" class="config-editor" spellcheck="false">${escapeHtml(JSON.stringify(settings.math.macros, null, 2))}</textarea>
-      <button type="button" class="settings-action" id="apply-macros">应用命令</button>
+      <button type="button" class="settings-action" id="apply-macros">${tr("应用命令")}</button>
       <p id="macro-error" class="config-feedback" role="status"></p>
-      <details><summary>公式识别语法</summary><fieldset data-extension-fields="pymdownx.arithmatex">${Object.entries(
+      <details><summary>${tr("公式识别语法")}</summary><fieldset data-extension-fields="pymdownx.arithmatex">${Object.entries(
         extensionSpecs.find((e) => e.id === "pymdownx.arithmatex")!.options,
       )
         .map(([name, spec]) =>
@@ -122,7 +117,7 @@ export function renderSettingsMarkup(settings: RenderSettings) {
         )
         .join("")}</fieldset></details>
       </div></div>
-    <div data-settings-panel="extensions" hidden>${[
+    <div data-settings-panel="extensions" hidden>${settingsPageHeading("extensions")}${[
       ...new Set(extensionSpecs.map((e) => e.group)),
     ]
       .map(
@@ -134,7 +129,7 @@ export function renderSettingsMarkup(settings: RenderSettings) {
                 `<div class="extension-settings"><label class="setting-row"><span>${e.label}<small>${e.id}</small></span><input type="checkbox" data-extension="${e.id}" ${settings.extensions[e.id] ? "checked" : ""}></label>${
                   Object.keys(e.options).length &&
                   e.id !== "pymdownx.arithmatex"
-                    ? `<details><summary>配置选项</summary><fieldset data-extension-fields="${e.id}">${Object.entries(
+                    ? `<details><summary>${tr("配置选项")}</summary><fieldset data-extension-fields="${e.id}">${Object.entries(
                         e.options,
                       )
                         .map(([name, spec]) =>
@@ -153,33 +148,34 @@ export function renderSettingsMarkup(settings: RenderSettings) {
       )
       .join("")}</div>
     <div data-settings-panel="advanced" hidden>
-      <div class="settings-section"><h3>组件样式与颜色</h3>
-      ${select("variant", "组件样式", [
+      ${settingsPageHeading("advanced")}
+      <div class="settings-section"><h3>${tr("组件样式与颜色")}</h3>
+      ${select("variant", tr("组件样式"), [
         ["modern", "Modern"],
         ["classic", "Classic"],
       ])}
       ${select(
         "primary",
-        "链接 / 主色",
-        paletteColors.map((c) => [c, c === "app" ? "跟随应用" : c]),
+        tr("链接 / 主色"),
+        paletteColors.map((c) => [c, c === "app" ? tr("跟随应用") : c]),
       )}
       ${select(
         "accent",
-        "交互强调色",
-        paletteColors.map((c) => [c, c === "app" ? "跟随应用" : c]),
+        tr("交互强调色"),
+        paletteColors.map((c) => [c, c === "app" ? tr("跟随应用") : c]),
       )}
-      <p class="muted">这些颜色主要用于链接及特殊组件；不改变普通正文的底色和排版。</p></div>
-      <div class="settings-section"><h3>文档 HTML 与 CSS</h3>
-      ${check("features.inlineStyles", "显示文档内的 CSS", "支持 style 属性与样式块，只影响隔离的阅读区域。文档 JavaScript 不执行。")}
-      <label class="field-label" for="theme-css">自定义 CSS 覆盖</label>
+      <p class="muted">${tr("这些颜色主要用于链接及特殊组件；不改变普通正文的底色和排版。")}</p></div>
+      <div class="settings-section"><h3>${tr("文档 HTML 与 CSS")}</h3>
+      ${check("features.inlineStyles", tr("显示文档内的 CSS"), tr("支持 style 属性与样式块，只影响隔离的阅读区域。文档 JavaScript 不执行。"))}
+      <label class="field-label" for="theme-css">${tr("自定义 CSS 覆盖")}</label>
       <textarea id="theme-css" class="config-editor" maxlength="262144" spellcheck="false">${escapeHtml(settings.customCss)}</textarea>
-      <div class="theme-css-actions"><label class="theme-css-import">导入 CSS<input id="theme-css-file" type="file" accept=".css,text/css" hidden></label><button id="theme-css-clear" type="button">清除覆盖</button></div>
-      <p class="muted">自定义 CSS 最后应用。相对资源不随文件导入，可使用 data: URL。</p></div>
-      <div class="settings-section"><h3>渲染配置</h3>
+      <div class="theme-css-actions"><label class="theme-css-import">${tr("导入 CSS")}<input id="theme-css-file" type="file" accept=".css,text/css" hidden></label><button id="theme-css-clear" type="button">${tr("清除覆盖")}</button></div>
+      <p class="muted">${tr("自定义 CSS 最后应用。相对资源不随文件导入，可使用 data: URL。")}</p></div>
+      <div class="settings-section"><h3>${tr("渲染配置")}</h3>
       <textarea id="render-config-json" class="config-editor" spellcheck="false">${escapeHtml(JSON.stringify(settings, null, 2))}</textarea>
-      <div class="theme-css-actions"><button id="config-apply" type="button">校验并应用</button><button id="config-export" type="button">导出 JSON</button><label class="theme-css-import">导入 JSON<input id="config-import" type="file" accept=".json,application/json" hidden></label><button id="config-reset" type="button">恢复默认</button></div>
+      <div class="theme-css-actions"><button id="config-apply" type="button">${tr("校验并应用")}</button><button id="config-export" type="button">${tr("导出 JSON")}</button><label class="theme-css-import">${tr("导入 JSON")}<input id="config-import" type="file" accept=".json,application/json" hidden></label><button id="config-reset" type="button">${tr("恢复默认")}</button></div>
       <p id="config-error" class="config-feedback" role="status"></p>
-      <details><summary>查看实际生效配置</summary><pre id="config-effective" class="effective-config"></pre></details>
+      <details><summary>${tr("查看实际生效配置")}</summary><pre id="config-effective" class="effective-config"></pre></details>
       </div>
     </div>
     <p id="render-setting-error" class="config-feedback" role="status"></p>
@@ -209,7 +205,7 @@ export function mountRenderSettings(
     const picker = query<HTMLSelectElement>("#render-profile"),
       selected = picker.value;
     picker.innerHTML =
-      '<option value="">选择已保存的配置…</option>' +
+      `<option value="">${tr("选择已保存的配置…")}</option>` +
       profiles
         .map(
           (profile, i) =>
@@ -229,7 +225,7 @@ export function mountRenderSettings(
       });
     query("#reader-preset-description").textContent =
       readerPresets.find((p) => p.id === settings.reader.preset)?.description ||
-      "保留你自定义的字体、行距与栏宽。";
+      tr("保留你自定义的字体、行距与栏宽。");
     root
       .querySelectorAll<HTMLInputElement>("[data-extension]")
       .forEach((input) => {
@@ -270,20 +266,20 @@ export function mountRenderSettings(
         2,
       );
   };
-  const sample =
-    "# 阅读，从一段普通文字开始\n\n字体、行距与栏宽决定阅读的节奏。这里没有链接或特殊语法，也能看出排版预设之间的差异。\n\n## 留下清晰的思路\n\n这是第二段笔记。底色与应用一致，切换深色时同样保持协调。";
+  const sample = () =>
+    tr("# 阅读，从一段普通文字开始\n\n字体、行距与栏宽决定阅读的节奏。这里没有链接或特殊语法，也能看出排版预设之间的差异。\n\n## 留下清晰的思路\n\n这是第二段笔记。底色与应用一致，切换深色时同样保持协调。");
   const preview = async (revision: number) => {
     const current = structuredClone(settings);
     try {
       const result: RenderResult = isTauri()
         ? await invoke("render_markdown", {
-            text: sample,
+            text: sample(),
             path: null,
             settings: current,
             includeEffectiveConfig: true,
           })
         : {
-            html: "<h1>阅读，从一段普通文字开始</h1><p>字体、行距与栏宽决定阅读的节奏。这里没有链接或特殊语法，也能看出排版预设之间的差异。</p><h2>留下清晰的思路</h2><p>这是第二段笔记。底色与应用一致，切换深色时同样保持协调。</p>",
+            html: `<h1>${tr("阅读，从一段普通文字开始")}</h1><p>${tr("字体、行距与栏宽决定阅读的节奏。这里没有链接或特殊语法，也能看出排版预设之间的差异。")}</p><h2>${tr("留下清晰的思路")}</h2><p>${tr("这是第二段笔记。底色与应用一致，切换深色时同样保持协调。")}</p>`,
             toc: [],
             meta: {},
             warnings: [],
@@ -319,7 +315,7 @@ export function mountRenderSettings(
       }
     } catch (error) {
       if (!disposed && revision === generation)
-        feedback("#render-setting-error", String(error));
+        feedback("#render-setting-error", localizeError(error));
     }
   };
   const schedule = () => {
@@ -426,8 +422,8 @@ export function mountRenderSettings(
           feedback(
             "#config-error",
             input.id === "theme-css-file"
-              ? "CSS 超过 256 KB。"
-              : "配置超过 1 MB。",
+              ? tr("CSS 超过 256 KB。")
+              : tr("配置超过 1 MB。"),
           );
           return;
         }
@@ -439,7 +435,7 @@ export function mountRenderSettings(
         } else {
           configDirty = true;
           query<HTMLTextAreaElement>("#render-config-json").value = text;
-          feedback("#config-error", "已载入配置草稿，请校验并应用。");
+          feedback("#config-error", tr("已载入配置草稿，请校验并应用。"));
         }
         input.value = "";
       }
@@ -453,42 +449,29 @@ export function mountRenderSettings(
         "button",
       );
       if (!button) return;
-      if (button.dataset.settingsTab) {
-        root
-          .querySelectorAll<HTMLElement>("[data-settings-panel]")
-          .forEach((el) => {
-            el.hidden = el.dataset.settingsPanel !== button.dataset.settingsTab;
-          });
-        root
-          .querySelectorAll<HTMLElement>("[data-settings-tab]")
-          .forEach((el) =>
-            el.setAttribute("aria-pressed", String(el === button)),
-          );
-        return;
-      }
       try {
         if (button.id === "profile-save") {
           const name = query<HTMLInputElement>("#profile-name").value.trim();
           if (!name) {
-            feedback("#profile-feedback", "请填写配置名称。");
+            feedback("#profile-feedback", tr("请填写配置名称。"));
             return;
           }
           const next = profiles.filter((profile) => profile.name !== name);
           if (next.length >= 20) {
-            feedback("#profile-feedback", "最多保存 20 个配置。");
+            feedback("#profile-feedback", tr("最多保存 20 个配置。"));
             return;
           }
           next.push({ name, settings: structuredClone(settings) });
           writeRenderProfiles(localStorage, next);
           profiles = next;
           syncProfiles();
-          feedback("#profile-feedback", `已保存：${name}`);
+          feedback("#profile-feedback", tr("已保存：{0}", [name]));
         }
         if (button.id === "profile-load" || button.id === "profile-remove") {
           const selected = query<HTMLSelectElement>("#render-profile").value,
             profile = selected ? profiles[Number(selected)] : undefined;
           if (!profile) {
-            feedback("#profile-feedback", "请先选择一个配置。");
+            feedback("#profile-feedback", tr("请先选择一个配置。"));
             return;
           }
           if (button.id === "profile-load") {
@@ -500,13 +483,13 @@ export function mountRenderSettings(
               2,
             );
             query<HTMLTextAreaElement>("#theme-css").value = settings.customCss;
-            feedback("#profile-feedback", `已使用：${profile.name}`);
+            feedback("#profile-feedback", tr("已使用：{0}", [profile.name]));
           } else {
             const next = profiles.filter((item) => item !== profile);
             writeRenderProfiles(localStorage, next);
             profiles = next;
             syncProfiles();
-            feedback("#profile-feedback", `已删除：${profile.name}`);
+            feedback("#profile-feedback", tr("已删除：{0}", [profile.name]));
           }
         }
         if (button.id === "apply-macros") {
@@ -524,7 +507,7 @@ export function mountRenderSettings(
               "#macro-error",
             )
           )
-            feedback("#macro-error", "命令已应用。");
+            feedback("#macro-error", tr("命令已应用。"));
         }
         if (button.id === "config-apply") {
           if (
@@ -543,7 +526,7 @@ export function mountRenderSettings(
               2,
             );
             query<HTMLTextAreaElement>("#theme-css").value = settings.customCss;
-            feedback("#config-error", "配置已应用。");
+            feedback("#config-error", tr("配置已应用。"));
           }
         }
         if (button.id === "config-reset") {
@@ -560,8 +543,9 @@ export function mountRenderSettings(
           if (isTauri()) {
             const path = await invoke<string | null>("export_render_settings", {
               settings,
+              filterLabel: tr("渲染配置"),
             });
-            if (!disposed && path) feedback("#config-error", `已导出：${path}`);
+            if (!disposed && path) feedback("#config-error", tr("已导出：{0}", [path]));
           } else {
             const url = URL.createObjectURL(
               new Blob([JSON.stringify(settings, null, 2)], {
@@ -579,7 +563,7 @@ export function mountRenderSettings(
         if (!disposed)
           feedback(
             button.id === "apply-macros" ? "#macro-error" : "#config-error",
-            `配置未应用：${String(error)}`,
+            tr("配置未应用：{0}", [localizeError(error)]),
           );
       }
     },
@@ -605,7 +589,13 @@ export function mountRenderSettings(
   syncProfiles();
   sync();
   schedule();
+  const disposeLanguage = onLanguageChange(() => {
+    localizeUi(root, 'textarea, #render-profile option:not([value=""])');
+    query("#reader-preset-description").textContent = readerPresets.find(p => p.id === settings.reader.preset)?.description || tr("保留你自定义的字体、行距与栏宽。");
+    schedule();
+  });
   return () => {
+    disposeLanguage();
     disposed = true;
     generation++;
     clearTimeout(timer);

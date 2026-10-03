@@ -1,9 +1,10 @@
-import { EditorState } from "@codemirror/state";
+import { tr, onLanguageChange } from "./i18n";
+import { EditorState, Compartment } from "@codemirror/state";
 import { EditorView, keymap, drawSelection, dropCursor, highlightActiveLine, placeholder } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap, indentWithTab, toggleComment } from "@codemirror/commands";
 import { markdown, markdownKeymap } from "@codemirror/lang-markdown";
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching, indentOnInput } from "@codemirror/language";
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+import { searchKeymap, highlightSelectionMatches, closeSearchPanel, openSearchPanel } from "@codemirror/search";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 
 export interface EditorCallbacks {
@@ -17,6 +18,19 @@ export interface EditorCallbacks {
 /** One lossless Markdown source editor, reused in edit and split views. */
 export class NoteEditor {
   readonly view: EditorView;
+  private readonly locale = new Compartment();
+  private readonly disposeLanguage: () => void;
+  private localeExtensions() {
+    return [
+      EditorState.phrases.of({
+        Find: tr("查找"), Replace: tr("替换"), next: tr("下一个"), previous: tr("上一个"),
+        all: tr("全选"), "match case": tr("区分大小写"), regexp: tr("正则"),
+        "by word": tr("全词"), replace: tr("替换"), "replace all": tr("全部替换"), close: tr("关闭"),
+      }),
+      placeholder(tr("写下你的第一个想法…")),
+      EditorView.contentAttributes.of({"aria-label": tr("Markdown 编辑器"), spellcheck: "false", autocapitalize: "off"}),
+    ];
+  }
   constructor(parent: HTMLElement, text: string, callbacks: EditorCallbacks) {
     const shortcuts = [
       { key: "Mod-s", run: () => { callbacks.save(); return true; } },
@@ -37,22 +51,10 @@ export class NoteEditor {
       state: EditorState.create({
         doc: text,
         extensions: [
-          EditorState.phrases.of({
-            Find: "查找",
-            Replace: "替换",
-            next: "下一个",
-            previous: "上一个",
-            all: "全选",
-            "match case": "区分大小写",
-            regexp: "正则",
-            "by word": "全词",
-            replace: "替换",
-            "replace all": "全部替换",
-            close: "关闭",
-          }),
+          this.locale.of(this.localeExtensions()),
           markdown(), history(), drawSelection(), dropCursor(), indentOnInput(),
           bracketMatching(), closeBrackets(), highlightSelectionMatches(), highlightActiveLine(),
-          syntaxHighlighting(defaultHighlightStyle), placeholder("写下你的第一个想法…"),
+          syntaxHighlighting(defaultHighlightStyle),
           EditorView.lineWrapping,
           keymap.of([...shortcuts, ...markdownKeymap, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
           EditorView.updateListener.of((update) => {
@@ -64,9 +66,16 @@ export class NoteEditor {
             if (!image) return false;
             event.preventDefault(); callbacks.image(image); return true;
           }}),
-          EditorView.contentAttributes.of({"aria-label": "Markdown 编辑器", spellcheck: "false", autocapitalize: "off"}),
         ],
       }),
+    });
+    this.disposeLanguage = onLanguageChange(() => {
+      const focused = this.view.dom.ownerDocument.activeElement as HTMLElement | null;
+      const searching = !!this.view.dom.querySelector(".cm-search");
+      if (searching) closeSearchPanel(this.view);
+      this.view.dispatch({ effects: this.locale.reconfigure(this.localeExtensions()) });
+      if (searching) openSearchPanel(this.view);
+      if (focused?.isConnected && !this.view.dom.contains(focused)) focused.focus({ preventScroll: true });
     });
   }
   insert(text: string) {
@@ -86,7 +95,7 @@ export class NoteEditor {
       y: "start", yMargin: this.view.scrollDOM.clientHeight * 0.28,
     })});
   }
-  destroy() { this.view.destroy(); }
+  destroy() { this.disposeLanguage(); this.view.destroy(); }
 }
 
 export function wrap(view: EditorView, mark: string) {

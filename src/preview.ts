@@ -1,3 +1,4 @@
+import { tr } from "./i18n";
 import DOMPurify from "dompurify";
 import { mountRuntimes, mountInteractions } from "./render-plugins";
 import { invoke } from "@tauri-apps/api/core";
@@ -73,7 +74,7 @@ async function hydrateImages(container: HTMLElement, path: string, signal: Abort
         delete img.dataset.znSrc;
       }
     } catch {
-      img.alt = img.alt || `找不到图片：${src}`;
+      img.alt = img.alt || tr("找不到图片：{0}", [src]);
       img.title = src;
     }
   }
@@ -107,7 +108,7 @@ export async function setRendered(
     typeof result.html !== "string" ||
     (result.plan && result.plan.schemaVersion !== 4)
   )
-    throw new Error("渲染协议版本不兼容，请更新内置渲染器。");
+    throw new Error(tr("渲染协议版本不兼容，请更新内置渲染器。"));
   sessions.get(container)?.abort();
   const session = new AbortController();
   sessions.set(container, session);

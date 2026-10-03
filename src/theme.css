@@ -8,6 +8,7 @@
   --secondary: #65716a;
   --muted: #929991;
   --accent: #376e5a;
+  --on-accent: #ffffff;
   --accent-soft: #e7eee7;
   --border: #e7e9e1;
   --border-strong: #d5dcd1;
@@ -34,6 +35,7 @@
   --secondary: #a9b7aa;
   --muted: #728578;
   --accent: #9bbea2;
+  --on-accent: #202124;
   --accent-soft: #2d4133;
   --border: #334236;
   --border-strong: #425746;

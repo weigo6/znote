@@ -1,3 +1,4 @@
+import { tr } from "./i18n";
 import manifest from "../config/render-capabilities.json";
 
 export type OptionValue = boolean | string | number | string[];
@@ -20,9 +21,21 @@ export interface ExtensionSpec {
   options: Record<string, OptionSpec>;
 }
 export const capabilities = manifest;
-export const extensionSpecs = manifest.extensions as ExtensionSpec[];
+function localizedSpec<T extends object>(source: T): T {
+  const result = { ...source };
+  for (const [key, value] of Object.entries(source)) {
+    if (["label", "name", "description", "group"].includes(key) && typeof value === "string")
+      Object.defineProperty(result, key, { enumerable: true, get: () => tr(value) });
+    else if (key === "labels" && Array.isArray(value))
+      Object.defineProperty(result, key, { enumerable: true, get: () => value.map(label => tr(label)) });
+    else if (value && typeof value === "object" && !Array.isArray(value))
+      (result as Record<string, unknown>)[key] = localizedSpec(value);
+  }
+  return result;
+}
+export const extensionSpecs = manifest.extensions.map(localizedSpec) as ExtensionSpec[];
 export const fieldSpecs = manifest.fields as Record<string, OptionSpec>;
-export const readerPresets = manifest.readerPresets;
+export const readerPresets = manifest.readerPresets.map(localizedSpec);
 export const extensionGroups = [
   ...new Set(extensionSpecs.map((item) => item.group)),
 ].map((title) => ({

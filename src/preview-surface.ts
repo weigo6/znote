@@ -1,3 +1,4 @@
+import { tr, getLanguage, languagePacks, onLanguageChange, localizeUi } from "./i18n";
 import { setRendered, applyRenderedTheme } from "./preview";
 import { updateSourceLocations } from "./preview-source-map";
 import { previewAnchors, previewAnchorAt, readingAnchors, readingAnchorAt, lineWithin, isPreviewVisible, type PreviewAnchor, type ReadingAnchor } from "./preview-sync";
@@ -12,6 +13,7 @@ import { mountInteractions, mountRuntimes } from "./render-plugins";
 
 /** The child has no script execution or Tauri bridge; trusted host code mounts plugins. */
 export class PreviewSurface {
+  private disposeLanguage?: () => void;
   private session?: AbortController;
   private themeRuntime?: AbortController;
   private observer?: MutationObserver;
@@ -357,6 +359,8 @@ export class PreviewSurface {
   }
 
   dispose() {
+    this.disposeLanguage?.();
+    this.disposeLanguage = undefined;
     this.clearFind();
     this.cancel();
     this.observer?.disconnect();
@@ -404,8 +408,9 @@ export class PreviewSurface {
       return this.frame;
     }
     this.observer?.disconnect();
+    this.disposeLanguage?.();
     const frame = (this.frame = document.createElement("iframe"));
-    frame.title = "Markdown 正文预览";
+    frame.title = tr("Markdown 正文预览");
     frame.className = "document-preview-frame";
     frame.setAttribute("sandbox", "allow-same-origin allow-modals");
     const loaded = new Promise<void>((resolve) => {
@@ -420,7 +425,17 @@ export class PreviewSurface {
       if (this.frame !== frame) return;
       this.resolveReady = undefined;
       const doc = frame.contentDocument;
-      if (!doc) throw new Error("预览文档未能载入");
+      if (!doc) throw new Error(tr("预览文档未能载入"));
+      const syncLanguage = () => {
+        frame.title = tr("Markdown 正文预览");
+        doc.documentElement.lang = getLanguage();
+        doc.documentElement.dir = languagePacks[getLanguage()].direction;
+        doc.querySelectorAll(".md-code__nav").forEach(element => localizeUi(element));
+        doc.querySelectorAll<HTMLElement>(".znote-code-annotation").forEach(button =>
+          button.setAttribute("aria-label", tr("代码注释 {0}", [button.dataset.annotationIndex])));
+      };
+      syncLanguage();
+      this.disposeLanguage = onLanguageChange(syncLanguage);
       const style = (css: string) => {
         const element = doc.createElement("style");
         element.textContent = css;

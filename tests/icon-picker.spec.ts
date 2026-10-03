@@ -17,6 +17,7 @@ test("online icon picker replaces the saved editor selection with a shortcode", 
     }),
   );
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   const content = page.locator(".cm-content");
   await content.click();
   await page.keyboard.press("Control+a");
@@ -47,6 +48,7 @@ test("toolbar picker inserts a shortcode and Escape keeps the note untouched", a
     }),
   );
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   const content = page.locator(".cm-content");
   await content.click();
   await page.keyboard.press("Control+a");
@@ -88,6 +90,7 @@ test("search keeps existing cards until replacement and keeps a short result row
     }),
   );
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".sidebar-add").click();
   await page.getByRole("button", { name: "在线选择图标" }).click();
   const dialog = page.getByRole("dialog", { name: "在线选择图标" });
   const grid = page.locator("#icon-picker-results");

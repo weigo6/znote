@@ -1,3 +1,4 @@
+import { tr } from "./i18n";
 import DOMPurify from "dompurify";
 import type { RenderPlan } from "./types";
 import { mountCodeAnnotations } from "./code-annotations";
@@ -65,8 +66,8 @@ const plugins: RuntimePlugin[] = [
           el.classList.add("math-error");
           el.title = String(error);
           if (settings.errorMode === "inline")
-            el.textContent = `公式错误：${source}`;
-          diagnostic(`公式排版失败：${String(error)}`);
+            el.textContent = tr("公式错误：{0}", [source]);
+          diagnostic(tr("公式排版失败：{0}", [String(error)]));
         }
         if (onMathMarkup && performance.now() - sliceStarted > 8) {
           await new Promise<void>((resolve) =>
@@ -169,9 +170,9 @@ const plugins: RuntimePlugin[] = [
               });
           } catch {
             if (signal.aborted) return;
-            diagnostic("Mermaid 图表无法生成，请检查语法");
+            diagnostic(tr("Mermaid 图表无法生成，请检查语法"));
             diagram.classList.add("diagram-error");
-            diagram.title = "图表尚未完成，请检查 Mermaid 语法";
+            diagram.title = tr("图表尚未完成，请检查 Mermaid 语法");
           }
         }
       }

@@ -14,6 +14,8 @@ use std::{
     time::Duration,
 };
 use tauri::Manager;
+mod file_operations;
+mod recovery;
 
 type Result<T> = std::result::Result<T, String>;
 #[derive(Default)]
@@ -28,6 +30,8 @@ struct AppState {
     data: PathBuf,
     renderer: PathBuf,
     renderer_args: Vec<PathBuf>,
+    recovery: recovery::Recovery,
+    initial_document: Mutex<Option<Document>>,
 }
 struct Worker {
     child: Child,
@@ -325,9 +329,12 @@ fn workspace(state: &AppState, path: PathBuf) -> Result<Value> {
     )
 }
 #[tauri::command]
-fn choose_workspace(state: tauri::State<AppState>) -> Result<Option<Value>> {
+fn choose_workspace(
+    state: tauri::State<AppState>,
+    dialog_title: Option<String>,
+) -> Result<Option<Value>> {
     rfd::FileDialog::new()
-        .set_title("浏览 Markdown 文件夹")
+        .set_title(dialog_title.as_deref().unwrap_or("浏览 Markdown 文件夹"))
         .pick_folder()
         .map(|path| workspace(&state, path))
         .transpose()
@@ -348,9 +355,15 @@ fn refresh_workspace(state: tauri::State<AppState>) -> Result<Value> {
     workspace(&state, root)
 }
 #[tauri::command]
-fn choose_file(state: tauri::State<AppState>) -> Result<Option<Document>> {
+fn choose_file(
+    state: tauri::State<AppState>,
+    filter_label: Option<String>,
+) -> Result<Option<Document>> {
     let Some(path) = rfd::FileDialog::new()
-        .add_filter("Markdown / 文本", &["md", "markdown", "txt"])
+        .add_filter(
+            filter_label.as_deref().unwrap_or("Markdown / 文本"),
+            &["md", "markdown", "txt"],
+        )
         .pick_file()
     else {
         return Ok(None);
@@ -508,20 +521,23 @@ fn save_as(state: tauri::State<AppState>, text: String, name: String) -> Result<
     .map(Some)
 }
 #[tauri::command]
-fn create_note(state: tauri::State<AppState>, name: String) -> Result<Document> {
-    if name.trim().is_empty()
-        || name.contains(['/', '\\', ':', '*', '?', '"', '<', '>', '|'])
-        || name.starts_with('.')
-    {
-        return Err("请填写有效的文件名，不包含路径或特殊字符。".into());
-    }
-    let root = state
-        .access
-        .lock()
-        .unwrap()
-        .root
-        .clone()
-        .ok_or("请先打开文件夹")?;
+fn create_note(
+    state: tauri::State<AppState>,
+    name: String,
+    parent: Option<String>,
+) -> Result<Document> {
+    file_operations::valid_name(&name)?;
+    let root = if let Some(parent) = parent {
+        file_operations::workspace_path(&state, &parent, true)?
+    } else {
+        state
+            .access
+            .lock()
+            .unwrap()
+            .root
+            .clone()
+            .ok_or("请先打开文件夹")?
+    };
     let name = if name.ends_with(".md") {
         name
     } else {
@@ -606,19 +622,11 @@ fn import_image(
 }
 #[tauri::command]
 fn write_recovery(state: tauri::State<AppState>, documents: Value) -> Result<()> {
-    atomic_write(
-        &state.data.join("recovery.json"),
-        serde_json::to_vec(&documents)
-            .map_err(|e| e.to_string())?
-            .as_slice(),
-    )
+    state.recovery.write(&documents)
 }
 #[tauri::command]
 fn read_recovery(state: tauri::State<AppState>) -> Value {
-    let saved: Value = fs::read(state.data.join("recovery.json"))
-        .ok()
-        .and_then(|b| serde_json::from_slice(&b).ok())
-        .unwrap_or(json!([]));
+    let saved = state.recovery.read();
     // Restore only paths persisted by the previous local editing session.
     if let Some(docs) = saved.as_array() {
         let mut access = state.access.lock().unwrap();
@@ -679,7 +687,7 @@ fn open_url(url: String) -> Result<()> {
 }
 
 #[tauri::command]
-fn export_render_settings(settings: Value) -> Result<Option<String>> {
+fn export_render_settings(settings: Value, filter_label: Option<String>) -> Result<Option<String>> {
     if settings.get("schemaVersion").and_then(Value::as_u64) != Some(3) {
         return Err("渲染配置版本不受支持。".into());
     }
@@ -688,7 +696,7 @@ fn export_render_settings(settings: Value) -> Result<Option<String>> {
         return Err("渲染配置超过 1 MB。".into());
     }
     let Some(path) = rfd::FileDialog::new()
-        .add_filter("渲染配置", &["json"])
+        .add_filter(filter_label.as_deref().unwrap_or("渲染配置"), &["json"])
         .set_file_name("znote-render-settings.json")
         .save_file()
     else {
@@ -726,8 +734,22 @@ fn main() {
             } else {
                 (bundled, vec![])
             };
+            let initial_path = std::env::args_os()
+                .skip(1)
+                .collect::<Vec<_>>()
+                .windows(2)
+                .find(|args| args[0] == "--open-note")
+                .and_then(|args| fs::canonicalize(&args[1]).ok());
+            let initial_document = initial_path
+                .as_deref()
+                .and_then(|path| read_document(path).ok());
+            let mut access = Access::default();
+            if let Some(path) = initial_path {
+                access.files.insert(path);
+            }
+            let recovery = recovery::Recovery::new(&data)?;
             app.manage(AppState {
-                access: Mutex::new(Access::default()),
+                access: Mutex::new(access),
                 recent_files: Mutex::new(
                     recent_files.into_iter().take(RECENT_FILES_LIMIT).collect(),
                 ),
@@ -735,6 +757,8 @@ fn main() {
                 data,
                 renderer,
                 renderer_args,
+                recovery,
+                initial_document: Mutex::new(initial_document),
             });
             Ok(())
         })
@@ -754,6 +778,14 @@ fn main() {
             save_file,
             save_as,
             create_note,
+            file_operations::create_folder,
+            file_operations::rename_entry,
+            file_operations::duplicate_note,
+            file_operations::trash_entry,
+            file_operations::entry_properties,
+            file_operations::reveal_entry,
+            file_operations::open_in_new_window,
+            file_operations::startup_document,
             read_asset,
             import_image,
             write_recovery,
@@ -818,6 +850,8 @@ mod tests {
             data: dir.path().to_path_buf(),
             renderer: PathBuf::new(),
             renderer_args: Vec::new(),
+            recovery: recovery::Recovery::new(dir.path()).unwrap(),
+            initial_document: Mutex::new(None),
         };
         let first = dir.path().join("first.md");
         let other = dir.path().join("other.md");

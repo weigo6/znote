@@ -1,3 +1,4 @@
+import { tr } from "./i18n";
 const cache = new Map<string, string>();
 const CACHE_LIMIT = 128;
 
@@ -8,7 +9,7 @@ interface PreviewTask {
 }
 
 function abortError() {
-  return new DOMException("图标预览已取消", "AbortError");
+  return new DOMException(tr("图标预览已取消"), "AbortError");
 }
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {
@@ -81,16 +82,16 @@ export class IconPreviewLoader {
         await wait(delay, this.controller.signal);
         continue;
       }
-      if (!response.ok) throw new Error(`图标预览请求失败：${response.status}`);
+      if (!response.ok) throw new Error(tr("图标预览请求失败：{0}", [response.status]));
       const svg = await response.text();
       if (this.controller.signal.aborted) throw abortError();
-      if (!/<svg(?:\s|>)/i.test(svg)) throw new Error("图标预览不是 SVG");
+      if (!/<svg(?:\s|>)/i.test(svg)) throw new Error(tr("图标预览不是 SVG"));
       const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       cache.delete(url);
       cache.set(url, src);
       if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
       return src;
     }
-    throw new Error("图标预览暂时不可用");
+    throw new Error(tr("图标预览暂时不可用"));
   }
 }
