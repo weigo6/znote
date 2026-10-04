@@ -471,11 +471,16 @@ test("drag selection survives the editor context menu and formats only selected 
   await editor.click();
   await page.keyboard.type("alpha beta gamma");
   const line = page.locator(".tab-editor:not([hidden]) .cm-line").first();
-  const box = await line.boundingBox();
-  if (!box) throw new Error("Editor line is not visible");
-  await page.mouse.move(box.x + 4, box.y + box.height / 2);
+  const box = await line.evaluate(el => {
+    const text = el.firstChild!;
+    const range = document.createRange();
+    range.setStart(text, 0); range.setEnd(text, 11);
+    const rect = range.getBoundingClientRect();
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  });
+  await page.mouse.move(box.x, box.y + box.height / 2);
   await page.mouse.down();
-  await page.mouse.move(box.x + 100, box.y + box.height / 2, { steps: 10 });
+  await page.mouse.move(box.x + box.width, box.y + box.height / 2, { steps: 10 });
   await page.mouse.up();
   await expect(
     page.locator(".tab-editor:not([hidden]) .cm-selectionBackground"),
@@ -486,7 +491,7 @@ test("drag selection survives the editor context menu and formats only selected 
   await expect(page.getByRole("menu", { name: "编辑菜单" })).toBeVisible();
   await page.getByRole("menuitem", { name: "粗体" }).click();
   await expect(editor).toContainText("**alpha");
-  await expect(editor).toContainText("**alpha beta **gamma");
+  await expect(editor).toContainText("**alpha beta** gamma");
   await expect(page.getByRole("menu", { name: "编辑菜单" })).toHaveCount(0);
 });
 
@@ -500,11 +505,16 @@ test("mouse selection shows nearby actions and selected length", async ({
   await editor.click();
   await page.keyboard.type("alpha beta gamma");
   const line = page.locator(".tab-editor:not([hidden]) .cm-line").first();
-  const box = await line.boundingBox();
-  if (!box) throw new Error("Editor line is not visible");
-  await page.mouse.move(box.x + 4, box.y + box.height / 2);
+  const box = await line.evaluate(el => {
+    const text = el.firstChild!;
+    const range = document.createRange();
+    range.setStart(text, 0); range.setEnd(text, 11);
+    const rect = range.getBoundingClientRect();
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  });
+  await page.mouse.move(box.x, box.y + box.height / 2);
   await page.mouse.down();
-  await page.mouse.move(box.x + 100, box.y + box.height / 2, { steps: 10 });
+  await page.mouse.move(box.x + box.width, box.y + box.height / 2, { steps: 10 });
   await page.mouse.up();
   await expect(page.locator("#selection-toolbar")).toBeVisible();
   await expect(page.locator("#selection-summary")).toContainText("已选");
@@ -515,7 +525,7 @@ test("mouse selection shows nearby actions and selected length", async ({
       .evaluate((el) => getComputedStyle(el).backgroundColor),
   ).toBe("rgba(0, 0, 0, 0)");
   await page.locator('[data-selection-action="bold"]').click();
-  await expect(editor).toContainText("**alpha beta **gamma");
+  await expect(editor).toContainText("**alpha beta** gamma");
   await expect(page.locator("#selection-toolbar")).toBeHidden();
 });
 

@@ -80,6 +80,8 @@ znote/
 │   ├── *.spec.ts               Playwright 浏览器回归
 │   ├── generate-fixtures.py    生成 fixtures/rendered.json
 │   ├── test-bundled-renderer.py 冻结渲染器端到端
+│   ├── check-editor-templates.mjs 编辑器模板与 Python 渲染器集成测试
+│   ├── benchmark-*             源码映射与预览同步性能测量
 │   ├── *.html + *-fixture.ts   测试载具与夹具装配器
 │   └── fixtures/               渲染样本、跨语言配置边界用例、语法覆盖样本
 ├── docs/                       面向使用者的文档与示例
@@ -132,6 +134,9 @@ pnpm test
 
 # 类型检查
 pnpm run check
+
+# 编辑器插入模板与实际 Python 渲染器的集成测试
+pnpm run test:editor-render
 
 # 渲染器单元测试
 & .venv/Scripts/python.exe -m unittest discover -s python -p 'test_*.py'
@@ -191,8 +196,8 @@ HTML 类名、生成器函数、格式化回调、资源路径属于应用内部
 复用节点的映射与新 DOM 一起提交；不能把绝对位置加入签名，也不能继续使用旧范围。
 预处理修改不明确或扩展生成的内容必须降级，禁止从渲染文本进行无界反查。
 
-性能测量脚本为 `scripts/benchmark-source-map.py`（交替比较原生/映射解析）与
-`scripts/benchmark-preview-sync.mjs`（需要 1430 端口的 Vite 测试服务器）。两者接受文档路径，
+性能测量脚本为 `tests/benchmark-source-map.py`（交替比较原生/映射解析）与
+`tests/benchmark-preview-sync.mjs`（需要 1430 端口的 Vite 测试服务器）。两者接受文档路径，
 只读取文档；前端测量包括稳定布局下的索引、查询和插入内容后的公式节点复用，不能代替桌面 IPC 整链路测量。
 
 ### 前端

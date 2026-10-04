@@ -23,6 +23,20 @@
   --scrollbar: #d6dbd3;
   --scrollbar-hover: #aebbb1;
   --editor-font: 17px;
+  --syntax-keyword: #65409a;
+  --syntax-number: #3e6424;
+  --syntax-string: #805326;
+  --syntax-tag: #21644c;
+  --syntax-selector: #246479;
+  --syntax-meta: #5b626f;
+  --syntax-comment: #5b626f;
+  --syntax-link: #225a9e;
+  --syntax-invalid: #b42335;
+  /* Keep syntax readable on selected text in every application palette. */
+  --editor-selection: color-mix(in srgb, var(--selection) 40%, var(--paper));
+  --editor-selection-inactive: color-mix(in srgb, var(--selection) 24%, var(--paper));
+  --editor-search-match: color-mix(in srgb, var(--highlight) 25%, var(--paper));
+  --editor-search-selected: color-mix(in srgb, var(--highlight) 40%, var(--paper));
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -49,5 +63,14 @@
   --warning-soft: #3c3427;
   --scrollbar: #3b4c40;
   --scrollbar-hover: #667a69;
+  --syntax-keyword: #b9a3e3;
+  --syntax-number: #a8cf88;
+  --syntax-string: #e6c07b;
+  --syntax-tag: #7cc9a7;
+  --syntax-selector: #86c5da;
+  --syntax-meta: #a5aebd;
+  --syntax-comment: #a5aebd;
+  --syntax-link: #a0c4f5;
+  --syntax-invalid: #ff9aab;
   color-scheme: dark;
 }

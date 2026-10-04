@@ -41,8 +41,12 @@ test("all built-in palettes update chrome, source editor and mounted reading pre
   await expect(frame.locator("article h1")).toBeVisible();
   await frame.locator("article").evaluate(article => { article.dataset.themeTest = "retained"; });
   await page.locator('[data-settings-tab="appearance"]').click();
+  let lightEditorClasses = "";
   for (const mode of ["light", "dark"] as const) {
     await page.locator("#theme-choice").selectOption(mode);
+    const editor = page.locator(".tab-editor:not([hidden]) .cm-editor");
+    if (mode === "light") lightEditorClasses = (await editor.getAttribute("class"))!;
+    else await expect(editor).not.toHaveAttribute("class", lightEditorClasses);
     for (const theme of appThemes) {
       await page.getByRole("radio", { name: theme[mode].name, exact: true }).check();
       await expect(page.locator("html")).toHaveAttribute("data-theme-style", theme.id);

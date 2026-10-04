@@ -24,6 +24,7 @@ ZNote 是一款本地优先的 Windows 桌面 Markdown 编辑器与阅览器。�
 - **真实渲染管线。** 正文由内置的 Python Markdown + PyMdown Extensions 生成。
 - **正文样式。** 兼容 Zensical 的 modern / classic 两套组件样式。
 - **扩展语法随手可用。** 提示框、折叠块、内容标签页、脚注（支持悬浮查看）、任务列表、代码行号与文件名、`==高亮==`、`++按键++`、网格卡片、五套 SVG 图标……
+- **分组编辑栏。** 段落与列表菜单显示当前格式，支持六级标题；图标、卡片和 Material 保持一级入口。卡片可配置标题、正文、图标和链接，缺少渲染扩展时提供明确提示。
 - **公式与图表。** KaTeX 或 MathJax 二选一，支持识别语法、排版参数和自定义宏（含带参数的宏）。Mermaid 图表离线渲染，文字用原生 SVG，不会丢字。
 
 ### 自定义配置
@@ -87,10 +88,13 @@ ZNote 是一款本地优先的 Windows 桌面 Markdown 编辑器与阅览器。�
 | --- | --- |
 | 粗体 | `Ctrl + B` |
 | 斜体 | `Ctrl + I` |
+| 一至六级标题 | `Ctrl + Alt + 1` 至 `Ctrl + Alt + 6` |
+| 恢复普通段落 | `Ctrl + Alt + 0` |
 | 插入代码块 | `Ctrl + Shift + K` |
 | 插入公式块 | `Ctrl + Shift + M` |
 | 插入表格 | `Ctrl + T` |
 | 插入图片 | `Ctrl + Shift + I` |
+| 在线选择图标 | `Ctrl + Shift + E` |
 | 切换行注释 | `Ctrl + /` |
 
 ### 三个视图

@@ -3,7 +3,6 @@ import type { Language } from "./i18n";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
-  createIcons,
   FolderOpen,
   FileText,
   Plus,
@@ -31,6 +30,18 @@ import {
   Code2,
   Sparkles,
   Smile,
+  LayoutGrid,
+  MessageSquare,
+  StickyNote,
+  Info,
+  Lightbulb,
+  OctagonAlert,
+  ListCollapse,
+  PanelTop,
+  Workflow,
+  SquareArrowOutUpRight,
+  Sigma,
+  Minus,
   ArrowUpRight,
   Command,
   Sun,
@@ -55,7 +66,13 @@ import {
   CheckCircle2,
 } from "lucide";
 import { openSearchPanel } from "@codemirror/search";
-import { NoteEditor, wrap, prefixLines } from "./editor";
+import { initializeIcons } from "./ui-icons";
+import { NoteEditor } from "./editor";
+import { applyEditorTransaction } from "./editor-commands";
+import { captureEditorSelection, restoreEditorSelection } from "./editor-commands";
+import { EditorToolbar } from "./editor-toolbar";
+import { editorCommand, commandShortcut, requiredExtensions } from "./editor-command-registry";
+import { cardsDialogMarkup, mountCardsDialog } from "./grid-cards-dialog";
 import { iconCollections, searchOnlineIcons } from "./icon-picker";
 import type { IconCollection, OnlineIcon } from "./icon-picker";
 import { IconPreviewLoader } from "./icon-preview-loader";
@@ -111,6 +128,18 @@ const iconSet = {
   Code2,
   Sparkles,
   Smile,
+  LayoutGrid,
+  MessageSquare,
+  StickyNote,
+  Info,
+  Lightbulb,
+  OctagonAlert,
+  ListCollapse,
+  PanelTop,
+  Workflow,
+  SquareArrowOutUpRight,
+  Sigma,
+  Minus,
   ArrowUpRight,
   Command,
   Sun,
@@ -134,8 +163,7 @@ const iconSet = {
   ListOrdered,
   CheckCircle2,
 };
-const icons = () =>
-  createIcons({ icons: iconSet, attrs: { "stroke-width": 1.7 } });
+const icons = (root: ParentNode = document) => initializeIcons(root, iconSet);
 const icon = (name: string) => `<i data-lucide="${name}"></i>`;
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) =>
   document.querySelector<T>(selector)!;
@@ -246,6 +274,7 @@ let queuedRenderGeneration: number | undefined;
 let mounted = false,
   restoring = true,
   recoveryQueue = Promise.resolve();
+let editorToolbar: EditorToolbar | undefined;
 const current = () => tabs.find((t) => t.id === activeId);
 const persistPrefs = () =>
   localStorage.setItem("znote:preferences", JSON.stringify(prefs));
@@ -300,7 +329,7 @@ $("#app").innerHTML = `
   </div>
   <main class="main">
     <div class="tabs-bar"><button class="icon-btn start-toggle" data-action="welcome" title="${tr("起始页")}" aria-label="${tr("起始页")}">${icon("notebook-pen")}</button><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="${tr("新建笔记")}">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="${tr("快速操作 Ctrl+K")}" aria-label="${tr("快速操作")}">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="${tr("保存 Ctrl+S")}" aria-label="${tr("保存")}">${icon("save")}</button><button class="icon-btn" data-action="settings" title="${tr("渲染设置")}" aria-label="${tr("渲染设置")}">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn" data-action="theme" title="${tr("切换界面主题")}" aria-label="${tr("切换界面主题")}">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="${tr("专注模式 Ctrl+Shift+F")}" aria-label="${tr("专注模式")}" aria-pressed="false">${icon("focus")}</button></div></div>
-    <div class="editor-toolbar"><div class="format-tools"><button class="icon-btn" data-format="heading" title="${tr("标题")}">H<span>1</span></button><button class="icon-btn" data-format="bold" title="${tr("粗体 Ctrl+B")}">${icon("bold")}</button><button class="icon-btn" data-format="italic" title="${tr("斜体 Ctrl+I")}">${icon("italic")}</button><span class="separator"></span><button class="icon-btn" data-format="quote" title="${tr("引用")}">${icon("quote")}</button><button class="icon-btn" data-format="list" title="${tr("列表")}">${icon("list")}</button><button class="icon-btn" data-format="task" title="${tr("任务列表")}">${icon("list-todo")}</button><button class="icon-btn" data-format="link" title="${tr("插入链接")}">${icon("link")}</button><button class="icon-btn" data-format="image" title="${tr("插入图片")}">${icon("image")}</button><button class="icon-btn" data-format="code" title="${tr("代码块")}">${icon("code")}</button><button class="icon-btn" data-format="table" title="${tr("表格")}">${icon("table")}</button><button class="insert-extension" data-action="insert">${icon("sparkles")}<span>${tr("扩展")}</span></button></div><div class="view-modes" role="group" aria-label="${tr("编辑模式")}"><button data-mode="source" title="${tr("Markdown 编辑")}">${icon("code-2")}<span>${tr("编辑")}</span></button><button data-mode="split" title="${tr("Python Markdown 对照预览")}">${icon("columns-2")}<span>${tr("对照")}</span></button><button data-mode="read" title="${tr("阅读模式")}">${icon("book-open")}<span>${tr("阅读")}</span></button></div></div>
+    <div class="editor-toolbar"></div>
     <section id="start-page" aria-label="${tr("欢迎使用 ZNote")}" hidden></section>
     <div id="conflict-banner" class="banner conflict" hidden></div>
     <div id="workspace-notice" class="banner" hidden></div>
@@ -310,11 +339,6 @@ $("#app").innerHTML = `
   <div id="selection-toolbar" class="selection-toolbar" role="toolbar" aria-label="${tr("选中文本操作")}" hidden><span id="selection-summary"></span><span class="selection-toolbar-divider"></span><button type="button" data-selection-action="copy" title="${tr("复制 Ctrl+C")}" aria-label="${tr("复制选中文本")}">${icon("copy")}</button><button type="button" data-selection-action="bold" title="${tr("粗体 Ctrl+B")}" aria-label="${tr("将选中文本设为粗体")}">${icon("bold")}</button><button type="button" data-selection-action="italic" title="${tr("斜体 Ctrl+I")}" aria-label="${tr("将选中文本设为斜体")}">${icon("italic")}</button><button type="button" data-selection-action="code" title="${tr("行内代码")}" aria-label="${tr("将选中文本设为代码")}">${icon("code")}</button><button type="button" data-selection-action="link" title="${tr("插入链接")}" aria-label="${tr("将选中文本设为链接")}">${icon("link")}</button></div>
   <div id="toasts" aria-live="polite"></div><div id="modal-root"></div><div id="editor-context-root"></div><div id="file-context-root"></div><input id="image-picker" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
 `;
-
-$<HTMLElement>(".format-tools .insert-extension").insertAdjacentHTML(
-  "beforebegin",
-  `<button class="insert-extension" data-action="icons" title="${tr("在线选择图标 Ctrl+Shift+E")}" aria-label="${tr("在线选择图标")}">${icon("smile")}<span>${tr("图标")}</span></button>`,
-);
 
 const sidebar = $<HTMLElement>("#sidebar");
 const sidebarResizer = $<HTMLElement>(".sidebar-resizer");
@@ -421,6 +445,8 @@ systemTheme.addEventListener("change", () => {
 
 function applyPrefs() {
   applyAppTheme(document.documentElement, prefs.theme, prefs.themeBindings, systemTheme.matches);
+  const colorMode = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  for (const tab of tabs) tab.editor?.setColorMode(colorMode);
   document
     .querySelectorAll<HTMLElement>(".znote-render-scope")
     .forEach(
@@ -455,6 +481,7 @@ function applyPrefs() {
   previewSurface.refreshHostAppearance();
 }
 function refreshLanguageUi() {
+  editorToolbar?.refreshLanguage();
   document.documentElement.lang = prefs.language;
   document.documentElement.dir = languagePacks[prefs.language].direction;
   localizeUi($("#app"), '.cm-editor, #preview-content, #sidebar-content, #tabs, #workspace-name, #recent-files, #recent-folders, textarea, #start-page, #file-context-root, [data-user-content], #render-profile option:not([value=""])');
@@ -660,31 +687,57 @@ function renderSidebar() {
     `<div class="sidebar-empty">${tr("没有匹配的笔记")}</div>`;
   icons();
 }
+let tabsMarkup = "";
 function renderTabs() {
-  $("#tabs").innerHTML = tabs
+  const markup = tabs
     .map(
       (t) =>
         `<div class="tab ${t.id === activeId ? "active" : ""}" role="tab" aria-selected="${t.id === activeId}" data-tab="${t.id}">${icon("file-text")}<span>${escapeHtml(t.name)}</span>${t.dirty ? '<span class="dirty-dot"></span>' : ""}<button class="tab-close" title="${tr("关闭笔记")}" data-close="${t.id}">${icon("x")}</button></div>`,
     )
     .join("");
-  icons();
+  if (markup === tabsMarkup) return;
+  tabsMarkup = markup;
+  $("#tabs").innerHTML = markup;
+  icons($("#tabs"));
 }
-function status() {
+let saveStatusMarkup = "";
+const wordCounts = new WeakMap<Tab, {revision: number; count: number}>();
+let wordCountTimer: ReturnType<typeof setTimeout> | undefined;
+function updateWordCount(tab: Tab) {
+  clearTimeout(wordCountTimer);
+  const render = () => {
+    if (current() !== tab) return;
+    let cached = wordCounts.get(tab);
+    if (cached?.revision !== tab.revision) {
+      cached = {revision: tab.revision, count: wordCount(tab.text)};
+      wordCounts.set(tab, cached);
+    }
+    $("#word-count").textContent = tr("{0} 字 · 约 {1} 分钟阅读", [cached.count.toLocaleString(prefs.language), Math.max(1, Math.ceil(cached.count / 450))]);
+    $("#word-count").removeAttribute("aria-busy");
+  };
+  if (tab.text.length > 20000 && wordCounts.get(tab)?.revision !== tab.revision) {
+    $("#word-count").setAttribute("aria-busy", "true");
+    wordCountTimer = setTimeout(render, 120);
+  } else render();
+}
+function status(updateCursor = true) {
   const tab = current();
   if (!tab) {
     for (const selector of ["#save-status", "#word-count", "#cursor-position", "#encoding", "#eol"]) $(selector).textContent = "";
     $("#profile-status").textContent = tr("设置");
     $("#save-status").classList.remove("unsaved");
+    saveStatusMarkup = "";
+    clearTimeout(wordCountTimer);
+    $("#word-count").removeAttribute("aria-busy");
+    if (updateCursor) cursorStatus();
     return;
   }
-  const count = wordCount(tab.text);
+  updateWordCount(tab);
   $("#profile-status").textContent = `Markdown · ${tab.plan?.math.engine ?? prefs.render.math.engine}`;
-  $("#word-count").textContent =
-    tr("{0} 字 · 约 {1} 分钟阅读", [count.toLocaleString(prefs.language), Math.max(1, Math.ceil(count / 450))]);
-  cursorStatus();
+  if (updateCursor) cursorStatus();
   $("#encoding").textContent = tab.bom ? "UTF-8 BOM" : "UTF-8";
   $("#eol").textContent = tab.eol;
-  $("#save-status").innerHTML =
+  const markup =
     icon(
       tab.conflict ? "alert-triangle" : tab.dirty ? "more-horizontal" : "check",
     ) +
@@ -698,9 +751,14 @@ function status() {
             ? tr("所有更改已保存")
             : tr("本地草稿"));
   $("#save-status").classList.toggle("unsaved", tab.dirty);
-  icons();
+  if (markup !== saveStatusMarkup) {
+    saveStatusMarkup = markup;
+    $("#save-status").innerHTML = markup;
+    icons($("#save-status"));
+  }
 }
 function cursorStatus() {
+  editorToolbar?.refresh();
   if (!current()) { $("#cursor-position").textContent = ""; return; }
   const state = current()?.editor?.view.state;
   const pos = state?.selection.main.head || 0;
@@ -735,7 +793,7 @@ function mountTab(tab: Tab) {
       tab.dirty = text !== tab.base;
       if (tab.id === activeId) {
         renderTabs();
-        status();
+        status(false);
         if (side === "outline" || side === "search") renderSidebar();
         scheduleRender();
       }
@@ -755,6 +813,7 @@ function mountTab(tab: Tab) {
     save: () => void save(tab),
     image: (file) => void insertImage(file, tab),
     command: runEditorContextAction,
+    formatting: () => { if (tab.id === activeId) editorToolbar?.refresh(); },
   });
 }
 function activate(id: string) {
@@ -1337,6 +1396,7 @@ async function restoreDrafts() {
   }
 }
 function setMode(value: Mode) {
+  editorToolbar?.close(false);
   if (mode === value && $(".writing-area").dataset.mode === value) return;
   hideSelectionToolbar();
   if (value === "source") closePreviewFind();
@@ -1347,6 +1407,7 @@ function setMode(value: Mode) {
     .querySelectorAll<HTMLElement>("[data-mode]")
     .forEach((el) => el.classList.toggle("active", el.dataset.mode === value));
   $(".writing-area").dataset.mode = value;
+  editorToolbar?.refresh();
   scheduleRender();
   if (value === "split") requestAnimationFrame(syncPreviewToCursor);
 }
@@ -1440,11 +1501,13 @@ async function renderPreviewNow(generation: number) {
   }
 }
 async function insertImage(file: File, tab = current()) {
-  if (!tab) return;
+  if (!tab?.editor) return;
   if (!tab.path) {
     toast(tr("请先保存笔记，再插入图片。"), true);
     return;
   }
+  const editor = tab.editor;
+  const saved = captureEditorSelection(editor.view);
   try {
     const extension = file.type.split("/")[1].replace("jpeg", "jpg");
     const relative = await invoke<string>("import_image", {
@@ -1452,7 +1515,13 @@ async function insertImage(file: File, tab = current()) {
       bytes: Array.from(new Uint8Array(await file.arrayBuffer())),
       extension,
     });
-    tab.editor?.insert(`![${file.name.replace(/[\[\]]/g, "")}](${relative})`);
+    const view = current()?.editor?.view;
+    if (view !== saved.view) return;
+    if (!restoreEditorSelection(saved, view)) {
+      toast(tr("笔记已变化，请重新插入。"), true);
+      return;
+    }
+    editor.insert(`![${file.name.replace(/[\[\]]/g, "")}](${relative})`);
   } catch (e) {
     fail(e);
   }
@@ -1464,7 +1533,7 @@ function modal(title: string, body: string) {
   icons();
   $("#modal-root")
     .querySelectorAll("[data-dismiss]")
-    .forEach((b) => b.addEventListener("click", closeModal));
+    .forEach((b) => b.addEventListener("click", () => closeModal(true)));
   const dialog = $("#modal-root .modal");
   setTimeout(() => {
     if (dialog.isConnected && !dialog.contains(document.activeElement))
@@ -1473,13 +1542,32 @@ function modal(title: string, body: string) {
 }
 let modalCancel: (() => void) | undefined;
 let modalDispose: (() => void) | undefined;
-function closeModal() {
+let suspendedModal: {
+  content: Node[];
+  dispose?: () => void;
+  cancel?: () => void;
+  focus: HTMLElement;
+} | undefined;
+function closeModal(returnToParent = false) {
+  const parent = suspendedModal;
+  suspendedModal = undefined;
   modalDispose?.();
   modalDispose = undefined;
   const cb = modalCancel;
   modalCancel = undefined;
   $("#modal-root").innerHTML = "";
   cb?.();
+  if (parent) {
+    if (returnToParent) {
+      $("#modal-root").replaceChildren(...parent.content);
+      modalDispose = parent.dispose;
+      modalCancel = parent.cancel;
+      parent.focus.focus();
+    } else {
+      parent.dispose?.();
+      parent.cancel?.();
+    }
+  }
 }
 function decisionDialog(
   title: string,
@@ -1619,76 +1707,32 @@ function showSettings() {
       })
       .catch(() => {});
 }
-const snippets: { name: string; description: string; text: string }[] = [
-  {
-    get name() { return tr("提示框"); },
-    get description() { return tr("admonition · 突出一段重要内容"); },
-    get text() { return tr("\n!!! note \"标题\"\n\n    在这里写下内容。\n"); },
-  },
-  {
-    get name() { return tr("折叠详情"); },
-    get description() { return tr("details · 收起补充信息"); },
-    get text() { return tr("\n???+ tip \"展开了解更多\"\n\n    补充内容。\n"); },
-  },
-  {
-    get name() { return tr("内容标签页"); },
-    get description() { return tr("tabbed · 并列展示多个方案"); },
-    get text() { return tr("\n=== \"方案一\"\n\n    第一组内容。\n\n=== \"方案二\"\n\n    第二组内容。\n"); },
-  },
-  {
-    get name() { return tr("数学公式"); },
-    get description() { return tr("arithmatex · LaTeX 公式"); },
-    text: "\n$$\nE = mc^2\n$$\n",
-  },
-  {
-    get name() { return tr("Mermaid 图表"); },
-    get description() { return tr("流程图 · 结构与关系"); },
-    get text() { return tr("\n```mermaid\ngraph LR\n    A[想法] --> B[写作]\n    B --> C[发布]\n```\n"); },
-  },
-  {
-    get name() { return tr("网格卡片"); },
-    get description() { return tr("md_in_html · 内容卡片"); },
-    get text() { return `
-<div class="grid cards" markdown>
-
-${tr("- **卡片标题**")}
-
-    ${tr("卡片内容。")}
-
-${tr("- **另一张卡片**")}
-
-    ${tr("更多内容。")}
-
-</div>
-`; },
-  },
-  {
-    get name() { return tr("脚注"); },
-    get description() { return tr("footnotes · 补充参考"); },
-    get text() { return tr("正文[^note]\n\n[^note]: 脚注内容。\n"); },
-  },
-  {
-    get name() { return tr("按钮链接"); },
-    get description() { return tr("attr_list · 行动入口"); },
-    get text() { return tr("[了解更多](https://zensical.org/){ .md-button }"); },
-  },
-];
-function insertMenu() {
-  modal(
-    tr("丰富你的表达"),
-    `<p class="muted">${tr("插入 Markdown 原文；可切换到「对照」查看渲染结果。")}</p><div class="snippet-grid">${snippets.map((s, i) => `<button data-snippet="${i}"><strong>${escapeHtml(s.name)}</strong><span>${escapeHtml(s.description)}</span></button>`).join("")}</div>`,
-  );
-  document.querySelectorAll<HTMLElement>("[data-snippet]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        const s = snippets[Number(b.dataset.snippet)];
-        closeModal();
-        if (mode === "read") setMode("source");
-        current()?.editor?.insert(s.text);
-      }),
-  );
+function missingExtensions(action: string) {
+  const missing = requiredExtensions(action).filter(id => !prefs.render.extensions[id]);
+  if (action === "material:mermaid" && !prefs.render.mermaid.enabled) missing.push("Mermaid");
+  if (action === "math" && prefs.render.math.engine === "none") missing.push(tr("数学引擎"));
+  return missing;
 }
-function openIconPicker() {
+function insertMenu() { if (mode === "read") setMode("source"); editorToolbar?.showMaterial(); }
+function openCardsDialog() {
+  const view = current()?.editor?.view;
+  if (!view) return;
+  closeModal();
+  modal(tr("网格卡片"), cardsDialogMarkup());
+  modalDispose = mountCardsDialog($("#modal-root .modal"), view, {
+    current: () => current()?.editor?.view,
+    missing: () => missingExtensions("cards"),
+    enable: ids => {
+      for (const id of ids) prefs.render.extensions[id] = true;
+      persistPrefs(); renderInputsRevision++; scheduleRender(); editorToolbar?.refresh();
+    },
+    close: closeModal,
+    pickIcon: input => openIconPicker(input),
+  });
+}
+function openIconPicker(target?: HTMLInputElement) {
+  const missing = missingExtensions("icons");
+  if (missing.length) { toast(tr("需要启用：{0}", [missing.join(", ")]), true); return; }
   const tab = current();
   const editor = tab?.editor;
   if (!tab || !editor) {
@@ -1696,12 +1740,23 @@ function openIconPicker() {
     return;
   }
   if (mode === "read") setMode("source");
-  const { from, to } = editor.view.state.selection.main;
-  closeModal();
+  const saved = captureEditorSelection(editor.view);
+  if (target) {
+    // Keep the live card form and its selection until the picker returns.
+    suspendedModal = {
+      content: Array.from($("#modal-root").childNodes),
+      dispose: modalDispose,
+      cancel: modalCancel,
+      focus: target,
+    };
+    modalDispose = undefined;
+    modalCancel = undefined;
+    $("#modal-root").replaceChildren();
+  } else closeModal();
   modal(
     tr("在线选择图标"),
     `<div class="icon-picker" id="icon-picker">
-      <p class="muted">${tr("搜索在线图标库，选中后在光标处插入 Zensical 短码。")}</p>
+      <p class="muted">${tr(target ? "搜索并选择图标，选中后填入当前卡片的图标短码。" : "搜索在线图标库，选中后在光标处插入 Zensical 短码。")}</p>
       <div class="icon-picker-controls">
         <input id="icon-query" type="search" placeholder="${tr("搜索英文名称，如 home、star、github")}" aria-label="${tr("搜索图标")}" autocomplete="off" spellcheck="false">
         <select id="icon-collection" aria-label="${tr("筛选图标库")}"><option value="all">${tr("全部图标库")}</option>${iconCollections.map((item) => `<option value="${item.prefix}">${escapeHtml(item.label)}</option>`).join("")}</select>
@@ -1709,6 +1764,7 @@ function openIconPicker() {
       <div class="icon-picker-examples">${tr("试试：")}${["home", "star", "heart", "github"].map((word) => `<button type="button" data-icon-example="${word}">${word}</button>`).join("")}</div>
       <p class="icon-picker-status" id="icon-picker-status" role="status" aria-live="polite">${tr("输入关键词开始搜索")}</p>
       <div class="icon-picker-grid" id="icon-picker-results" aria-label="${tr("图标搜索结果")}"></div>
+      ${target ? `<div class="icon-picker-footer"><button type="button" data-dismiss>${tr("返回卡片编辑")}</button></div>` : ""}
     </div>`,
   );
   const root = $<HTMLElement>("#icon-picker");
@@ -1738,18 +1794,28 @@ function openIconPicker() {
     clearTimeout(timer);
     request?.abort();
     stopPreviews();
-    if (!inserted && current()?.editor === editor) editor.view.focus();
+    if (!inserted && !target && restoreEditorSelection(saved, current()?.editor?.view)) editor.view.focus();
   };
   const select = (index: number) => {
     const selected = results[index];
     if (searching || !selected || current()?.editor !== editor) return;
+    if (!restoreEditorSelection(saved, current()?.editor?.view)) {
+      toast(tr("笔记已变化，请重新插入。"), true);
+      return;
+    }
     inserted = true;
+    if (target) {
+      closeModal(true);
+      target.value = selected.shortcode;
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+      target.focus();
+      return;
+    }
     closeModal();
-    const end = Math.min(to, editor.view.state.doc.length);
-    const start = Math.min(from, end);
+    const { from, to } = saved.selection.main;
     editor.view.dispatch({
-      changes: { from: start, to: end, insert: selected.shortcode },
-      selection: { anchor: start + selected.shortcode.length },
+      changes: { from, to, insert: selected.shortcode },
+      selection: { anchor: from + selected.shortcode.length },
       scrollIntoView: true,
     });
     editor.view.focus();
@@ -1776,7 +1842,7 @@ function openIconPicker() {
       results = icons;
       status.textContent = icons.length ? tr("找到 {0} 个候选（最多显示 64 个）", [icons.length]) : tr("没有找到图标，请换个关键词");
       grid.innerHTML = icons.map((item, index) =>
-        `<button type="button" class="icon-picker-result" data-icon-index="${index}" title="${escapeHtml(item.shortcode)}" aria-label="${tr("插入")} ${escapeHtml(item.shortcode)}">
+        `<button type="button" class="icon-picker-result" data-icon-index="${index}" title="${escapeHtml(item.shortcode)}" aria-label="${tr(target ? "选择图标" : "插入")} ${escapeHtml(item.shortcode)}">
           <span class="icon-picker-preview"><img data-preview-index="${index}" alt="" width="28" height="28"></span>
           <span class="icon-picker-name">${escapeHtml(item.label)}</span>
           <span class="icon-picker-source">${escapeHtml(item.collection)}</span>
@@ -1850,81 +1916,14 @@ function openIconPicker() {
   });
 }
 function format(kind: string) {
-  const editor = current()?.editor;
-  if (!editor) return;
-  if (mode === "read") setMode("source");
-  if (kind === "bold") wrap(editor.view, "**");
-  else if (kind === "italic") wrap(editor.view, "*");
-  else if (kind === "image") $("#image-picker").click();
-  else if (kind === "heading") prefixLines(editor.view, "# ");
-  else if (kind === "quote") prefixLines(editor.view, "> ");
-  else if (kind === "list") prefixLines(editor.view, "- ");
-  else if (kind === "task") prefixLines(editor.view, "- [ ] ");
-  else if (kind === "link") {
-    const { from, to } = editor.view.state.selection.main;
-    const selected = editor.view.state.sliceDoc(from, to) || tr("链接文字");
-    editor.insert(`[${selected}](https://)`);
-  } else if (kind === "code") {
-    const { from, to } = editor.view.state.selection.main;
-    const selected = editor.view.state.sliceDoc(from, to);
-    if (selected && !selected.includes("\n")) wrap(editor.view, "`");
-    else editor.insert(`\n\`\`\`\n${selected}\n\`\`\`\n`);
-  } else
-    editor.insert(
-      (
-        {
-          table: tr("\n| 名称 | 内容 |\n| --- | --- |\n| 示例 | 正文 |\n"),
-        } as Record<string, string>
-      )[kind] || "",
-    );
-}
-function setBlockStyle(editor: NoteEditor, style: string) {
-  const view = editor.view;
-  const selection = view.state.selection.main;
-  const start = view.state.doc.lineAt(selection.from).from;
-  const last =
-    selection.empty || selection.to !== view.state.doc.lineAt(selection.to).from
-      ? selection.to
-      : selection.to - 1;
-  const end = view.state.doc.lineAt(last).to;
-  const lines = view.state.sliceDoc(start, end).split("\n");
-  const updated = lines
-    .map((line, index) => {
-      const plain = line.replace(
-        /^(?:#{1,6} |>\s?|- \[[ xX]\] |[-*+] |\d+\. )/,
-        "",
-      );
-      const prefix =
-        style === "paragraph"
-          ? ""
-          : style === "ordered"
-            ? index + 1 + ". "
-            : style === "heading-1"
-              ? "# "
-              : style === "heading-2"
-                ? "## "
-                : style === "heading-3"
-                  ? "### "
-                  : style === "quote"
-                    ? "> "
-                    : style === "task"
-                      ? "- [ ] "
-                      : "- ";
-      return prefix + plain;
-    })
-    .join("\n");
-  if (updated !== view.state.sliceDoc(start, end))
-    view.dispatch({
-      changes: { from: start, to: end, insert: updated },
-      selection: selection.empty
-        ? { anchor: start + updated.length }
-        : { anchor: start, head: start + updated.length },
-      scrollIntoView: true,
-    });
-  view.focus();
+  runEditorContextAction(kind === "heading" ? "heading-1" : kind === "code" ? "inline-code" : kind);
 }
 const contextRoot = $("#editor-context-root");
 const selectionToolbar = $("#selection-toolbar");
+editorToolbar = new EditorToolbar($(".editor-toolbar"), {
+  editor: () => current()?.editor?.view, mode: () => mode,
+  command: runEditorContextAction, setMode, missing: missingExtensions, icons,
+});
 function hideSelectionToolbar() {
   selectionToolbar.hidden = true;
 }
@@ -1965,10 +1964,13 @@ function contextButton(
   shortcut = "",
   disabled = false,
 ) {
+  const missing = missingExtensions(action);
+  disabled ||= action !== "cards" && missing.length > 0;
+  shortcut = commandShortcut(action) ?? shortcut;
   return (
     '<button type="button" role="menuitem" data-context-action="' +
     action +
-    '"' +
+    '"' + (missing.length ? ` title="${escapeHtml(tr("需要启用：{0}", [missing.join(", ")]))}"` : "") +
     (disabled ? " disabled" : "") +
     "><span>" +
     label +
@@ -1992,13 +1994,15 @@ function contextIcon(
   label: string,
   disabled = false,
 ) {
+  const missing = missingExtensions(action);
+  disabled ||= action !== "cards" && missing.length > 0;
   return (
     '<button type="button" role="menuitem" data-context-action="' +
     action +
     '" aria-label="' +
-    label +
+    escapeHtml(label) +
     '" title="' +
-    label +
+    escapeHtml(missing.length ? tr("需要启用：{0}", [missing.join(", ")]) : label) +
     '"' +
     (disabled ? " disabled" : "") +
     ">" +
@@ -2072,6 +2076,9 @@ function showEditorContextMenu(event: MouseEvent) {
         contextButton(tr("一级标题"), "heading-1"),
         contextButton(tr("二级标题"), "heading-2"),
         contextButton(tr("三级标题"), "heading-3"),
+        contextButton(tr("四级标题"), "heading-4"),
+        contextButton(tr("五级标题"), "heading-5"),
+        contextButton(tr("六级标题"), "heading-6"),
         contextButton(tr("引用"), "quote"),
         contextButton(tr("有序列表"), "ordered"),
         contextButton(tr("无序列表"), "list"),
@@ -2082,6 +2089,8 @@ function showEditorContextMenu(event: MouseEvent) {
       tr("插入"),
       [
         contextButton(tr("图像"), "image", "Ctrl+Shift+I"),
+        contextButton(tr("在线选择图标"), "icons", "Ctrl+Shift+E"),
+        contextButton(tr("网格卡片"), "cards"),
         '<div class="editor-context-divider"></div>',
         contextButton(tr("脚注"), "footnote"),
         contextButton(tr("链接引用"), "reference"),
@@ -2177,7 +2186,17 @@ function runEditorContextAction(action: string) {
     openIconPicker();
     return;
   }
+  if (action === "settings") { showSettings(); return; }
+  if (action === "cards") { openCardsDialog(); return; }
+  const missing = missingExtensions(action);
+  if (missing.length) { toast(tr("需要启用：{0}", [missing.join(", ")]), true); return; }
+  if (mode === "read") setMode("source");
   const view = editor.view;
+  const command = editorCommand(action);
+  if (command?.transaction) {
+    applyEditorTransaction(view, command.transaction(view.state));
+    return;
+  }
   if (["copy", "cut", "paste", "paste-quote"].includes(action)) {
     void editorClipboard(action, editor);
     return;
@@ -2190,35 +2209,12 @@ function runEditorContextAction(action: string) {
         selection: { anchor: from },
       });
     view.focus();
-  } else if (action === "inline-code") wrap(view, String.fromCharCode(96));
-  else if (["bold", "italic", "link", "image", "table"].includes(action))
-    format(action);
-  else if (
-    ["paragraph", "ordered", "quote", "list", "task"].includes(action) ||
-    action.startsWith("heading-")
-  )
-    setBlockStyle(editor, action);
-  else if (action === "codeblock") {
+  } else if (action === "image") $("#image-picker").click();
+  else if (action === "link") {
     const { from, to } = view.state.selection.main;
-    const selected = view.state.sliceDoc(from, to);
-    const fence = String.fromCharCode(96).repeat(3);
-    editor.insert(
-      "\n\n" +
-        fence +
-        "\n" +
-        selected +
-        (selected.endsWith("\n") ? "" : "\n") +
-        fence +
-        "\n\n",
-    );
-  } else if (action === "footnote")
-    editor.insert(tr("[^note]\n\n[^note]: 脚注内容"));
-  else if (action === "reference")
-    editor.insert(tr("[链接文字][ref]\n\n[ref]: https://"));
-  else if (action === "rule") editor.insert("\n\n---\n\n");
-  else if (action === "math") editor.insert("\n\n$$\nE = mc^2\n$$\n\n");
-  else if (action === "toc") editor.insert("\n\n[TOC]\n\n");
-  else if (action === "yaml") {
+    const text = view.state.sliceDoc(from, to) || tr("链接文字");
+    editor.insert(`[${text}](https://)`);
+  } else if (action === "yaml") {
     if (view.state.doc.sliceString(0, 4) === "---\n") {
       toast(tr("文档已有 YAML Front Matter"));
       return;
@@ -2412,6 +2408,7 @@ const actions: Record<string, () => unknown> = {
   },
   insert: insertMenu,
   icons: openIconPicker,
+  cards: openCardsDialog,
   commands: commandPalette,
   external: showExternal,
   find: () => {
@@ -2528,7 +2525,7 @@ document.addEventListener(
       closeSidebarMenu();
       closeEditorContextMenu();
       hideSelectionToolbar();
-      closeModal();
+      closeModal(true);
     }
     if (!(e.ctrlKey || e.metaKey)) return;
     dismissFileMenu?.();

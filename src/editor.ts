@@ -2,10 +2,16 @@ import { tr, onLanguageChange } from "./i18n";
 import { EditorState, Compartment } from "@codemirror/state";
 import { EditorView, keymap, drawSelection, dropCursor, highlightActiveLine, placeholder } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap, indentWithTab, toggleComment } from "@codemirror/commands";
-import { markdown, markdownKeymap } from "@codemirror/lang-markdown";
-import { syntaxHighlighting, defaultHighlightStyle, bracketMatching, indentOnInput } from "@codemirror/language";
+import { markdown, markdownLanguage, markdownKeymap } from "@codemirror/lang-markdown";
+import { syntaxHighlighting, bracketMatching, indentOnInput, syntaxTree } from "@codemirror/language";
 import { searchKeymap, highlightSelectionMatches, closeSearchPanel, openSearchPanel } from "@codemirror/search";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { editorHighlightStyle } from "./editor-theme";
+import { editorCommands } from "./editor-command-registry";
+import { applyEditorTransaction, blockStyleTransaction, inlineStyleTransaction, type InlineStyle, type BlockStyle } from "./editor-commands";
+
+const lightTheme = EditorView.theme({}, { dark: false });
+const darkTheme = EditorView.theme({}, { dark: true });
 
 export interface EditorCallbacks {
   change: (text: string) => void;
@@ -13,12 +19,14 @@ export interface EditorCallbacks {
   save: () => void;
   image: (file: File) => void;
   command?: (action: string) => void;
+  formatting?: () => void;
 }
 
 /** One lossless Markdown source editor, reused in edit and split views. */
 export class NoteEditor {
   readonly view: EditorView;
   private readonly locale = new Compartment();
+  private readonly appearance = new Compartment();
   private readonly disposeLanguage: () => void;
   private localeExtensions() {
     return [
@@ -33,17 +41,11 @@ export class NoteEditor {
   }
   constructor(parent: HTMLElement, text: string, callbacks: EditorCallbacks) {
     const shortcuts = [
+      ...editorCommands.filter(command => command.key).map(command => ({key: command.key!, run: (view: EditorView) => {
+        if (callbacks.command) { callbacks.command(command.id); return true; }
+        return command.transaction ? applyEditorTransaction(view, command.transaction(view.state)) : false;
+      }})),
       { key: "Mod-s", run: () => { callbacks.save(); return true; } },
-      { key: "Mod-b", run: (view: EditorView) => wrap(view, "**") },
-      { key: "Mod-i", run: (view: EditorView) => wrap(view, "*") },
-      { key: "Mod-Shift-k", run: (view: EditorView) => {
-        if (callbacks.command) { callbacks.command("codeblock"); return true; }
-        return wrap(view, String.fromCharCode(96));
-      } },
-      { key: "Mod-Shift-i", run: () => { callbacks.command?.("image"); return !!callbacks.command; } },
-      { key: "Mod-Shift-e", run: () => { callbacks.command?.("icons"); return !!callbacks.command; } },
-      { key: "Mod-t", run: () => { callbacks.command?.("table"); return !!callbacks.command; } },
-      { key: "Mod-Shift-m", run: () => { callbacks.command?.("math"); return !!callbacks.command; } },
       { key: "Mod-/", run: toggleComment },
     ];
     this.view = new EditorView({
@@ -52,14 +54,16 @@ export class NoteEditor {
         doc: text,
         extensions: [
           this.locale.of(this.localeExtensions()),
-          markdown(), history(), drawSelection(), dropCursor(), indentOnInput(),
+          this.appearance.of(parent.ownerDocument.documentElement.dataset.theme === "dark" ? darkTheme : lightTheme),
+          markdown({ base: markdownLanguage }), history(), drawSelection(), dropCursor(), indentOnInput(),
           bracketMatching(), closeBrackets(), highlightSelectionMatches(), highlightActiveLine(),
-          syntaxHighlighting(defaultHighlightStyle),
+          syntaxHighlighting(editorHighlightStyle),
           EditorView.lineWrapping,
           keymap.of([...shortcuts, ...markdownKeymap, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) callbacks.change(update.state.doc.toString());
             if (update.selectionSet || update.docChanged) callbacks.cursor();
+            else if (syntaxTree(update.startState) !== syntaxTree(update.state)) callbacks.formatting?.();
           }),
           EditorView.domEventHandlers({paste: (event) => {
             const image = Array.from(event.clipboardData?.files || []).find(file => file.type.startsWith("image/"));
@@ -77,6 +81,12 @@ export class NoteEditor {
       if (searching) openSearchPanel(this.view);
       if (focused?.isConnected && !this.view.dom.contains(focused)) focused.focus({ preventScroll: true });
     });
+  }
+  setColorMode(mode: "light" | "dark") {
+    const dark = mode === "dark";
+    if (this.view.state.facet(EditorView.darkTheme) !== dark) {
+      this.view.dispatch({ effects: this.appearance.reconfigure(dark ? darkTheme : lightTheme) });
+    }
   }
   insert(text: string) {
     const { from, to } = this.view.state.selection.main;
@@ -99,6 +109,8 @@ export class NoteEditor {
 }
 
 export function wrap(view: EditorView, mark: string) {
+  const style = ({ "**": "bold", "*": "italic", "`": "inline-code", "~~": "strikethrough" } as Record<string, InlineStyle>)[mark];
+  if (style) return applyEditorTransaction(view, inlineStyleTransaction(view.state, style));
   const { from, to } = view.state.selection.main;
   const text = view.state.sliceDoc(from, to);
   view.dispatch({changes: { from, to, insert: mark + text + mark }, selection: { anchor: from + mark.length, head: to + mark.length }, scrollIntoView: true});
@@ -108,6 +120,8 @@ export function wrap(view: EditorView, mark: string) {
 
 /** Prefix complete selected lines without discarding their source text. */
 export function prefixLines(view: EditorView, prefix: string) {
+  const style = ({ "# ": "heading-1", "> ": "quote", "- ": "list", "- [ ] ": "task" } as Record<string, BlockStyle>)[prefix];
+  if (style) return applyEditorTransaction(view, blockStyleTransaction(view.state, style));
   const selection = view.state.selection.main;
   const start = view.state.doc.lineAt(selection.from).from;
   const last = selection.empty || selection.to !== view.state.doc.lineAt(selection.to).from

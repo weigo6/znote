@@ -30,6 +30,7 @@ const commands: Command[] = [
   { id: "replace", label: "查找与替换", description: "查找文字并替换为新的内容", icon: "refresh-cw", group: "写作", keys: ["Ctrl", "H"], aliases: "find replace 替换", needs: "note" },
   { id: "insert", label: "插入扩展内容", description: "插入提示框、公式或其他内容", icon: "sparkles", group: "写作", aliases: "insert extension math 插入扩展公式", needs: "note" },
   { id: "icons", label: "在线选择图标", description: "搜索图标并插入笔记", icon: "smile", group: "写作", keys: ["Ctrl", "Shift", "E"], aliases: "icon 图标", needs: "note" },
+  { id: "cards", label: "网格卡片", description: "创建 Material 网格卡片，保留可编辑的 Markdown 原文。", icon: "table", group: "写作", aliases: "grid cards material 卡片", needs: "note" },
   { id: "welcome", label: "返回起始页", description: "浏览最近使用记录，开始新的笔记", icon: "notebook-pen", group: "界面", aliases: "home start welcome 起始欢迎" },
   { id: "settings", label: "设置", description: "调整语言、主题和阅读习惯", icon: "settings", group: "界面", aliases: "settings preferences theme language 设置主题语言" },
   { id: "sidebar", label: "切换侧边栏", description: "显示或收起左侧导航", icon: "panel-left-close", group: "界面", keys: ["Ctrl", "Shift", "L"], aliases: "sidebar navigation 侧边导航" },

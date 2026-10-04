@@ -9,6 +9,7 @@
     "tauri": "node scripts/tauri.mjs",
     "test": "vitest run src",
     "test:browser": "playwright test",
+    "test:editor-render": "node tests/check-editor-templates.mjs",
     "styles:sync": "node scripts/sync-zensical-styles.mjs",
     "check": "tsc --noEmit"
   },
