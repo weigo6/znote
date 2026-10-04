@@ -21,6 +21,10 @@
 - 发布工作流升级 checkout、setup-node、setup-python 与 upload-artifact 至 v7，pnpm/action-setup 至 v6，使用 Node 24 Action 运行时。
 - 应用版本统一为 v0.5.5，发布校验同时检查 npm、Tauri、Cargo 配置及 Cargo.lock 与 Git 标签的一致性。
 
+### 修复
+
+- 修正 GitHub Actions 中 pnpm 的 Tauri 构建命令；启动脚本兼容前置 `--` 分隔符，保留子命令后的参数分隔符。
+
 ## [0.5.4] — 2026-10-04
 
 重构编辑工具栏与 Markdown 格式命令，新增可配置的网格卡片插入，改善语法配色、异步插入安全性与大文档输入性能。

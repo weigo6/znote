@@ -104,10 +104,10 @@ pnpm run build          # tsc --noEmit && vite build
 pnpm run check          # 仅类型检查
 
 # 便携版可执行文件
-pnpm run tauri -- build --no-bundle
+pnpm run tauri build --no-bundle
 
 # NSIS 安装器
-pnpm run tauri -- build
+pnpm run tauri build
 ```
 
 开发版 WebView2 数据保存在项目的 `.znote/webview-dev`，与安装版隔离，避免配置目录争用。

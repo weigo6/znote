@@ -3,6 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const args = process.argv.slice(2);
+// pnpm forwards the script separator; npm consumes it. Accept both forms.
+// Only remove a leading separator: later `--` belongs to the Tauri command.
+if (args[0] === "--") args.shift();
 
 // Keep the development WebView2 profile independent of installed ZNote builds.
 // WebView2 can fail to create a window when another process holds its profile.

@@ -44,7 +44,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - run: pnpm test
       - name: Build desktop and NSIS installer
-        run: pnpm run tauri -- build
+        run: pnpm run tauri build
       - name: Validate native behavior
         run: cargo test --locked --manifest-path src-tauri/Cargo.toml
       - name: Package portable application
