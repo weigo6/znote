@@ -46,7 +46,9 @@ jobs:
       - name: Build desktop and NSIS installer
         run: pnpm run tauri build
       - name: Validate native behavior
-        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+        # Match Tauri's release profile and feature set to reuse compiled dependencies.
+        # The application test harness still needs its own compilation and linking.
+        run: cargo test --release --locked --features tauri/custom-protocol --manifest-path src-tauri/Cargo.toml
       - name: Package portable application
         run: .venv/Scripts/python.exe scripts/package-release.py
       - name: Hash the installer
@@ -56,7 +58,9 @@ jobs:
             $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             "$hash  $($_.Name)" | Set-Content -LiteralPath ($_.FullName + '.sha256') -Encoding utf8NoBOM
           }
-      - uses: actions/upload-artifact@v7
+      - name: Upload installers and portable application
+        id: artifacts
+        uses: actions/upload-artifact@v7
         with:
           name: ZNote-windows-x64
           path: |
@@ -65,6 +69,26 @@ jobs:
             release/*.zip
             release/*.sha256
           if-no-files-found: error
+          # The installer and portable ZIP are already compressed.
+          compression-level: 0
+      - name: Show download location
+        env:
+          ARTIFACT_URL: ${{ steps.artifacts.outputs.artifact-url }}
+        shell: pwsh
+        run: |
+          $releaseMessage = '本次为分支构建，只上传 Artifacts，不创建 GitHub Release。'
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            $releaseMessage = '本次为标签构建，下一步会创建 GitHub Release 草稿；验证后需手动发布草稿。'
+          }
+          @(
+            '## Windows 构建产物'
+            ''
+            "[下载 ZNote-windows-x64]($env:ARTIFACT_URL)（需要登录 GitHub）"
+            ''
+            '解压下载的产物后，可找到 NSIS 安装器、便携 ZIP 和 SHA-256 校验文件。'
+            ''
+            $releaseMessage
+          ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
       - name: Create a reviewable release draft
         if: github.ref_type == 'tag'
         env:
