@@ -5,6 +5,22 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v0.5.5] — 2026-10-04
+
+### 新增
+
+- Windows 安装版注册 Markdown 文件打开方式，接收启动及运行中的文件打开请求。
+- 文件打开预设支持阅读、对照、编辑与专注组合，独立窗口或当前窗口，以及起始页或恢复工作。
+- 关于与更新设置支持检查 GitHub 正式版本、显示更新说明和打开下载页；可选每日启动检查。
+- GitHub Actions 构建安装版、便携版与 SHA-256 校验文件，并创建 Release 草稿。
+
+### 调整
+
+- 将第三方原始样式及许可证由 `public/vendor/` 移至 `tests/vendor/`。原始 CSS 不重复打包，许可证与来源清单保留。
+- 将打包资源检查移至 `tests/`，许可证提取合并到 Vite 配置，删除独立的 `scripts/public-assets.mjs`。
+- 发布工作流升级 checkout、setup-node、setup-python 与 upload-artifact 至 v7，pnpm/action-setup 至 v6，使用 Node 24 Action 运行时。
+- 应用版本统一为 v0.5.5，发布校验同时检查 npm、Tauri、Cargo 配置及 Cargo.lock 与 Git 标签的一致性。
+
 ## [0.5.4] — 2026-10-04
 
 重构编辑工具栏与 Markdown 格式命令，新增可配置的网格卡片插入，改善语法配色、异步插入安全性与大文档输入性能。

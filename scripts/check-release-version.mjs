@@ -1,0 +1,12 @@
+import fs from "node:fs";
+import assert from "node:assert/strict";
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const tauri = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json", "utf8"));
+const cargo = fs.readFileSync("src-tauri/Cargo.toml", "utf8").match(/^version = "([^"]+)"/m)?.[1];
+const locked = fs.readFileSync("src-tauri/Cargo.lock", "utf8").match(/^name = "znote"\r?\nversion = "([^"]+)"/m)?.[1];
+assert.equal(pkg.version, tauri.version, "package.json and tauri.conf.json versions differ");
+assert.equal(pkg.version, cargo, "package.json and Cargo.toml versions differ");
+assert.equal(pkg.version, locked, "package.json and Cargo.lock versions differ");
+const tag = process.argv[2];
+if (tag) assert.equal(tag, `v${pkg.version}`, "Git tag must match the package version");
+console.log(`Release version verified: v${pkg.version}`);

@@ -2,6 +2,10 @@ import { tr, getLanguage, setLanguage, normalizeLanguage, languagePacks, onLangu
 import type { Language } from "./i18n";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { listen } from "@tauri-apps/api/event";
+import { normalizeFileOpening, openRequestPolicy, fileOpeningMarkup } from "./file-opening";
+import type { FileOpeningPreferences, OpenTicket } from "./file-opening";
+import { checkUpdates, updateSettingsMarkup, mountUpdateSettings } from "./update-check";
 import {
   FolderOpen,
   FileText,
@@ -193,6 +197,8 @@ interface Tab {
   saving?: boolean;
 }
 interface Preferences {
+  fileOpening: FileOpeningPreferences;
+  autoCheckUpdates: boolean;
   language: Language;
   render: RenderSettings;
   theme: ThemeMode;
@@ -209,6 +215,8 @@ interface Preferences {
   fileView: FileView;
 }
 const initial: Preferences = {
+  fileOpening: normalizeFileOpening(undefined),
+  autoCheckUpdates: false,
   language: getLanguage(),
   render: normalizeRenderSettings(undefined),
   theme: "light",
@@ -227,6 +235,8 @@ try {
   const stored = JSON.parse(localStorage.getItem("znote:preferences") || "{}");
   prefs = {
     ...initial,
+    fileOpening: normalizeFileOpening(stored.fileOpening),
+    autoCheckUpdates: stored.autoCheckUpdates === true,
     language: normalizeLanguage(stored.language),
     theme: normalizeThemeMode(stored.theme),
     themeBindings: normalizeThemeBindings(stored.themeBindings),
@@ -276,8 +286,17 @@ let mounted = false,
   recoveryQueue = Promise.resolve();
 let editorToolbar: EditorToolbar | undefined;
 const current = () => tabs.find((t) => t.id === activeId);
+let externalView = false;
 const persistPrefs = () =>
   localStorage.setItem("znote:preferences", JSON.stringify(prefs));
+window.addEventListener("storage", event => {
+  if (event.key !== "znote:preferences") return;
+  try {
+    const stored = JSON.parse(event.newValue || "{}");
+    prefs.fileOpening = normalizeFileOpening(stored.fileOpening);
+    prefs.autoCheckUpdates = stored.autoCheckUpdates === true;
+  } catch { /* Ignore invalid preferences from another window. */ }
+});
 function toast(message: string, error = false) {
   const el = document.createElement("div");
   el.className = "toast" + (error ? " error" : "");
@@ -328,7 +347,7 @@ $("#app").innerHTML = `
     <button class="clear-recent" data-action="clear-recent">${tr("清空最近记录")}</button>
   </div>
   <main class="main">
-    <div class="tabs-bar"><button class="icon-btn start-toggle" data-action="welcome" title="${tr("起始页")}" aria-label="${tr("起始页")}">${icon("notebook-pen")}</button><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="${tr("新建笔记")}">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="${tr("快速操作 Ctrl+K")}" aria-label="${tr("快速操作")}">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="${tr("保存 Ctrl+S")}" aria-label="${tr("保存")}">${icon("save")}</button><button class="icon-btn" data-action="settings" title="${tr("渲染设置")}" aria-label="${tr("渲染设置")}">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn" data-action="theme" title="${tr("切换界面主题")}" aria-label="${tr("切换界面主题")}">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="${tr("专注模式 Ctrl+Shift+F")}" aria-label="${tr("专注模式")}" aria-pressed="false">${icon("focus")}</button></div></div>
+    <div class="tabs-bar"><button class="icon-btn start-toggle" data-action="welcome" title="${tr("起始页")}" aria-label="${tr("起始页")}">${icon("notebook-pen")}</button><div id="tabs" role="tablist"></div><button class="icon-btn" data-action="new" title="${tr("新建笔记")}">${icon("plus")}</button><div class="tabs-spacer"></div><button class="icon-btn" data-action="commands" title="${tr("快速操作 Ctrl+K")}" aria-label="${tr("快速操作")}">${icon("command")}</button><button class="icon-btn save-btn" data-action="save" title="${tr("保存 Ctrl+S")}" aria-label="${tr("保存")}">${icon("save")}</button><button class="icon-btn" data-action="settings" title="${tr("渲染设置")}" aria-label="${tr("渲染设置")}">${icon("settings")}</button><div class="focus-mode-controls"><button class="icon-btn focus-edit" data-action="focus-edit" title="${tr("切换到编辑")}" aria-label="${tr("切换到编辑")}">${icon("code-2")}</button><button class="icon-btn" data-action="theme" title="${tr("切换界面主题")}" aria-label="${tr("切换界面主题")}">${icon("sun")}</button><button class="icon-btn" data-action="focus" title="${tr("专注模式 Ctrl+Shift+F")}" aria-label="${tr("专注模式")}" aria-pressed="false">${icon("focus")}</button></div></div>
     <div class="editor-toolbar"></div>
     <section id="start-page" aria-label="${tr("欢迎使用 ZNote")}" hidden></section>
     <div id="conflict-banner" class="banner conflict" hidden></div>
@@ -880,6 +899,7 @@ function renderStartPage() {
   icons();
 }
 function showStartPage() {
+  if (externalView) { externalView = false; setMode(prefs.mode, false); }
   hideSelectionToolbar();
   closePreviewFind();
   closeSidebarMenu();
@@ -1353,6 +1373,15 @@ async function restoreDrafts() {
   let recovered = 0;
   for (const item of saved) {
     if (typeof item.text !== "string") continue;
+    if (item.path && tabs.some(tab => tab.path === item.path && tab.dirty)) {
+      if (item.dirty) {
+        const copy = addTab(undefined, item.text);
+        copy.name = item.name + tr("（恢复副本）");
+        copy.dirty = true;
+        recovered++;
+      }
+      continue;
+    }
     if (item.path) {
       try {
         const doc = await invoke<DiskDocument>("read_file", {
@@ -1395,14 +1424,13 @@ async function restoreDrafts() {
     toast(tr("已恢复 {0} 篇本地草稿", [recovered]));
   }
 }
-function setMode(value: Mode) {
+function setMode(value: Mode, remember = !externalView) {
   editorToolbar?.close(false);
   if (mode === value && $(".writing-area").dataset.mode === value) return;
   hideSelectionToolbar();
   if (value === "source") closePreviewFind();
   mode = value;
-  prefs.mode = value;
-  persistPrefs();
+  if (remember) { prefs.mode = value; persistPrefs(); }
   document
     .querySelectorAll<HTMLElement>("[data-mode]")
     .forEach((el) => el.classList.toggle("active", el.dataset.mode === value));
@@ -1634,6 +1662,8 @@ function showSettings() {
   <div class="settings-layout">${settingsNavigationMarkup()}<div class="settings-content">
   <div data-settings-panel="appearance">${settingsPageHeading("appearance")}<div class="settings-section"><h3>${tr("语言")}</h3><div class="setting-row"><label for="language-choice">${tr("界面语言")}</label><select id="language-choice">${Object.entries(languagePacks).map(([id, pack]) => `<option value="${id}">${pack.name}</option>`).join("")}</select></div><p class="muted">${tr("语言更改立即生效，不会修改笔记内容。")}</p></div><div class="settings-section"><h3>${tr("界面主题")}</h3><div class="setting-row"><label for="theme-choice">${tr("颜色模式")}</label><select id="theme-choice"><option value="light">${tr("亮色")}</option><option value="dark">${tr("暗色")}</option><option value="system">${tr("跟随系统")}</option></select></div>${themeSettingsMarkup(prefs.themeBindings)}</div><div class="settings-section"><h3>${tr("文字显示")}</h3><div class="setting-row"><label for="font-size">${tr("正文字号")}</label><div><input id="font-size" type="range" min="14" max="24" value="${prefs.fontSize}"><span id="font-value">${prefs.fontSize}px</span></div></div></div></div>
   ${renderSettingsMarkup(prefs.render)}
+  <div data-settings-panel="files" hidden>${settingsPageHeading("files")}${fileOpeningMarkup(prefs.fileOpening)}</div>
+  <div data-settings-panel="updates" hidden>${settingsPageHeading("updates")}${updateSettingsMarkup(prefs.autoCheckUpdates)}</div>
   <div data-settings-panel="writing" hidden>${settingsPageHeading("writing")}<div class="settings-section"><h3>${tr("对照模式同步")}</h3><label class="setting-row"><span>${tr("编辑时预览跟随光标")}<small>${tr("对照模式中，预览定位到光标所在段落。")}</small></span><input id="sync-preview" type="checkbox" ${prefs.syncPreview ? "checked" : ""}></label><label class="setting-row"><span>${tr("滚动预览时编辑区跟随")}<small>${tr("对照模式中，编辑区定位到预览正文对应位置。")}</small></span><input id="sync-editor-scroll" type="checkbox" ${prefs.syncEditorScroll ? "checked" : ""}></label></div><div class="settings-section"><h3>${tr("保存与恢复")}</h3><label class="setting-row"><span>${tr("自动保存已命名笔记")}<small>${tr("停顿后保存；检测到外部修改时暂停。")}</small></span><input id="autosave" type="checkbox" ${prefs.autosave ? "checked" : ""}></label><p class="muted">${tr("未保存的内容会自动保存本地恢复快照。快捷键 Ctrl+S 可随时保存原文件。")}</p></div></div>
   </div></div><div class="settings-footer"><span>${tr("常规选项自动保存")}<span class="engine-info" id="settings-engine">${tr("内置 Python Markdown 渲染器")}</span></span><button class="primary" data-dismiss>${tr("完成")}</button></div>`,
   );
@@ -1656,9 +1686,25 @@ function showSettings() {
   });
   $("#modal-root .modal").classList.add("render-settings-modal");
   const disposeNavigation = mountSettingsNavigation($("#modal-root .modal"));
+  const disposeUpdates = mountUpdateSettings($("#modal-root .modal"), value => { prefs.autoCheckUpdates = value; persistPrefs(); });
+  const openingSelects = { "external-open-mode": "mode", "external-open-target": "target", "startup-behavior": "startup" } as const;
+  for (const [id, key] of Object.entries(openingSelects)) {
+    const input = $<HTMLSelectElement>(`#${id}`);
+    input.value = prefs.fileOpening[key];
+    input.onchange = () => { prefs.fileOpening = normalizeFileOpening({ ...prefs.fileOpening, [key]: input.value }); persistPrefs(); };
+  }
+  $("#external-open-focus").onchange = event => { prefs.fileOpening.focus = (event.target as HTMLInputElement).checked; persistPrefs(); };
+  $<HTMLButtonElement>("#default-apps").disabled = !native;
+  $("#default-apps").onclick = () => { void invoke("open_default_apps").catch(fail); };
+  $<HTMLButtonElement>("#restore-drafts").disabled = !native;
+  $("#restore-drafts").onclick = async () => {
+    closeModal();
+    await restoreDrafts();
+  };
   modalDispose = () => {
     disposeRenderSettings();
     disposeNavigation();
+    disposeUpdates();
   };
   $<HTMLSelectElement>("#language-choice").value = prefs.language;
   $("#language-choice").onchange = event => {
@@ -2401,6 +2447,10 @@ const actions: Record<string, () => unknown> = {
     const active = document.body.classList.toggle("focus-mode");
     $('[data-action="focus"]').setAttribute("aria-pressed", String(active));
   },
+  "focus-edit": () => {
+    setMode("source");
+    current()?.editor?.view.focus();
+  },
   settings: showSettings,
   theme: () => {
     prefs.theme = prefs.theme === "light" ? "dark" : prefs.theme === "dark" ? "system" : "light";
@@ -2685,6 +2735,31 @@ setInterval(() => {
   }
 }, 3000);
 
+let openRequestQueue = Promise.resolve();
+let openRequestsListening = false;
+async function handleOpenTickets(tickets: OpenTicket[]) {
+  for (const ticket of tickets) {
+    const policy = openRequestPolicy(ticket, prefs.fileOpening, prefs.mode);
+    try {
+      const result = await invoke<{ documents: DiskDocument[]; errors: string[] }>("complete_open_request", { id: ticket.id, newWindow: policy.newWindow });
+      for (const doc of result.documents) { addTab(doc); await rememberRecentFile(doc.path); }
+      if (result.documents.length) {
+        externalView = ticket.source === "system";
+        setMode(policy.mode, !externalView);
+        document.body.classList.toggle("focus-mode", policy.focus);
+        $('[data-action="focus"]').setAttribute("aria-pressed", String(policy.focus));
+      }
+      for (const error of result.errors) fail(error);
+    } catch (error) { fail(error); }
+  }
+}
+function drainOpenRequests() {
+  openRequestQueue = openRequestQueue.then(async () => {
+    const tickets = await invoke<OpenTicket[] | null>("pending_open_requests");
+    await handleOpenTickets(tickets ?? []);
+  }).catch(fail);
+  return openRequestQueue;
+}
 async function start() {
   document.documentElement.lang = prefs.language;
   document.documentElement.dir = languagePacks[prefs.language].direction;
@@ -2693,7 +2768,10 @@ async function start() {
   setMode(mode);
   icons();
   if (native) {
-    if (prefs.lastWorkspace)
+    await listen("open-requests-ready", () => { if (openRequestsListening) void drainOpenRequests(); }).catch(fail);
+    const opening = (await invoke<OpenTicket[] | null>("pending_open_requests").catch(error => { fail(error); return []; })) ?? [];
+    const restoreSession = !opening.length && prefs.fileOpening.startup === "restore";
+    if (restoreSession && prefs.lastWorkspace)
       try {
         await setWorkspace(
           await invoke<Workspace>("restore_workspace", {
@@ -2702,11 +2780,8 @@ async function start() {
           false,
         );
       } catch {}
-    await restoreDrafts();
-    try {
-      const doc = await invoke<DiskDocument | null>("startup_document");
-      if (doc) { addTab(doc); await rememberRecentFile(doc.path); }
-    } catch (e) { fail(e); }
+    if (restoreSession) await restoreDrafts();
+    await handleOpenTickets(opening);
     void invoke<{ versions: Record<string, string> }>("renderer_info")
       .then((r) => {
         $("#engine-label").textContent =
@@ -2741,6 +2816,17 @@ async function start() {
   } else $("#engine-label").textContent = tr("浏览器演示 · 请运行桌面版");
   restoring = false;
   mounted = true;
+  if (native) {
+    openRequestsListening = true;
+    await drainOpenRequests();
+    if (prefs.autoCheckUpdates) {
+      const checkedAt = Number(localStorage.getItem("znote:update-checked-at")) || 0;
+      if (Date.now() - checkedAt >= 24 * 60 * 60 * 1000) {
+        localStorage.setItem("znote:update-checked-at", String(Date.now()));
+        void checkUpdates().then(result => { if (result.available) toast(tr("发现新版本 {0}，可在设置的关于与更新中查看。", [`v${result.latestVersion}`])); }).catch(() => {});
+      }
+    }
+  }
   scheduleRecovery();
 }
 void start();

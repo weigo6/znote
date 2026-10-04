@@ -5,7 +5,7 @@ test("settings categories keep navigation fixed and retain drafts and page scrol
   await page.locator('[data-action="settings"]').first().click();
   await page.getByRole("dialog").evaluate(element => Promise.all(element.getAnimations().map(animation => animation.finished)));
   const navigation = page.getByRole("tablist", { name: "设置分类" });
-  await expect(navigation.getByRole("tab")).toHaveCount(7);
+  await expect(navigation.getByRole("tab")).toHaveCount(9);
   await expect(page.getByRole("tabpanel", { name: "外观", exact: true })).toBeVisible();
   await expect(page.getByRole("tabpanel", { name: "阅读", exact: true })).toBeHidden();
   const sidebar = await navigation.boundingBox();
@@ -42,7 +42,7 @@ test("settings supports keyboard category navigation, focus containment and retu
   await expect(page.getByRole("tab", { name: "阅读", exact: true })).toBeFocused();
   await expect(page.getByRole("tab", { name: "阅读", exact: true })).toHaveAttribute("aria-selected", "true");
   await page.keyboard.press("End");
-  await expect(page.getByRole("tabpanel", { name: "配置管理", exact: true })).toBeVisible();
+  await expect(page.getByRole("tabpanel", { name: "关于与更新", exact: true })).toBeVisible();
   await page.keyboard.press("Home");
   await expect(first).toBeFocused();
   const done = page.getByRole("button", { name: "完成", exact: true });
@@ -65,6 +65,7 @@ test("narrow settings keep categories and footer accessible without horizontal o
   await expect(navigation).toHaveAttribute("aria-orientation", "horizontal");
   await page.getByRole("tab", { name: "外观", exact: true }).focus();
   await page.keyboard.press("End");
+  await page.keyboard.press("ArrowLeft");
   await expect(page.getByRole("tabpanel", { name: "配置管理", exact: true })).toBeVisible();
   await page.locator("#profile-name").fill("窄窗口配置");
   await page.locator("#profile-save").click();

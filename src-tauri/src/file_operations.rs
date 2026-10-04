@@ -193,25 +193,7 @@ fn shell_path(path: &Path) -> String {
 pub(crate) fn open_in_new_window(state: tauri::State<AppState>, path: String) -> Result<()> {
     let path = workspace_path(&state, &path, false)?;
     read_document(&path)?;
-    let mut command = Command::new(std::env::current_exe().map_err(|error| error.to_string())?);
-    command
-        .arg("--open-note")
-        .arg(path)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null());
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        command.creation_flags(0x08000000);
-    }
-    command.spawn().map_err(|error| error.to_string())?;
-    Ok(())
-}
-
-#[tauri::command]
-pub(crate) fn startup_document(state: tauri::State<AppState>) -> Option<Document> {
-    state.initial_document.lock().unwrap().take()
+    open_requests::spawn_window(&[path], "internal")
 }
 
 fn recycle(path: &Path) -> Result<()> {
@@ -333,7 +315,6 @@ mod tests {
             renderer: PathBuf::new(),
             renderer_args: Vec::new(),
             recovery: recovery::Recovery::new(data).unwrap(),
-            initial_document: Mutex::new(None),
         }
     }
     #[test]

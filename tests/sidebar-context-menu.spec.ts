@@ -18,7 +18,8 @@ async function desktop(page: Page, language = "zh-CN", startup = false) {
         app.calls.push({ command, args });
         if (["restore_workspace", "refresh_workspace", "choose_workspace"].includes(command)) return structuredClone(workspace);
         if (command === "read_recovery") return [];
-        if (command === "startup_document") return startup ? docs[note] : null;
+        if (command === "pending_open_requests") { if (app.startupTaken || !startup) return []; app.startupTaken = true; return [{ id: 0, source: "internal", initial: true }]; }
+        if (command === "complete_open_request") return { documents: [docs[note]], errors: [] };
         if (command === "renderer_info") return { versions: { zensical: "test" } };
         if (command === "list_recent_files") return Object.keys(docs);
         if (command === "read_file" || command === "open_recent_file") return structuredClone(docs[args.path]);
@@ -57,7 +58,9 @@ async function desktop(page: Page, language = "zh-CN", startup = false) {
       },
     };
   }, { root, folder, note, other, language, startup });
-  await page.goto("/"); await expect(page.locator("[data-file]")).toHaveCount(2);
+  await page.goto("/");
+  if (startup) await expect(page.locator("#tabs .tab")).toHaveCount(1);
+  else await expect(page.locator("[data-file]")).toHaveCount(2);
 }
 // Attribute matching through JS avoids CSS escaping Windows paths.
 const file = (page: Page, name = "Plan") => page.locator("#sidebar-content [data-file]").filter({ hasText: name });
@@ -156,6 +159,9 @@ test("keyboard menu navigates, returns focus and stays inside a short viewport",
 
 test("English menu supports language switching without translating filenames; child startup opens the selected note", async ({ page }) => {
   await desktop(page, "en", true); await expect(page.locator("#tabs .tab")).toContainText("Plan.md");
+  expect(await page.evaluate(() => (window as any).calls.some((call: any) => call.command === "restore_workspace"))).toBe(false);
+  await page.keyboard.press("Control+Shift+o");
+  await expect(page.locator("[data-file]")).toHaveCount(2);
   const popup = await menu(page, "设置"); await expect(popup.getByRole("menuitem", { name: "Rename", exact: true })).toBeVisible(); await expect(popup.locator("header")).toHaveText("设置.md");
   await expect(popup.getByRole("menuitem", { name: "Search files", exact: true })).toBeVisible();
   const labels = await popup.locator("button").allTextContents();

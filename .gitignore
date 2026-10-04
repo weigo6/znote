@@ -3,7 +3,7 @@
 # Rule of thumb: anything a build step can regenerate, anything machine-specific,
 # and anything holding local user data stays out. Committed source is limited to
 # hand-authored code, hand-authored docs, and the byte-pinned vendored assets
-# under public/vendor/.
+# under tests/vendor/.
 #
 # NOTE: .gitignore has no inline trailing comments. Every comment must occupy its
 # own line, otherwise the comment text becomes part of the pattern and silently
@@ -30,15 +30,15 @@ src-tauri/bin/
 release/
 
 # --- Local release tooling --------------------------------------------------
-# Produces the distributable ZIP. It is not needed to build or test the product,
-# so it is not part of the published source. Every other file in scripts/ is
-# required by a build or test step and stays committed.
+# Legacy local packaging helper. The published workflow uses the committed
+# scripts/package-release.py instead.
 scripts/package-portable.py
 
 # --- Local development archive ---------------------------------------------
 # Internal roadmaps, iteration records, research material and QA screenshots.
 # Deliberately kept out of the published tree. See .dev-archive/README.md.
 .dev-archive/
+docs/publishing.md
 
 # --- Local application data -------------------------------------------------
 # WebView2 dev profile (see README)

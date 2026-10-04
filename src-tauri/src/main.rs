@@ -15,7 +15,9 @@ use std::{
 };
 use tauri::Manager;
 mod file_operations;
+mod open_requests;
 mod recovery;
+mod updates;
 
 type Result<T> = std::result::Result<T, String>;
 #[derive(Default)]
@@ -31,7 +33,6 @@ struct AppState {
     renderer: PathBuf,
     renderer_args: Vec<PathBuf>,
     recovery: recovery::Recovery,
-    initial_document: Mutex<Option<Document>>,
 }
 struct Worker {
     child: Child,
@@ -707,7 +708,24 @@ fn export_render_settings(settings: Value, filter_label: Option<String>) -> Resu
 }
 
 fn main() {
-    tauri::Builder::default()
+    let launch = open_requests::parse(
+        std::env::args_os().skip(1),
+        &std::env::current_dir().unwrap_or_default(),
+        true,
+    );
+    let requests = open_requests::OpenRequests::default();
+    if let Some(request) = launch.request {
+        requests.push(request);
+    }
+    let mut builder = tauri::Builder::default()
+        .manage(requests)
+        .manage(open_requests::PendingOpens::default());
+    // Explicit new windows keep the existing process-per-window architecture and
+    // independent recovery locks. Only the primary instance receives OS requests.
+    if !launch.independent {
+        builder = builder.plugin(tauri_plugin_single_instance::init(open_requests::receive));
+    }
+    builder
         .setup(|app| {
             let data = app.path().app_data_dir()?;
             fs::create_dir_all(&data)?;
@@ -734,22 +752,9 @@ fn main() {
             } else {
                 (bundled, vec![])
             };
-            let initial_path = std::env::args_os()
-                .skip(1)
-                .collect::<Vec<_>>()
-                .windows(2)
-                .find(|args| args[0] == "--open-note")
-                .and_then(|args| fs::canonicalize(&args[1]).ok());
-            let initial_document = initial_path
-                .as_deref()
-                .and_then(|path| read_document(path).ok());
-            let mut access = Access::default();
-            if let Some(path) = initial_path {
-                access.files.insert(path);
-            }
             let recovery = recovery::Recovery::new(&data)?;
             app.manage(AppState {
-                access: Mutex::new(access),
+                access: Mutex::new(Access::default()),
                 recent_files: Mutex::new(
                     recent_files.into_iter().take(RECENT_FILES_LIMIT).collect(),
                 ),
@@ -758,11 +763,14 @@ fn main() {
                 renderer,
                 renderer_args,
                 recovery,
-                initial_document: Mutex::new(initial_document),
             });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            open_requests::pending_open_requests,
+            open_requests::complete_open_request,
+            open_requests::open_default_apps,
+            updates::check_for_updates,
             choose_workspace,
             restore_workspace,
             refresh_workspace,
@@ -785,7 +793,6 @@ fn main() {
             file_operations::entry_properties,
             file_operations::reveal_entry,
             file_operations::open_in_new_window,
-            file_operations::startup_document,
             read_asset,
             import_image,
             write_recovery,
@@ -851,7 +858,6 @@ mod tests {
             renderer: PathBuf::new(),
             renderer_args: Vec::new(),
             recovery: recovery::Recovery::new(dir.path()).unwrap(),
-            initial_document: Mutex::new(None),
         };
         let first = dir.path().join("first.md");
         let other = dir.path().join("other.md");

@@ -6,7 +6,8 @@ ZNote 是一款本地优先的 Windows 桌面 Markdown 编辑器与阅览器。�
 `.md` 文件保存在自己的磁盘上，随时可以用任何别的工具打开；ZNote 只负责让你写得舒服、
 读得好看。
 
-不登录、不联网、不上传、不绑定格式、不建私有数据库。
+不登录、不上传笔记、不绑定格式、不建私有数据库。编辑与阅读可离线使用；在线图标搜索
+和更新检查需要连接网络，自动检查更新默认关闭。
 
 ## 产品特点
 
@@ -40,9 +41,31 @@ ZNote 是一款本地优先的 Windows 桌面 Markdown 编辑器与阅览器。�
 
 ## 下载与安装
 
+正式版本发布在 [GitHub Releases](https://github.com/weigo6/znote/releases)。
+
+### 安装版
+
+下载 `ZNote_<版本>_x64-setup.exe` 并安装。安装版会注册 `.md` 和 `.markdown`
+的打开方式；可以在 Windows 中选择 ZNote，并按需要设为默认应用。
+
 ### 便携版（推荐）
 
 下载并解压 `ZNote-<版本>-windows-x64.zip`，直接运行其中的 `ZNote.exe`。
+
+便携版不会自动注册文件关联；可以在 Windows 的“打开方式”中手动选择 `ZNote.exe`。
+
+### 系统打开与更新
+
+在「设置 → 文件打开」选择从系统打开时的编辑、对照或阅读模式，以及是否启用专注模式。
+例如选择「阅读 + 专注」，双击 Markdown 文件后即可直接浏览正文。软件已经运行时，
+默认另开独立窗口，也可以改为当前窗口；当前窗口的模式会一起切换，原有标签和未保存内容保留。
+专注界面保留「切换到编辑」和退出专注按钮。外部打开不会恢复其他工作区或草稿，也不会改写
+普通工作窗口记住的模式。正常启动可选择显示起始页或恢复上次工作；起始页模式下草稿仍保留，
+可在文件打开设置中手动恢复。
+
+在「设置 → 关于与更新」手动检查正式版本，查看更新说明并打开 GitHub 下载页。
+也可开启启动检查，每天最多检查一次。检查失败不会影响编辑；只有公开正式版本会作为更新提示。
+第一版由用户下载并安装或替换便携版，不自动安装，也不上传笔记。
 
 ### 系统要求
 
@@ -157,9 +180,11 @@ ZNote 以 MIT 许可证发布。便携包里带有完整的第三方许可证文
 | Inter / JetBrains Mono / Roboto / Roboto Mono | OFL-1.1 | 界面字体 |
 
 内置的 Zensical 图标资源来自 FontAwesome、Lucide、Material Design、Octicons
-与 Simple Icons，许可证文本见 [`public/vendor/icon-licenses/`](public/vendor/icon-licenses/)。
+与 Simple Icons，许可证文本见 [`tests/vendor/icon-licenses/`](tests/vendor/icon-licenses/)。
 内置的官方 CSS 附有来源记录与逐文件校验值，见
-[`public/vendor/zensical/manifest.json`](public/vendor/zensical/manifest.json)。
+[`tests/vendor/zensical/manifest.json`](tests/vendor/zensical/manifest.json)。
+原始 CSS 只用于样式生成与测试，不随前端重复分发；应用使用 `src/zensical.generated.css`。
+许可证与来源清单会随正式包保留。
 
 ## 许可证
 

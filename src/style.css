@@ -1482,6 +1482,9 @@ kbd {
 .focus-mode .cm-content {
   padding-top: 65px !important;
 }
+.focus-edit { display: none; }
+.focus-mode .focus-edit { display: inline-flex; }
+.update-notes { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 300px; overflow: auto; font-family: inherit; font-size: 13px; }
 #toasts {
   position: fixed;
   bottom: 49px;

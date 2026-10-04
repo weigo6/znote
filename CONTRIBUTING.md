@@ -76,17 +76,17 @@ znote/
 │   └── icons/                  应用图标资源
 ├── config/
 │   └── render-capabilities.json  扩展与选项的单一事实来源（TS 与 Python 共用）
-├── tests/                      全部测试与测试支持
+├── tests/                      全部测试、测试支持与第三方对照资源
 │   ├── *.spec.ts               Playwright 浏览器回归
 │   ├── generate-fixtures.py    生成 fixtures/rendered.json
 │   ├── test-bundled-renderer.py 冻结渲染器端到端
 │   ├── check-editor-templates.mjs 编辑器模板与 Python 渲染器集成测试
 │   ├── benchmark-*             源码映射与预览同步性能测量
 │   ├── *.html + *-fixture.ts   测试载具与夹具装配器
-│   └── fixtures/               渲染样本、跨语言配置边界用例、语法覆盖样本
+│   ├── fixtures/               渲染样本、跨语言配置边界用例、语法覆盖样本
+│   └── vendor/                 Zensical 原始样式对照、来源记录与许可证
 ├── docs/                       面向使用者的文档与示例
 ├── scripts/                    构建与发版脚本
-├── public/vendor/zensical/     内置的 Zensical 官方 CSS 与许可证
 └── assets/icon.svg             应用图标 SVG 源文件
 ```
 
@@ -122,9 +122,15 @@ pnpm run styles:sync
 ```
 
 该脚本从 `.venv` 中**同一个固定版本的 wheel** 读取样式表与许可证，写入
-`src/zensical.generated.css` 与 `public/vendor/zensical/`，使随包 CSS 永远与解析器版本一致。
+`src/zensical.generated.css` 与 `tests/vendor/zensical/`，使随包 CSS 永远与解析器版本一致。
 `src/zensical.generated.css` 与应用侧适配分开：**生成文件不要手改**，
 排版调整写在 `src/markdown-theme.css` 与 `src/reader-theme.ts`。
+
+`tests/vendor/` 中的原始 CSS 用于生成与回归对照，不重复装入前端包。
+正式构建仅提取许可证和来源清单到 `dist/licenses/`，构建后的资源检查会验证此规则。
+`scripts/` 保留构建、资源生成和发布工具；测试、回归检查和基准测试放在 `tests/`。
+许可证提取由 `vite.config.ts` 的构建插件执行，产物校验为 `tests/check-package-assets.mjs`。
+发布流程和首次发版步骤见 [GitHub 发布说明](docs/publishing.md)。
 
 ## 测试
 
@@ -214,7 +220,7 @@ HTML 类名、生成器函数、格式化回调、资源路径属于应用内部
 
 ## 提交范围约定
 
-仓库遵循一条原则：**只提交手写代码、手写文档，以及 `public/vendor/` 下按字节固定的第三方资源。**
+仓库遵循一条原则：**只提交手写代码、手写文档，以及 `tests/vendor/` 下按字节固定的第三方资源。**
 可重建的东西、机器相关的东西、本机数据都不提交。
 
 ## 提交前检查清单

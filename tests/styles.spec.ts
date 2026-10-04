@@ -4,7 +4,7 @@ const fixtures = JSON.parse(
   fs.readFileSync("tests/fixtures/rendered.json", "utf8"),
 );
 const manifest = JSON.parse(
-  fs.readFileSync("public/vendor/zensical/manifest.json", "utf8"),
+  fs.readFileSync("tests/vendor/zensical/manifest.json", "utf8"),
 ) as { files: { variant: string; file: string }[] };
 
 for (const variant of ["modern", "classic"])
@@ -29,7 +29,7 @@ for (const variant of ["modern", "classic"])
         .filter((f) => f.variant === variant)
         .map((f) =>
           fs.readFileSync(
-            `public/vendor/zensical/${variant}/${f.file}`,
+            `tests/vendor/zensical/${variant}/${f.file}`,
             "utf8",
           ),
         )
